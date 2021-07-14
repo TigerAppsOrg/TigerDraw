@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TigerDraw</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+</head>
+<style>
+  .rooms-table {
+    font-size: 0.9em;
+    min-width: 800px;
+    box-shadow: 10px 10px 20px rgba(120, 132, 241, 0.15);
+    font-family: helveticaneue-light,helvetica neue light,helvetica neue,Helvetica,Arial,lucida grande,sans-serif;
+    top: 50%;
+    left: 50%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .rooms-table thead tr {
+    background-color: #7884F1;
+    color: #FFFFFF;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .rooms-table th,
+  .rooms-table td {
+    padding: 12px 15px;
+  }
+
+  .rooms-table tbody tr {
+    border-bottom: thin solid #7884F1;
+  }
+
+
+  .star {
+    visibility: hidden;
+    display: inline-block;
+  }
+
+  .star:before {
+    content: "\2606";
+    display: inline-block;
+    visibility: visible;
+    height: 20px;
+    width: 20px;
+    padding-bottom: 10px;
+  }
+
+  .star:checked:before {
+    content: "\2605";
+    display: inline-block;
+    padding-bottom: 10px;
+  }
+
+
+  h2 {
+    font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
+    text-align: center;
+    font-weight: normal;
+    font-size: 2em;
+    margin-top: 20px;
+  }
+
+  .help-tip{
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    text-align: center;
+    background-color: #7884F1;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    line-height: 26px;
+    cursor: default;
+    margin-top: -20px;
+}
+
+.help-tip:before{
+    content:'?';
+    font-weight: bold;
+    color:#fff;
+}
+
+.help-tip:hover p{
+    display:block;
+    transform-origin: 100% 0%;
+
+    -webkit-animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
+
+}
+
+.help-tip p{    /* The tooltip */
+    display: none;
+    text-align: left;
+    background-color: #7884F1;
+    padding: 10px;
+    width: 300px;
+    position: absolute;
+    border-radius: 3px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    right: -4px;
+    color: #FFF;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.help-tip p:before{ /* The pointer of the tooltip */
+    position: absolute;
+    content: '';
+    width:0;
+    height: 0;
+    border:6px solid transparent;
+    border-bottom-color:#7884F1;
+    right:10px;
+    top:40px;
+}
+
+.help-tip p:after{ /* Prevents the tooltip from being hidden */
+    width:100%;
+    height:40px;
+    content:'';
+    position: absolute;
+    top:40px;
+    left:0;
+}
+
+/* CSS animation */
+
+@-webkit-keyframes fadeIn {
+    0% { 
+        opacity:0; 
+        transform: scale(0.6);
+    }
+
+    100% {
+        opacity:100%;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% { opacity:0; }
+    100% { opacity:100%; }
+}
+
+</style>
+
+<body>
+  <nav class="navbar navbar-dark" style="background-color: #7884F1;">
+    <a style="padding-left: 20px;" href="#" class="navbar-brand">TigerDraw</a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div style="padding-left: 20px;" class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav">
+            <a href="/rooms" class="nav-item nav-link active">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+        </div>
+        <div class="navbar-nav ml-auto">
+            <a href="/logout" class="nav-item nav-link">Logout</a>
+        </div>
+    </div>
+</nav>
+
+  <div style="padding-top:25px;">
+    <h2 style="font-weight:700;">Past Room Draws</h2>
+  </div>
+  <div class="form-inline" style="padding-left: 75px; padding-right: 75px; padding-top:25px">
+    <div class="col-auto my-1">
+      <label class="college">College</label>
+      <select class="form-control" name="college" id="college">
+        <option value="">College</option>
+        <option value="Butler College">Butler</option>
+        <option value="Forbes College">Forbes</option>
+        <option value="Mathey College">Mathey</option>
+        <option value="Rockefeller College">Rocky</option>
+        <option value="Whitman College">Whitman</option>
+        <option value="Wilson College">Wilson</option>
+<!--         <option value="Independent">Independent</option>
+ -->    <option value="Upperclass">Upperclassman</option>
+      </select>
+    </div>
+    <div class="col-auto my-1">
+      <label class="college">Ranking</label>
+      <div class="help-tip">
+        <p>Ranking is the number draw group in the college's room draw. If a college is not set, the ranking is taken from the overall room draw. We'll output rooms you're likely to get based on your ranking. </p>
+      </div>
+      <input type="text" class="form-control" name="ranking" id = "ranking" placeholder="Ranking" maxlength="4">
+    </div>
+    <div class="col-auto my-1">
+      <label class="college">Occupancy</label>
+      <input type="text" class="form-control" name="occupancy" id="occupancy" placeholder="Occupancy" maxlength="2">
+    </div>
+    <div class="col-auto my-1">
+      <label class="building">Building</label>
+      <select class="form-control" name="building" id="building">
+        <option value="">Building</option>
+      </select>
+    </div>
+    <div class="col-auto my-1">
+      <label class="year">Year</label>
+      <select class="form-control" name="year" id="year">
+        <option value="">Year</option>
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+      </select>
+    </div>
+    </div>
+  </div>
+
+
+  <div>
+    <div style="margin-top:20px; padding-left: 75px; padding-right: 75px; padding-bottom: 100px;">
+      <table id="rooms-table" class="table table-striped table-bordered">
+<!--       <table id="rooms-table" class="display">
+ -->        <thead>
+              <tr>
+                  <th>Starred</th>
+                  <th>Ranking</th>
+                  <th>College</th>
+                  <th>Building</th>
+                  <th>Room No.</th>
+                  <th>Occupancy</th>
+                  <th>Sq. Footage</th>
+              </tr>
+          </thead> 
+          <tfoot>
+              <tr>
+                  <th>Starred</th>
+                  <th>Ranking</th>
+                  <th>College</th>
+                  <th>Building</th>
+                  <th>Room No.</th>
+                  <th>Occupancy</th>
+                  <th>Sq. Footage</th>
+              </tr>
+          </tfoot>   
+      </table>
+    </div>
+  </div>
+  </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>    
+  var rt;
+  let request = null;
+
+
+  function getResults() 
+  {
+    let college = $('#college').val();
+    college = encodeURIComponent(college);
+    let ranking = $('#ranking').val();
+    ranking = encodeURIComponent(ranking);
+    let occupancy = $('#occupancy').val();
+    occupancy = encodeURIComponent(occupancy);
+    let year = $('#year').val();
+    year = encodeURIComponent(year);
+    let building = $('#building').val();
+    building = encodeURIComponent(building);
+
+    populateDropdowns()
+
+    
+    // regex to check for ints only, datavalidation
+    let isranknum = /^\d+$/.test(ranking);
+    let isoccnum = /^\d+$/.test(occupancy);
+    if (!((isranknum || ranking == "")&& (isoccnum || occupancy == ""))) {
+      return
+    }
+
+    let url = '/queryrooms?college=' + college + "&ranking=" + ranking + "&occupancy=" + occupancy +  "&year=" + year + "&building=" + building
+
+    if (request != null)
+      request.abort();
+
+    // added button
+    rt = $('#rooms-table').DataTable({
+      destroy: true,
+      "pagingType": "first_last_numbers",
+      "bLengthChange": false,
+      "order": [[1, "asc"]],
+      "pageLength": 20,
+      "processing": true,
+      "ajax": {
+        "type": "POST",
+        "dataType": "json",
+        "dataSrc": "data",
+      },
+      "columns": [
+        {
+          targets: 0,
+          className: 'text-center',
+          searchable: false,
+          orderable: false,
+          "data": "favorites",
+          render: function (data, type, full, meta) {
+            if(full.favorite === true){
+              return '<input type="checkbox" class="star" name="star" checked="true">';
+            }
+            else{
+              return '<input type="checkbox" class="star" name="star">';
+            }
+          },
+        },
+        { "data": "ranking" },
+        { "data": "res_college" },
+        { "data": "building" },
+        { "data": "room_no" },
+        { "data": "occupancy" },
+        { "data": "sq_footage" },
+      ],
+    })
+    rt.ajax.url(url).load(populateDropdowns)
+
+  }
+
+  // dynamic dropdown for buildings
+  // function populateDropdowns(json) {
+  //   // const buildings = []
+  //   // // comment back when rendering for res college
+  //   // $('#building').empty()
+
+  //   // json.data.forEach(function(obj) { 
+  //   //   if (buildings.indexOf(obj.building) == -1) {
+  //   //     $("#building").append( $("<option>").val(obj.building).html(obj.building));
+  //   //     console.log(obj.building); 
+  //   //     buildings.push(obj.building)
+  //   //   }
+  //   // });
+
+  // }
+
+  function populateDropdowns() {
+    college = $('#college').val();
+    $('#building').empty()
+    $("#building").append( $("<option>").val("").html(""));
+
+    // my above function does this without less hard-coding, but it's a big buggy so this will have to do for now
+    if(college == "Butler College" || college == "") {
+
+      $("#building").append( $("<option>").val("1915").html("1915"));
+      $("#building").append( $("<option>").val("1967").html("1967"));
+      $("#building").append( $("<option>").val("1976").html("1967"));
+      $("#building").append( $("<option>").val("BLOOMBERG").html("Bloomberg"));
+      $("#building").append( $("<option>").val("BOGLE").html("Bogle"));
+      $("#building").append( $("<option>").val("WILF").html("Wilf"));
+      $("#building").append( $("<option>").val("YOSELOFF").html("Yoseloff"));
+    }
+
+    if(college == "Forbes College" || college == "") {
+      $("#building").append( $("<option>").val("FORBES").html("Forbes"));
+    }
+
+    if(college == "Mathey College" || college == "") {
+      $("#building").append( $("<option>").val("BLAIR").html("Blair"));
+      $("#building").append( $("<option>").val("CAMPBELL").html("Campbell"));
+      $("#building").append( $("<option>").val("EDWARDS").html("Edwards"));
+      $("#building").append( $("<option>").val("HAMILTON").html("Hamilton"));
+      $("#building").append( $("<option>").val("JOLINE").html("Joline"));
+      $("#building").append( $("<option>").val("LITTLE").html("Little"));
+    }
+    if(college == "Rockefeller College" || college == "") {
+      $("#building").append( $("<option>").val("BUYERS").html("Buyers"));
+      $("#building").append( $("<option>").val("CAMPBELL").html("Campbell"));
+      $("#building").append( $("<option>").val("HOLDER").html("Holder"));
+      $("#building").append( $("<option>").val("WITHERSPOON").html("Witherspoon"));
+    }
+    if(college == "Whitman College" || college == "") {
+      $("#building").append( $("<option>").val("1981").html("1981"));
+      $("#building").append( $("<option>").val("BAKER").html("Baker"));
+      $("#building").append( $("<option>").val("FISHER").html("Fisher"));
+      $("#building").append( $("<option>").val("HARGADON").html("Hargadon"));
+      $("#building").append( $("<option>").val("LAURITZEN").html("Lauritzen"));
+      $("#building").append( $("<option>").val("MURLEY").html("Murley"));
+      $("#building").append( $("<option>").val("WENDELL").html("Wendell"));
+    }
+    if(college == "Wilson College" || college == "") {
+      $("#building").append( $("<option>").val("1927").html("1927"));
+      $("#building").append( $("<option>").val("1937").html("1937"));
+      $("#building").append( $("<option>").val("1938").html("1938"));
+      $("#building").append( $("<option>").val("1939").html("1939"));
+      $("#building").append( $("<option>").val("CLAPP").html("Clapp"));
+      $("#building").append( $("<option>").val("DODGE OSBORN").html("Dodge Osborn"));
+      $("#building").append( $("<option>").val("FEINBERG").html("Feinberg"));
+      $("#building").append( $("<option>").val("GAUSS").html("Gauss"));
+      $("#building").append( $("<option>").val("WALKER").html("Walker"));
+    }
+    if(college == "Upperclass" || college == "") {
+      $("#building").append( $("<option>").val("1901").html("1901"));
+      $("#building").append( $("<option>").val("1903").html("1903"));
+      $("#building").append( $("<option>").val("BROWN").html("Brown"));
+      $("#building").append( $("<option>").val("CUYLER").html("Cuyler"));
+      $("#building").append( $("<option>").val("DOD").html("Dod"));
+      $("#building").append( $("<option>").val("FOULKE").html("Foulke"));
+      $("#building").append( $("<option>").val("HENRY").html("Henry"));
+      $("#building").append( $("<option>").val("LAUGHLIN").html("Laughlin"));
+      $("#building").append( $("<option>").val("LITTLE").html("Little"));
+      $("#building").append( $("<option>").val("LOCKHART").html("Lockhart"));
+      $("#building").append( $("<option>").val("PATTON").html("Patton"));
+      $("#building").append( $("<option>").val("PYNE").html("Pyne"));
+      $("#building").append( $("<option>").val("SCULLY").html("Scully"));
+      $("#building").append( $("<option>").val("SPELMAN").html("Spelman"));
+      $("#building").append( $("<option>").val("WILF").html("Wilf"));
+      $("#building").append( $("<option>").val("WRIGHT").html("Wright"));
+    }
+
+    // remove duplicates
+    $(".select option").val(function(idx, val) {
+      $(this).siblings('[value="'+ val +'"]').remove();
+    });
+
+    // $("#building").html($("#building option").sort(function (a, b) {
+    //   return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+    // }))
+  }
+
+  function setup(){
+  
+
+    $('#college').on('change', getResults)
+    $('#ranking').on('input', getResults)
+    $('#occupancy').on('input', getResults)
+    $('#year').on('change', getResults)
+    $('#building').on('change', getResults)
+
+    // on clicking stars, either favorite or unfavorite
+    $('#rooms-table').on('change', '.star', function () {
+      var data = rt.row( $(this).parents('tr') ).data();
+      changing_row = rt.row(this.closest('tr')).data()
+
+      if (this.checked !== true) {
+        // send message to db to remove from favorites
+        $.ajax({
+          type: 'POST',
+          url: "{{url_for('removeFromFravorites')}}",
+          contentType: 'application/json;charset=UTF-8',
+          data: JSON.stringify(changing_row.room_id)
+        });
+      }
+      else {
+        // SEND MESSAGE TO DATABASE TO ADD TO FAVORITES
+        $.ajax({
+          type: 'POST',
+          url: "{{url_for('addToFavorites')}}",
+          contentType: 'application/json;charset=UTF-8',
+          data: JSON.stringify(changing_row.room_id)
+        });
+      }
+    });
+  }
+  $('document').ready(getResults)
+  $('document').ready(setup)
+  $("#building").val("");
+  $("#year").val("2019");
+
+
+</script>

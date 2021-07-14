@@ -1,0 +1,120 @@
+{% raw %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script id="group-cards-template" type="x-tmpl-mustache">
+        {{#has_groups}}
+            {{#groups}}
+                <div class="card-container d-flex flex-column group-card" data-id="{{group_id}}" data-name="{{name}}">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="card shadow mb-4">
+                                    <!-- Card Header - Accordion -->
+                                    <a class="d-block card-header py-3">
+                                        <div class="row">
+                                            <div class="col-md-12" href="#collapseCardExample"
+                                            role="button" aria-expanded="true" aria-controls="collapseCardExample" >
+                                                <h6 class="m-0 font-weight-bold text-primary" style="margin-left: 1em; display:inline-block" >{{name}}</h6>
+                                                <div class="float-right" style="display:inline-block">
+                                                    <i class="bi bi-pencil-square float-right edit-group-icon" style="float:right; display:inline; margin-left:1em"></i>
+                                                    <i class="bi bi-trash-fill float-right delete-group-icon"style="float:right; display:inline" ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    
+                                    <div class="collapse show" id="collapseCardExample">
+                                        <div class="card-body">
+                                            <h10 class="font-weight-bold">Members:</h10>
+                                            {{#members_altered}}
+                                                {{member}}{{^last}},{{/last}}
+                                            {{/members_altered}}
+                                            <br>
+        
+                                            <h10 class="font-weight-bold">Rooms:</h10>
+                                                <ul class="list-group">
+                                                    <form>
+                                                        {{#rooms.length}}
+                                                        <div class="table-responsive">
+                                                            <table class="table table-striped table-bordered groups-rooms-table" id={{group_id}}}>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>College</th>
+                                                                        <th>Building</th>
+                                                                        <th>Room No.</th>
+                                                                        <th>Occupancy</th>
+                                                                        <th>Sq. Footage</th>
+                                                                        <th>In group?</th>
+                                                                        <th>Added By</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {{#rooms}}
+                                                                        {{#taken}}
+                                                                            <tr style="background-color:#ffcccb">
+                                                                                <td>{{res_college}}</td>
+                                                                                <td>{{building}}</td>
+                                                                                <td>{{room_no}}</td>
+                                                                                <td>{{occupancy}}</td>
+                                                                                <td>{{sq_footage}}</td>
+                                                                                {{#favorited}}
+                                                                                    <td><input type="checkbox" id = {{room_id}} value = {{group_id}} class="checkbox" name="star" checked="true"></td>
+                                                                                {{/favorited}}
+                                                                                <td>{{user_that_added}}</td>
+                                                                            </tr>
+                                                                        {{/taken}}
+                                                                        {{^taken}}
+                                                                            <tr>
+                                                                                <td>{{res_college}}</td>
+                                                                                <td>{{building}}</td>
+                                                                                <td>{{room_no}}</td>
+                                                                                <td>{{occupancy}}</td>
+                                                                                <td>{{sq_footage}}</td>
+                                                                                {{#favorited}}
+                                                                                    <td><input type="checkbox" id = {{room_id}} value = {{group_id}} class="checkbox" name="star" checked="true"></td>
+                                                                                {{/favorited}}
+                                                                                <td>{{user_that_added}}</td>
+                                                                            </tr>
+                                                                        {{/taken}}
+                                                                    {{/rooms}}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        {{/rooms.length}}
+                                                        {{^rooms.length}}
+                                                        <p style="text-align:center"> No rooms to show. You can add rooms to a group by clicking the 'Add Room' button on any row on the Rooms Page.</p>
+                                                        {{/rooms.length}}
+                                                    </form>
+                                                </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/groups}}
+        {{/has_groups}}
+
+        {{^has_groups}}
+        <div class="card-container d-flex flex-column">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card shadow mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">You currently have no groups. Add one by clicking above!</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/has_groups}}
+    </script>
+{% endraw %}
+
+<div id='groups'>
+</div>

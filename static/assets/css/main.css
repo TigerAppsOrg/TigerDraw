@@ -1,0 +1,18 @@
+.star {
+    visibility: hidden;
+    display: inline-block;
+}
+
+.star:before {
+    content: "\2606";
+    display: inline-block;
+    visibility: visible;
+    height: 20px;
+    width: 20px;
+}
+
+.star:checked:before {
+    content: "\2605";
+    display: inline-block;
+}
+

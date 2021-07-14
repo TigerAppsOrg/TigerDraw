@@ -1,0 +1,724 @@
+﻿/* -----------------------------------------------------------------------
+
+WebPatron: Design Triage
+Based upon Blueprint CSS Framework
+(http://blueprintcss.org)
+   
+----------------------------------------------------------------------- */
+/* reset.css */
+html {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, dialog, figure, footer, header, hgroup, section {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+article, aside, details, figcaption, figure, dialog, footer, header, hgroup, menu, section {
+	display: block;
+}
+body {
+	line-height: 1.25em;
+}
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+	float: none !important;
+}
+table, th, td {
+	vertical-align: middle;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+}
+blockquote, q {
+	quotes: "" "";
+}
+a img {
+	border: none;
+}
+:focus {
+	outline: 0;
+}
+/* typography.css */
+html {
+	font-size: 100.01%;
+}
+body {
+	font-size: 75%;
+	color: #696969;
+	background: #fff;
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	color: #999;
+	margin: 0.25em;
+	text-shadow: 0px 2px 3px #fff;
+}
+h1 {
+	font-size: 2em;
+	line-height: 1;
+	padding-bottom: 0.25em;
+	border-bottom: dotted 1px #d7d7d7;
+}
+h2 {
+	font-size: 1.25em;
+	padding-bottom: 0.25em;
+}
+h3, h4, h5, h6 {
+	font-size: 1em;
+	line-height: 1;
+	margin-bottom: 0.5em;
+	font-weight: bold;
+}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
+	margin: 0;
+}
+p {
+	margin: 0.25em;
+	padding: 0.25em;
+}
+.left {
+	float: left !important;
+}
+p .left {
+	margin: 1.5em 1.5em 1.5em 0;
+	padding: 0;
+}
+.right {
+	float: right !important;
+}
+p .right {
+	margin: 1.5em 0 1.5em 1.5em;
+	padding: 0;
+}
+a:link {
+	color: #1a6eca;
+	padding: 0px 2px; 
+	margin: 0px;
+}
+a:focus, a:hover {
+	color: #09f;
+}
+a {
+	color: #1a6eca;
+	text-decoration: none;
+}
+blockquote {
+	margin: 1.5em;
+	color: #666;
+	font-style: italic;
+}
+strong, dfn {
+	font-weight: bold;
+}
+em, dfn {
+	font-style: italic;
+}
+sup, sub {
+	line-height: 0;
+}
+abbr, acronym {
+	border-bottom: 1px dotted #666;
+}
+address {
+	margin: 0 0 1.5em;
+	font-style: italic;
+}
+del {
+	color: #666;
+}
+pre {
+	margin: 1.5em 0;
+	white-space: pre;
+}
+pre, code, tt {
+	font: 1em 'andale mono', 'lucida console', monospace;
+	line-height: 1.5;
+}
+li ul, li ol {
+	margin: 0;
+}
+ul, ol {
+	margin: 0 0.5em 0.5em 0;
+	padding-left: 0.5em;
+}
+.submenu { margin-left: 0px; padding-left: 0px;}
+ul {
+	list-style-type: none;
+}
+ul li {
+	list-style-position: outside;
+padding: 2px;
+
+}
+ol {
+	list-style-type: decimal;
+}
+dl {
+	margin: 0 0 1.5em 0;
+}
+dl dt {
+	font-weight: bold;
+}
+dd {
+	margin-left: 1.5em;
+}
+table {
+	margin-bottom: 1.4em;
+	width: 100%;
+}
+th {
+	font-weight: bold;
+}
+thead th {
+	background: #c3d9ff;
+}
+th, td, caption {
+	padding: 2px;
+}
+tbody tr.even td {
+	background: #e5ecf9;
+}
+/* Alternating color */
+tfoot {
+	font-style: italic;
+}
+caption {
+	background: #eee;
+}
+.small {
+	font-size: .8em;
+	margin-bottom: 1.875em;
+	line-height: 1.875em;
+}
+.large {
+	font-size: 1.2em;
+	line-height: 2.5em;
+	margin-bottom: 1.25em;
+}
+.hide {
+	display: none;
+}
+.quiet {
+	color: #666;
+}
+.loud {
+	color: #000;
+}
+.highlight {
+	background: #ff0;
+}
+.added {
+	background: #060;
+	color: #fff;
+}
+.removed {
+	background: #900;
+	color: #fff;
+}
+.first {
+	margin-left: 0;
+	padding-left: 0;
+}
+.last {
+	margin-right: 0;
+	padding-right: 0;
+}
+.top {
+	margin-top: 0;
+	padding-top: 0;
+}
+.bottom {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+/* forms.css */
+label {
+	font-weight: bold;
+}
+fieldset {
+	padding: 0 1.4em 1.4em 1.4em;
+	margin: 0 0 1.5em 0;
+	border: 1px solid #d7d7d7;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+legend {
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-top: -0.2em;
+	margin-bottom: 1em;
+	color: #999;
+}
+fieldset, #IE8#HACK {
+	padding-top: 1.4em;
+}
+legend, #IE8#HACK {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+input[type=text], input[type=password], input[type=url], input[type=email], input.text, input.title, textarea {
+	background-color: #fff;
+	border: 1px solid #bbb;
+	color: #000;
+}
+input[type=text]:focus, input[type=password]:focus, input[type=url]:focus, input[type=email]:focus, input.text:focus, input.title:focus, textarea:focus {
+	border-color: #666;
+}
+select {
+	background-color: #fff;
+	border-width: 1px;
+	border-style: solid;
+}
+input[type=text], input[type=password], input[type=url], input[type=email], input.text, input.title, textarea, select {
+	margin: 0.5em 0;
+    padding: 5px;
+}
+input.text, input.title {
+	width: 300px;
+	padding: 5px;
+}
+#frmAddresses select{
+	float:left;
+} 
+input[type=submit]#btnView{
+	 margin: 10px 0px 10px 0px;
+	 float: left;
+	 clear: both;
+}
+input.title {
+	font-size: 1.5em;
+}
+textarea {
+	width: 390px;
+	height: auto;
+	padding: 5px;
+}
+form.inline {
+	line-height: 3;
+}
+form.inline p {
+	margin-bottom: 0;
+}
+.Error, .error, .alert, .notice, .Important, .success, .info {
+	padding: 0.8em;
+	margin-bottom: 1em;
+	border: 2px solid #ddd;
+}
+.Error, .error, .alert {
+	background: #fbe3e4 url(../images/icons/x.png) no-repeat;
+	color: #8a1f11;
+	border-color: #fbc2c4;
+	padding: 1em 1em 1em 2.5em ;
+	margin: 0.3em 1em 0.3em 1em;
+	background-position: 0.75em;
+}
+.Success, .success {
+
+	padding: 1em 1em 1em 2.5em ;
+	margin: 0.3em 1em 0.3em 1em;
+	background: #e6efc2 url(../images/icons/check.png) no-repeat;
+	background-position: 0.75em;
+	color: #264409;
+	border:solid 2px #c6d880;
+}
+.notice, .Important {
+	background: #fff6bf;
+	color: #514721;
+	border-color: #ffd324;
+}
+.Important a {font-weight: bold; color: #1a6eca;}
+.info {
+	background: #d5edf8;
+	color: #205791;
+	border-color: #92cae4;
+}
+.error a, .alert a {
+	color: #8a1f11;
+}
+.notice a {
+	
+}
+.success a {
+	color: #264409;
+}
+.info a {
+	color: #205791;
+}
+/* === BUTTONS === */
+p button {
+	margin-top: 20px;
+}
+button, input[type=submit],input[type=button] {
+	margin: 0px 0px 10px 0px;
+	padding: 1em;
+	display: block;
+	float: left;
+	font-size: 1.25em;
+	background: #1a6eca;
+	text-decoration: none;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	cursor: pointer;
+color: #fff; 
+border: none;
+}
+
+button:hover, button:focus, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {
+	text-decoration: none;
+	background: #003366;
+}
+button:active, input[type=submit]:active {
+	
+	padding-top: 1px;
+	height: 46px;
+}
+input[type=button] {
+	
+}
+button:disabled, input[type=submit]:disabled {
+background-color: #a9a9a9;
+}
+
+/* Hide close [X] button on jQuery dialogs */
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+/*Table DNT */
+table {
+	margin: 20px auto;
+	padding: 0;
+	border-collapse: separate;
+}
+table th {
+	font-weight: bold;
+	color: #999;
+	font-size: 1em;
+	white-space:nowrap;
+}
+table td {
+	font-size: 1em;
+	white-space:nowrap;
+}
+table.DataTable {
+	background-position: 0 0;
+	background-image: url(../images/table-1.png);
+	background-position: 0 bottom;
+	background-repeat: repeat-x;
+	border-collapse: separate;
+	border: 1px solid #333;
+	border-right: 1px solid #cfcfcf;
+	border-left: 1px solid #cfcfcf;
+	border-bottom: #707070;
+	-webkit-box-shadow: #555 0 1px 1px;
+	-moz-box-shadow: #555 0 1px 1px;
+	box-shadow: #555 0 1px 1px;
+	border-top: none;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+table.DataTable td, table.DataTable th {
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #e1e1e1;
+	border-bottom: 1px solid #e1e1e1;
+	background: none;
+	margin: 0;
+	text-align: center;
+	padding: 13px 10px;
+	vertical-align: top;
+}
+table.DataTable th {
+	background: #f3f3f3;
+}
+
+table.DataTable th:last-child, table td:last-child {
+	border-right: none;
+}
+table.DataTable th:first-child, table td:first-child {
+	border-left: none;
+}
+table.DataTable tr:hover > * {
+	background: rgba(0,0,0,.03);
+}
+table.DataTable tr.DataRowEven {
+	background: #FFFFFF;
+}
+table.DataTable tr.DataRowSelected {
+	background: #00FF7F;
+}
+/*End Table DNT */
+/* grid.css */
+.container {
+	width: 950px;
+	margin: 0 auto;
+}
+.showgrid {
+	background: url(src/grid.png);
+}
+.column {
+	float: left;
+	margin-right: 10px;
+}
+.last {
+	margin-right: 0;
+}
+
+.border {
+	padding-right: 4px;
+	margin-right: 5px;
+	border-right: 1px solid #ddd;
+}
+.colborder {
+	padding-right: 24px;
+	margin-right: 25px;
+	border-right: 1px solid #ddd;
+}
+.box {
+	padding: 1.5em;
+	margin-bottom: 1.5em;
+	background: #e5eCf9;
+}
+hr {
+	background: #ddd;
+	color: #ddd;
+	clear: both;
+	float: none;
+	width: 100%;
+	height: 1px;
+	margin: 0 0 17px;
+	border: none;
+}
+hr.space {
+	background: #fff;
+	color: #fff;
+	visibility: hidden;
+}
+.clearfix:after, .container:after {
+	content: "\0020";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+	overflow: hidden;
+}
+.clearfix, .container {
+	display: block;
+}
+.clear {
+	clear: both;
+}
+#dialog {
+	width: auto;
+	max-width: 400px;
+	margin: 0 auto;
+}
+/* OLD */
+/* custom DIVs for picture use. Use however you wish. */
+#customDiv1, #customDiv2, #customDiv3 {
+	width: auto;
+	height: auto;
+	margin: 0 auto;
+}
+#GroupTable{
+	width: 50%;
+
+}
+#header {
+border-bottom: none;
+}
+/* Form-related styles*/
+td.formLabel {
+	text-align: right;
+	vertical-align: middle;
+	padding: 0.25em;
+	color: #999;
+	white-space: nowrap;
+font-size: 1em;
+font-weight: bold;
+}
+td.formGroup {
+                vertical-align : top;
+                white-space: normal;
+}
+
+/* Header style - appears at top of every page above both the
+   content and sidebar. Custom HTML must be supplied in the configuration
+	tool for the Header. */
+#header {
+}
+/* Main content styles. Container holds pageHeader + Content.  Content is main content area.*/
+#container {
+	width: auto;
+	max-width: 65%;
+	float: left;
+	clear: right;
+	margin: 0.5em 1em;
+	padding: 0.5em;
+}
+#content {
+	width: auto;
+	padding: 1em;
+}
+#content ul li {
+	list-style-type: disc;
+	margin-left: 0.5em;
+}
+#content ol li {
+	list-style-type: decimal;
+}
+#frmLogin {
+	width: 300px;
+	height:auto;
+	min-height: 150px;
+	margin-left: 1em;
+	padding: 1em;
+	border: solid 1px #d7d7d7;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	box-shadow: #666 0 2px 2px;
+	margin-bottom: 1em;
+	-webkit-box-shadow: #666 0 2px 2px;
+	-moz-box-shadow: #666 0 2px 2px;
+	-moz-box-shadow: #666 0 2px 2px;
+	background: #fcfff4;
+/* Old browsers */ /* IE9 SVG, needs conditional override of 'filter' to 'none' */	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxOSUiIHN0b3AtY29sb3I9IiNmY2ZmZjQiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZTVlZWZmIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+	
+	background: -moz-linear-gradient(top, #fcfff4 19%, #e5eeff 100%);
+	 /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(19%,#fcfff4), color-stop(100%,#e5eeff));
+	 /* Chrome,Safari4+ */ background: -webkit-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* Chrome10+,Safari5.1+ */ background: -o-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* Opera 11.10+ */ background: -ms-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* IE10+ */ background: linear-gradient(to bottom, #fcfff4 19%,#e5eeff 100%); /* W3C */;
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#e5eeff',GradientType=0 ); /* IE6-8 */;
+						}
+#frmLogin table {
+	margin-bottom: 0em;
+}
+#btnSubmit {
+	float: right;
+}
+.formField a {
+	padding: 0em 0em 0em 0.5em;
+}
+.formField select { float: left;}
+/* Sidebar styles */
+#sidebar {
+	float: left;
+	width: auto;
+	min-width: 250px;
+	padding: 75px 0em 0.3em 0em;
+	margin-left: 1.5em;
+	background: url(../images/webPatron-logoSM.png) no-repeat top center;
+	z-index: 10000;
+}
+#sidebar h1 {
+	font-size:1.85em;
+}
+#menu, #reminders, fieldset {
+	padding: 0.75em;
+	border: solid 1px #d7d7d7;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px !important;
+	margin-bottom: 1em;
+}
+#menu, #reminders {
+	width: 250px;
+	background: #fcfff4;
+/* Old browsers */ /* IE9 SVG, needs conditional override of 'filter' to 'none' */	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxOSUiIHN0b3AtY29sb3I9IiNmY2ZmZjQiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZTVlZWZmIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+	background: -moz-linear-gradient(top, #fcfff4 19%, #e5eeff 100%);
+	 /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(19%,#fcfff4), color-stop(100%,#e5eeff));
+	 /* Chrome,Safari4+ */ background: -webkit-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* Chrome10+,Safari5.1+ */ background: -o-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* Opera 11.10+ */ background: -ms-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+	 /* IE10+ */ background: linear-gradient(to bottom, #fcfff4 19%,#e5eeff 100%); /* W3C */;
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#e5eeff',GradientType=0 ); /* IE6-8 */;
+
+}
+#reminders {
+}
+#sidebar ul ul { margin-left: 10px;
+}
+#reminders ul li {
+	list-style-type: disc;
+	margin-left: 0.5em;
+}
+#reminders ol li {
+	list-style-type: decimal;
+	margin-left: 0.5em;
+}
+#breadcrumb { padding: 0.25em;}
+/* Footer */
+#footer {
+	clear: both;
+	font-size: 0.9em;
+	text-align: center;
+	border-top: 1px solid #d7d7d7;
+}
+#footer p {
+	padding: 0.75em;
+	margin: 0em 0.95em;
+}
+#footer p a {
+	margin: 0em 1em 0em 1em;
+}
+/* Success status messages*/
+.popupForm
+{
+	padding: 0.25em 0em 0.6em 0.25em; 
+
+}	
+*/
+/*Use this class if a link gets an icon when it shouldn't. */
+body a.noicon {
+  background:transparent none !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+
+/* Make sure the icons are not cut */
+a[href^="https:"],
+a[href^="mailto:"], a[href$=".pdf"], a[href$=".doc"], a[href$=".xls"],
+a[href$=".rss"], a[href$=".rdf"], a[href^="aim:"] {
+  padding:2px 22px 2px 0px;
+  margin:-2px 0;
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+/* External links */
+
+a[href^="https:"]         { background-image: url(../images/icons/lock.png); }
+a[href^="mailto:"]        { background-image: url(../images/icons/email.png); }
+
+
+/* Files */
+a[href$=".pdf"]   { background-image: url(../images/icons/pdf.png); }
+a[href$=".doc"]   { background-image: url(../images/icons/doc.png); }
+a[href$=".xls"]   { background-image: url(../images/icons/xls.png); }
+
+/* Misc */
+a[href$=".rss"],
+a[href$=".rdf"]   { background-image: url(../images/icons/feed.png); }
+a[href^="aim:"]   { background-image: url(../images/icons/im.png); }
+
+/*CUSTOM */
+
+body.noMenu #container {width: 95%; max-width: 95%;} 
+.SelectedMP (color: green;)

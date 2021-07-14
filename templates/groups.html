@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TigerDraw</title>
+    <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/scss/card.scss') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://unpkg.com/mustache@latest"></script>
+
+    <style>
+        .star {
+            visibility: hidden;
+            display: inline-block;
+        }
+
+        .star:before {
+            content: "\2606";
+            display: inline-block;
+            visibility: visible;
+            height: 20px;
+            width: 20px;
+            padding-bottom: 10px;
+        }
+
+        .star:checked:before {
+            content: "\2605";
+            display: inline-block;
+            padding-bottom: 10px;
+            color: #ffe135;
+        }
+    </style>
+
+    <script>
+        let controller = null;
+        let groups = {};
+        var rt;
+        let username = null;
+
+        // set up the datatables for the groups
+        rt = $('.groups-rooms-table').DataTable({
+            destroy: true,
+            searching: false,
+            "pagingType": "first_last_numbers",
+            "bLengthChange": false,
+            "order": [[1, "asc"]],
+            "pageLength": 20,
+            "processing": true,
+            "ajax": {
+                "type": "POST",
+            },
+        });
+
+        function showToast(header, body) {
+            $('#add-group-toast-header').text(header);
+            $('#add-group-toast-body').text(body);
+            $("#add_group_failure_toast").toast('show');
+        }
+
+        function checkMemberAndAdd(member, memberList, memberField) {
+            // user tries to add themself, then we show a toast 
+            if (member === username) {
+                showToast('Unnecessary Add', "You will automatically be added to any groups you create.");
+                return;
+            }
+
+            // check if the member is already in the list
+            var members = getMemberNamesFromList(memberList.find('li'));
+            for (var i = 0; i < members.length; i++) {
+                if (members[i] === member) {
+                    showToast("Redundant Add", "This member is already part of the group");
+                    return;
+                }
+            }
+
+            // set up url to call API
+            url = 'isuserstudent?username=' + encodeURIComponent(member);
+
+            resetController();
+
+            // check if the netID inputted corresponds to a student
+            fetch(url, { signal: controller.signal })
+                .then(function (resp) {
+                    return resp.text();
+                }).then(function (text) {
+                    // if netID corresponds to an actual student, add them to the member list
+                    if (text == "True") {
+                        // getting the list of group members
+                        addMemberToList(memberList, member, memberField);
+                    }
+                    // show a toast telling the user to input a different netID
+                    else {
+                        showToast('Invalid NetID', "Please enter a valid NetID");
+                    }
+                }).catch(function (err) {
+                    console.log("error", err);
+                });
+        }
+
+        // get all the member names from list in the edit/create modal
+        function getMemberNamesFromList(list) {
+            // get group name and members
+            var members = []
+            for (let i = 0; i <= list.length - 1; i++) {
+                members.push(list[i].innerText);
+            }
+            return members
+        }
+
+        // makes a call to the DB to get the groups and updates the page 
+        // along with our JS dictionary of groups
+        function updateGroupCardsAndDict(json) {
+            // so I'm not sure why, but at this point the variable
+            // 'json' is actually a JS object, and not a json string.
+            // This is why we don't need to call JSON.parse on it
+
+            // repopulate dict with groups
+            groups = {}
+            new_groups = json.groups
+            new_groups.forEach(group => {
+                groups[group.group_id] = group;
+            })
+
+            // update group cards
+            var template = $('#group-cards-template').html();
+            // console.log(json);
+            if(json.groups){
+                for(let i = 0; i<json.groups.length; i++){
+                    if(json.groups[i] && json.groups[i].accepted){
+                        var num_members = json.groups[i].accepted.length
+                        var new_obj = []
+                        for(let j = 0; j< num_members && num_members > 0; j++){
+                            last = false
+                            if(j === json.groups[i].accepted.length-1){
+                                last = true
+                            }
+                            new_obj.push({'member':json.groups[i].accepted[j], 'last':last})
+                        }
+                        if(num_members > 0){
+                            json.groups[i].members_altered = new_obj
+                        }
+                    }
+                }
+            }
+            console.log(json)
+            var rendered = Mustache.render(template, json);
+            $('#groups').html(rendered)
+            bindGroupHeaderButtons();
+        }
+
+        // display a modal with a default error message
+        function showErrorToast() {
+            showToast('Error', "Something has gone wrong. Please contact the system administrator.");
+        }
+
+        // called on setup of the document, intializes the page with groups
+        function getGroups() {
+            resetController();
+            fetch('/getgroupsjson', { signal: controller.signal })
+                .then(function (resp) {
+                    return resp.json();
+                }).then(function (json) {
+                    username = json.username;
+                    // update group cards
+                    updateGroupCardsAndDict(json);
+                }).catch(function (err) {
+                    console.log("error", err);
+                });
+        }
+
+        // we use a lot of AJAX calls so we need this in multiple places
+        function resetController() {
+            if (controller !== null)
+                controller.abort();
+            controller = new AbortController();
+        }
+
+        // adds member to the list of members on the group edit/create card
+        function addMemberToList(memberList, member, memberField) {
+            // add new list item
+            memberList.append('<div class="input-group member-name-row"> <li class="col"> ' + member + '</li>' + '<button type="button" class="btn btn-outline-danger btn-sm col ml-5 md-5 delete-item-button" id="remove">\
+                Remove Member</button></div>');
+            // clear value input
+            if (memberField) {
+                memberField.val('');
+            }
+
+            $('.delete-item-button').click(function () {
+                $(this).parent().remove();
+            });
+        }
+
+        // Because we use AJAX to re-render the group cards, the event 
+        // handlers on those cards for deleting, editing, etc, must be rebound
+        function bindGroupHeaderButtons() {
+            $('.edit-group-icon').off('click');
+            $('.delete-group-icon').off('click');
+            $('#delete-group-button').off('click');
+
+            // add/remove room from group
+            $('.groups-rooms-table').on('change', '.checkbox', function () {
+                console.log("hello");
+                var data = rt.row($(this).parents('tr')).data();
+                var room_id = this.id;
+                var group_id = this.value;
+
+                room_and_group = { "room_id": room_id, "group_id": group_id };
+
+                if (this.checked !== true) {
+
+                    // send message to db to remove room from group
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{url_for('removeroomfromgroup')}}",
+                        contentType: 'application/json;charset=UTF-8',
+                        data: JSON.stringify(room_and_group),
+                        complete: function (data) {
+                            getGroups();
+                        }
+                    });
+                }
+
+            });
+
+            // Edit icon on any of the groups
+            $('.edit-group-icon').click(function () {
+                // get group data 
+                group_id = $(this).closest('.group-card').attr('data-id');
+                group_name = $(this).closest('.group-card').attr('data-name');
+
+                // populate fields and data attributes
+                $('#edit_group_name').val(group_name);
+                $('#edit_group_modal').attr('data-id', group_id);
+
+                // clear out member list, then populate with the current group's member
+                members = groups[group_id]['accepted'];
+                member_list = $('#edit_group_member_list');
+                member_list.empty();
+                members.forEach((member) => {
+                    addMemberToList(member_list, member, $('#edit_group_member_name'));
+                });
+
+                $('#edit_group_modal').modal('show');
+            })
+
+            // Trashcan icon on any of the groups
+            $('.delete-group-icon').click(function () {
+                group_id = $(this).closest('.group-card').attr('data-id');
+                group_name = $(this).closest('.group-card').attr('data-name');
+
+                // open up a modal to confirm deletion
+                confirmation_string = "Are you sure you'd like to delete Group " + group_name + '?';
+                $('#delete-modal-title').html(confirmation_string);
+                $('#delete-group-button').attr("data-id", group_id);
+                $('#confirm_delete_group_modal').modal('show');
+            })
+
+            // Confirmation of deleting a group
+            $('#delete-group-button').click(function () {
+                group_id = $("#delete-group-button").attr('data-id');
+                let url = '/deletegroup?group_id=' + encodeURIComponent(group_id);
+                resetController();
+
+                fetch(url, { signal: controller.signal })
+                    .then(function (resp) {
+                        return resp.text();
+                    }).then(function (text) {
+                        // get new groups data
+                        return fetch('/getgroupsjson', { signal: controller.signal });
+                    }).then(function (resp) {
+                        return resp.json();
+                    }).then(function (json) {
+                        updateGroupCardsAndDict(json)
+
+                        // close out of the modal
+                        $('#confirm_delete_group_modal').modal('hide');
+                    })
+                    .catch(function (err) { console.log("error", err); });
+
+            })
+        }
+
+        function setup() {
+            maxInputSlicer = function () {
+                if (this.value.length > 50)
+                    this.value = this.value.slice(0, 50);
+            }
+
+            // update the groups cards every 15 seconds
+            setInterval(function () {
+                console.log('updating');
+                getGroups();
+            }, 15000);
+
+            // "Create Group" Button presented on the page 
+            $("#createGroupPageButton").click(function () {
+                $("#group-form").trigger('reset');      // clear the input fields
+                $('#memberList').empty();               // clear out the usernames list 
+            });
+
+            // click handler for addMember button on Edit Group Modal
+            $("#edit_group_add_member_button").click(function () {
+                event.preventDefault(); // stop default behaviour of submit button
+                var member = $('#edit_group_member_name').val();   // value of member name input
+                var memberList = $('#edit_group_member_list');
+                checkMemberAndAdd(member, memberList, $('#edit_group_member_name'));
+            });
+
+            bindGroupHeaderButtons();
+
+            $('#edit_group_save_button').click(function () {
+                // get group members
+                let lis = document.getElementById('edit_group_member_list').getElementsByTagName('li');
+                var members = getMemberNamesFromList(lis);
+
+                // get group info
+                group_id = $('#edit_group_modal').attr('data-id');
+                group_name = $('#edit_group_name').val();
+                group_info = { "group_id": group_id, "group_name": group_name, "members": members };
+
+                // set up fetch request
+                fetch_data = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify(group_info)
+                }
+
+                // edit group, then update group cards
+                resetController()
+                fetch("{{url_for('editGroup')}}", fetch_data)
+                    .then(function (resp) {
+                        return resp.text();
+                    }).then(function (text) {
+                        // result of editing group
+                    }).then(function () {
+                        // update the group cards on the page
+                        return fetch('/getgroupsjson', { signal: controller.signal });
+                    }).then(function (resp) {
+                        return resp.json();
+                    }).then(function (json) {
+                        // update group cards
+                        updateGroupCardsAndDict(json);
+
+                        // close out of the modal
+                        $('#edit_group_modal').modal('hide');
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
+            });
+
+            $(document).delegate('.text-input', 'input', function () {
+                maxInputSlicer.call(this);
+            });
+
+            // update db with group
+            $(document).delegate("#createGroupModalButton", 'click', function () {
+                let group_name = $("#group-name").val();
+
+                if (group_name == "") {
+                    showToast("Group name missing", "Please enter a name for your group");
+                    return;
+                }
+
+                // get group name and members
+                let lis = document.getElementById('memberList').getElementsByTagName('li');
+                var members = getMemberNamesFromList(lis);
+
+                group_info = [members, group_name, username]
+
+                fetch_data = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify(group_info)
+                }
+
+                if (controller !== null)
+                    controller.abort();
+                controller = new AbortController();
+
+                // close out of modal and add group to db
+                fetch("{{url_for('addGroup')}}", fetch_data)
+                    .then(function (resp) {
+                        // close out of the modal
+                        $('#addGroupModal').modal('hide');
+
+                        // update the group cards on the page
+                        return fetch('/getgroupsjson', { signal: controller.signal });
+                    }).then(function (resp) {
+                        return resp.json();
+                    }).then(function (json) {
+                        // update group cards
+                        updateGroupCardsAndDict(json);
+                    })
+                    .catch(function (err) {
+                        console.log("error", err);
+                    });
+            });
+        }
+
+        let request = null;
+
+        //click handler for addMemberButton on Create Group Modal
+        $(document).delegate("#addMemberButton", 'click', function () {
+            event.preventDefault(); // stop default behaviour of submit button
+            var member = $('#member-name').val();   // value of member name input
+            var memberList = $('#memberList');
+            checkMemberAndAdd(member, memberList, $('#member-name'));
+        });
+
+        $('document').ready(getGroups)
+        document.addEventListener('DOMContentLoaded', setup);
+
+    </script>
+    <style>
+        .delete-item-button {
+            max-width: 15em;
+        }
+
+        .card-container {
+            padding-top: 25px;
+        }
+
+        .container-fluid {
+            width: 100%;
+            padding-right: 0.75rem;
+            padding-left: 0.75rem;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        h2 {
+            font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2em;
+            margin-top: 20px;
+        }
+
+        .text-primary {
+            color: #4e73df !important;
+        }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:active,
+        .btn-primary:visited {
+            background-color: #4e73df !important;
+        }
+
+        .toast {
+            left: 50%;
+            top: 15%;
+            position: fixed;
+            transform: translate(-50%, 0px);
+            z-index: 9999;
+        }
+
+        .toast-header {
+            color: #4e73df
+        }
+
+        .member-name-row {
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body style="background-color:#f7f8fb; height:100%;">
+    <!-- Modal for editing group -->
+    {% include 'edit_group_modal.html' %}
+
+    <!-- Toast for if adding a group fails -->
+    {% include 'add_group_failure_toast.html' %}
+
+    <!-- Modal for adding groups -->
+    {% include 'add_group_modal.html' %}
+
+    <!-- Modal for deleting groups -->
+    {% include 'confirm_delete_group_modal.html' %}
+
+
+    <!-- NavBar -->
+    {% with page='groups' %}
+    {% include 'navbar.html' %}
+    {% endwith %}
+    <div>
+        <div class="main-container container rounded bg-white lg-13 mt-5 mb-5 shadow-sm" style="padding-bottom:50px;">
+            <div style="padding-top:25px;">
+                <div class="row">
+                    <div class="col" style="text-align:center">
+                        <h2 style="display: inline-block; text-align:center">Your Groups</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" style="text-align:center">
+                        <button id="createGroupPageButton" type="button" style="margin-top:20px; text-align:right;"
+                            class="btn btn-primary" data-toggle="modal" data-target="#addGroupModal"
+                            data-whatever="@getbootstrap">Create Group</button>
+                    </div>
+                </div>
+            </div>
+            {% include 'groups_cards.html' %}
+
+        </div>
+    </div>
+</body>
+
+</html>

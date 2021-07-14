@@ -1,0 +1,210 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>TigerDraw</title>
+ <title>TigerDraw</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+  <meta charset="utf-8">
+
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="ROBOTS" content="ALL">
+<meta name="Copyright" content="Copyright (c) 2004 The CBORD Group, Inc.">
+<link rel="stylesheet" type="text/css" media="all" href="{{ url_for('static', filename='assets/css/Princeton.css') }}">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.validate.js"></script>
+
+<style>
+	 .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+            background-color: #4e73df !important;
+        }
+    .hide{
+  		display:none;  
+	}
+
+	#menu, #reminders, fieldset {
+	padding: 0.75em;
+	border: solid 1px #d7d7d7;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px !important;
+	margin-bottom: 1em;
+}
+	#menu, #reminders {
+		width: 250px;
+		background: #fcfff4;
+	/* Old browsers */ /* IE9 SVG, needs conditional override of 'filter' to 'none' */	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxOSUiIHN0b3AtY29sb3I9IiNmY2ZmZjQiIHN0b3Atb3BhY2l0eT0iMSIvPgogICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZTVlZWZmIiBzdG9wLW9wYWNpdHk9IjEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+		background: -moz-linear-gradient(top, #fcfff4 19%, #e5eeff 100%);
+		 /* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(19%,#fcfff4), color-stop(100%,#e5eeff));
+		 /* Chrome,Safari4+ */ background: -webkit-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+		 /* Chrome10+,Safari5.1+ */ background: -o-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+		 /* Opera 11.10+ */ background: -ms-linear-gradient(top, #fcfff4 19%,#e5eeff 100%);
+		 /* IE10+ */ background: linear-gradient(to bottom, #fcfff4 19%,#e5eeff 100%); /* W3C */;
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#e5eeff',GradientType=0 ); /* IE6-8 */;
+
+	}
+
+	.Error, .error, .alert, .notice, .Important, .success, .info {
+	padding: 0.8em;
+	margin-bottom: 1em;
+	border: 2px solid #ddd;
+}
+.Error, .error, .alert {
+	background: #fbe3e4 url(../images/icons/x.png) no-repeat;
+	color: #8a1f11;
+	border-color: #fbc2c4;
+	padding: 1em 1em 1em 2.5em ;
+	margin: 0.3em 1em 0.3em 1em;
+	background-position: 0.75em;
+}
+
+</style>
+</head>
+<body>
+
+{% with page='housing' %}
+    {% include 'navbar.html' %} 
+  {% endwith %}
+  
+<div class="row justify-content-center" style="padding-top:25px;">
+	<h5 style="display: inline-block; text-align:center;">Before attempting to use this feature, we highly recommend you reference our <a style="color:#4e73df" target="_blank" href="https://docs.google.com/document/d/1fqrRnQ_3i0Z5OxUN_5nmPqet6ZAfDjOLoMhYlRu3sl4/edit?usp=sharing">User's Guide</a>.</h5>
+</div>
+<div class = "row justify-content-center" style="padding-top:25px;">
+	<!-- <input type = "button" button type="button" class="btn btn-primary" value="Start" id="toggle"></button> -->
+	<button type="button" class="btn btn-primary" id="startbutton">Start</button>
+	<button type="button" class="btn btn-primary" id="checkonce">Check Once</button>
+
+</div><br>
+<div class ="container">
+<form-row>
+	<div class = "row justify-content-center">
+		<button type="button" class="btn btn-outline-dark" id="firstdraw">First Rooms Drawn</button>
+		<button type="button" class="btn btn-outline-dark" id="halfway">Halfway Done</button>
+		<button type="button" class="btn btn-outline-dark" id="finished">Room Draw Finished</button>
+		<button type="button" class="btn btn-outline-dark" id="clear">Reset</button>
+	</div>
+</form-row>
+</div>
+ <div id="customDiv1"></div>
+ <div id="customDiv2"></div>
+ <div id="customDiv3"></div>
+
+<div id="header"></div>
+<div id="sidebar"><div style="height:1px;width:1px;overflow:hidden"><a href="#content" title="Skip navigation." accesskey="s">Skip navigation.</a></div>
+<div id="menu"><h1>Menu</h1>
+<ul>
+<li><a href="Default.asp" title="">My Home</a></li>
+<li><a href="DoorLockPIN.asp" title="">View Door Lock PIN</a></li>
+<li><a href="https://sp.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx" title="Link for floor plans ">Floor Plans </a></li>
+<!-- for purposes of displaying updated pdf to users, will have a different link but this is what the code will actually parse as it best imitates what would happen during room draw 
+ -->
+ <li class="hide"><a href="{{ url_for('static', filename='liveupdatepdfs/howroomsdrew.pdf') }}" title="Link for rooms drawn" id="pdf">How Rooms Drew</a></li>
+ <li class><a href="" title="Link for rooms drawn" id="mockpdf">How Rooms Drew</a></li>
+
+<li>&nbsp;</li>
+<li><a href="Logout.asp" title="">Logout</a></li>
+</ul>
+</div>
+</div>
+<div id="container">
+<div id="content">
+<div id="pageHeader"><h1>Error</h1>
+</div>
+<p>An error in processing your request has occurred. Contact the Housing and Real Estate Services Office for help:</p><p class="Error">You are not listed as a registered on-campus student. Please contact the Housing Office to apply. </p></div></div>
+
+<div id="footer">
+<!-- Generated by XStandard version 1.2.0.0 on 2018-01-23T15:24:10 --><p>Housing and Real Estate Services. New South Building 5th Floor, Princeton NJ 08544-5264 Phone: 609-258-3460| FAX: 609-258-5898 | Email: ughsg@princeton.edu</p>
+</div>
+
+</body></html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+
+	// change rooms drawn pdf based on button clicks
+	var link = document.getElementById("mockpdf");
+	document.getElementById("firstdraw").onclick = function() {
+		link.href = "{{ url_for('static', filename='liveupdatepdfs/starting.pdf') }}"
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('changeHowRoomsDrew')}}",
+          data: {"status": "firstdraw"}
+        });
+	}
+	document.getElementById("halfway").onclick = function() {
+		link.href = "{{ url_for('static', filename='liveupdatepdfs/halfway.pdf') }}"
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('changeHowRoomsDrew')}}",
+          data: {"status": "halfway"}
+        });
+	}
+	document.getElementById("finished").onclick = function() {
+		link.href = "{{ url_for('static', filename='liveupdatepdfs/full.pdf') }}"
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('changeHowRoomsDrew')}}",
+          data: {"status": "finished"}
+        });
+	}
+	document.getElementById("startbutton").onclick = function() {
+		// python not properly reading boolean var, so adding in variable
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('startRoomDraw')}}",
+          data: {"stopping": 0}
+        });
+	}
+
+	// document.getElementById("stopbutton").onclick = function() {
+	// 	// python not properly reading boolean var, so adding in variable
+	// 	$.ajax({
+ //          type: 'GET',
+ //          url: "{{url_for('startRoomDraw')}}",
+ //          data: {"stopping": 1}
+ //        });
+	// }
+
+	document.getElementById("checkonce").onclick = function() {
+		// python not properly reading boolean var, so adding in variable
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('checkOnce')}}"
+        });
+	}
+	// start room draw, call function which consistently checks pdf
+	// document.getElementById("toggle").onclick = function() {
+	// 	// python not properly reading boolean var, so adding in variable
+	// 	var stopping = 0;
+	// 	if (document.getElementById("toggle").value === "Stop") stopping = 1;
+	// 	$.ajax({
+ //          type: 'GET',
+ //          url: "{{url_for('startRoomDraw')}}",
+ //          data: {"stopping": stopping}
+ //        });
+ //        change();
+	// }
+
+	document.getElementById("clear").onclick = function() {
+		// link.href = ""
+		// $.ajax({
+  //         type: 'GET',
+  //         url: "{{url_for('clearRooms')}}",
+  //       });
+  		link.href = "{{ url_for('static', filename='liveupdatepdfs/blank.pdf') }}"
+		$.ajax({
+          type: 'GET',
+          url: "{{url_for('clearRooms')}}"
+        });
+	}
+
+	// change = function(){
+	// 	var elem = document.getElementById("toggle");
+	// 	if (elem.value=="Stop") elem.value = "Start";
+	// 	else elem.value = "Stop";
+	// }
+
+
+</script>

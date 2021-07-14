@@ -1,0 +1,86 @@
+<div class="modal fade bd-example-modal-lg" id="addRoomModal" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Room to Group</h5>
+            </div>
+            <style>
+                .groups-table {
+                    font-size: 0.9em;
+                    min-width: 800px;
+                    box-shadow: 10px 10px 20px rgba(120, 132, 241, 0.15);
+                    font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
+                    top: 50%;
+                    left: 50%;
+                    margin-right: auto;
+                    margin-left: auto;
+                }
+
+                .groups-table thead tr {
+                    background-color: #7884F1;
+                    color: #FFFFFF;
+                    text-align: left;
+                    font-weight: bold;
+                }
+
+                .rooms-table th,
+                .rooms-table td {
+                    padding: 12px 15px;
+                }
+
+                .groups-table tbody tr {
+                    border-bottom: thin solid #7884F1;
+                }
+
+                .star {
+                    visibility: hidden;
+                    display: inline-block;
+                }
+
+                .star:before {
+                    content: "\2606";
+                    display: inline-block;
+                    visibility: visible;
+                    height: 20px;
+                    width: 20px;
+                    padding-bottom: 10px;
+                }
+
+                .star:checked:before {
+                    content: "\2605";
+                    display: inline-block;
+                    padding-bottom: 10px;
+                    color: #ffe135;
+                }
+            </style>
+            <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+                crossorigin="anonymous">
+            <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+            <div class="modal-body">
+                <form>
+                    <table id="groups-table" class="table table-striped table-bordered">
+                        <tr>
+                            <th>Group Name</th>
+                            <th>In group?</th>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

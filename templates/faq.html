@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TigerDraw</title>
+    <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+    <!-- Link below is for the faq cards -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.2.0/css/ionicons.min.css" integrity="sha256-F3Xeb7IIFr1QsWD113kV2JXaEbjhsfpgrKkwZFGIA4E=" crossorigin="anonymous" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<style>
+    h2 {
+        font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
+        text-align: center;
+        font-weight: normal;
+        font-size: 2em;
+        margin-top: 20px;
+    }
+
+    .hk-row {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+
+    @media (min-width: 576px){
+        .mt-sm-60 {
+            margin-top: 60px !important;
+        }
+    }
+    .mt-30 {
+        margin-top: 30px !important;
+    }
+
+    .accordion .card .card-header.activestate {
+        border-width: 1px;
+    }
+    .accordion .card .card-header {
+        padding: 0;
+        border-width: 0;
+    }
+    .card.card-lg .card-header, .card.card-lg .card-footer {
+        padding: .9rem 1.5rem;
+    }
+    .accordion>.card .card-header {
+        margin-bottom: -1px;
+    }
+    .card .card-header {
+        background: transparent;
+        border: none;
+    }
+    .accordion.accordion-type-2 .card .card-header > a.collapsed {
+        color: #324148;
+    }
+    .accordion .card:first-of-type .card-header:first-child > a {
+        border-top-left-radius: calc(.25rem - 1px);
+        border-top-right-radius: calc(.25rem - 1px);
+    }
+    .accordion.accordion-type-2 .card .card-header > a {
+        background: transparent;
+        color: #00acf0;
+        padding-left: 50px;
+    }
+    .accordion .card .card-header > a.collapsed {
+        color: #324148;
+        background: transparent;
+    }
+    .accordion .card .card-header > a {
+        background: #00acf0;
+        color: #fff;
+        font-weight: 500;
+        padding: .75rem 1.25rem;
+        display: block;
+        width: 100%;
+        text-align: left;
+        position: relative;
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+    }
+    a {
+        text-decoration: none;
+        color: #00acf0;
+        -webkit-transition: color 0.2s ease;
+        -moz-transition: color 0.2s ease;
+        transition: color 0.2s ease;
+    }
+
+
+    .accordion.accordion-type-2 .card .card-header > a.collapsed:after {
+        content: "\f158";
+    }
+
+    .accordion.accordion-type-2 .card .card-header > a::after {
+        display: inline-block;
+        font: normal normal normal 14px/1 'Ionicons';
+        speak: none;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: auto;
+        position: absolute;
+        content: "\f176";
+        font-size: 21px;
+        top: 15px;
+        left: 20px;
+    }
+</style>
+
+<body style="background-color:#f7f8fb; height:100%;">
+    {% with page='faq' %}
+        {% include 'navbar.html' %} 
+    {% endwith %}
+    <div class="main-container container rounded bg-white lg-13 mt-5 mb-5 shadow-sm" style="padding-bottom:50px;">
+      <div style="padding-top:25px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-12 pa-0">
+                    <div class="container mt-sm-60 mt-30">
+                        <div class="hk-row">
+                            <div class="col-12">
+                                <div class="card card-lg">
+                                    <h3 class="card-header border-bottom-0" style="text-align:center;">
+                                        FAQ
+                                    </h3>
+                                    <div class="accordion accordion-type-2 accordion-flush" id="accordion_2">
+
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1i" aria-expanded="false">About TigerDraw</a>
+                                            </div>
+                                            <div id="collapse_1i" class="collapse" data-parent="#accordion_2">
+                                                <div class="card-body pa-15 pl-5">TigerDraw is a web application built by gcuenca, cscho, fge, and hannahh for COS 333. It is meant to make the process of finding rooms for room draw easier. To learn more about TigerDraw, please see 'Where Can I Learn More?' below.</div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2i" aria-expanded="false">Contact Us/Report A Bug </a>
+                                            </div>
+                                            <div id="collapse_2i" class="collapse" data-parent="#accordion_2">
+                                                <div class="card-body pa-15 pl-5">If you have found a bug or have any questions, comments, or concerns about TigerDraw, please reach out to us at tigerdrawprinceton@gmail.com</div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_3i" aria-expanded="false">Acknowledgements</a>
+                                            </div>
+                                            <div id="collapse_3i" class="collapse" data-parent="#accordion_2">
+                                                <div class="card-body pa-15 pl-5">Many thanks to Sata Sengupta, our team adviser, and Dr. Robert Dondero for their advice, mentorship, and support. We also thank our test users, who provided feedback during development.</div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_4i" aria-expanded="false">Where Can I Learn More?</a>
+                                            </div>
+                                            <div id="collapse_4i" class="collapse" data-parent="#accordion_2">
+                                                <div class="card-body pa-15 pl-5">
+                                                    The TigerDraw team has written several documents that may be of help to users and future system administrators:
+                                                    <br>
+                                                    <br>
+                                                    <a href="https://docs.google.com/document/d/1fqrRnQ_3i0Z5OxUN_5nmPqet6ZAfDjOLoMhYlRu3sl4/edit?usp=sharing" target="blank_">User's Guide:</a> Our User's Guide is meant for any user of TigerDraw. It explains all the features on TigerDraw, along with tutorials about how to use the application.
+                                                    <br>
+                                                    <br>
+                                                    <a href="https://docs.google.com/document/d/1Qx5QjhjZ_Ho52lz146vGgKcvI6YZ-zYOa3lZLXIU3uM/edit?usp=sharing" target="blank_">Programmer's Guide:</a> Our Programmer's Guide is meant for future system administrators of TigerDraw, or those who are interested in the tech behind TigerDraw. This document details our tech stack and the application's implementation.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_5i" aria-expanded="false">There Are Rooms Missing on TigerDraw</a>
+                                            </div>
+                                            <div id="collapse_5i" class="collapse" data-parent="#accordion_2">
+                                                <div class="card-body pa-15 pl-5">
+                                                    It's true that not 100% of all available dorm rooms on campus are shown on TigerDraw. This is due to limitations on the data the team had access to during development. We apologize for the inconvenience. 
+                                                    If you find that a particular room is not listed, please reach out to us at tigerdrawprinceton@gmail.com and we will add it manually to our database.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+      </div>
+    </div>
+</body>
+</html>

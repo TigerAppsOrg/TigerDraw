@@ -1,0 +1,33 @@
+<div class="modal fade bd-example-modal-lg" id="edit_group_modal" tabindex="-1" role="dialog" aria-labelledby="edit_group_modal_title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="edit_group_modal_title">Edit Group</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+        <form id="edit-group-form">
+            <div class="form-group">
+            <label for="group-name-field" class="col-form-label">Group name:</label>
+            <input type="text" class="form-control text-input" id="edit_group_name">
+            </div>
+            <div class="form-group">
+            <label for="recipient-names" class="col-form-label">Enter group member netID, then press 'Add Member':</label>
+            <input type="text" class="form-control text-input" id="edit_group_member_name">
+            <div style="padding-top:20px;">
+                <button type="button" class="btn btn-primary" id="edit_group_add_member_button">Add Member</button>
+            </div>
+            </div>
+        </form>
+        <br>
+        <ul id="edit_group_member_list"></ul>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="edit_group_save_button">Save</button>
+        </div>
+    </div>
+    </div>
+</div>

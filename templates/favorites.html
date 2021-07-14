@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TigerDraw</title>
+    <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script> 
+        let controller = null;
+    
+        var rt;
+        function getFavorites() 
+        {
+          let url = '/queryfavorites'
+      
+          // added button
+          rt = $('#favorites-table').DataTable({
+            destroy: true,
+            searching:false,
+            "oLanguage": {
+                "sEmptyTable": "No Favorites in list. You can add them by clicking a star on any row on the Rooms page."
+            },
+            "pagingType": "first_last_numbers",
+            "bLengthChange": false,
+            "order": [[1, "asc"]],
+            "processing": true,
+            "paging": false,
+            "bInfo": false,
+            "ajax": {
+              "url": '/queryfavorites',
+              "type": "POST",
+              "dataType": "json",
+              "dataSrc": "data",
+            },
+                   
+            "columns": [
+              {
+                targets: 0,
+                className: 'text-center',
+                searchable: false,
+                orderable: false,
+                "data": "favorites",
+                render: function (data, type, full, meta) {
+                  if(full.favorite === true){
+                    return '<input type="checkbox" class="star" name="star" checked="true">';
+                  }
+                  else{
+                    return '<input type="checkbox" class="star" name="star">';
+                  }
+                },
+              },
+              // {"data": "ranking"},
+              { "data": "res_college" },
+              { "data": "building" },
+              { "data": "room_no" },
+              { "data": "occupancy" },
+              { "data": "sq_footage" },
+            ],
+            "rowCallback": function (row, data, index) {
+                if (data["taken"] === true) {
+                  $('td', row).css('background-color', '#ffcccb');
+                }
+              }
+           });
+          changing_row = rt.row(this).data()
+          rt.ajax.url(url).load()
+        }
+        
+        // attach handlers to the datable's filters + star
+        function setup(){
+            $('#college').on('change', getFavorites)
+            $('#occupancy').on('input', getFavorites)
+            $('#year').on('change', getFavorites)
+
+            // on clicking stars, either favorite or unfavorite
+            $('#favorites-table').on('change', '.star', function () {
+                var data = rt.row( $(this).parents('tr') ).data();
+                changing_row = rt.row(this.closest('tr')).data()
+
+                if (this.checked !== true) {
+                    let url = '/removefromfavorites?room_id=' + changing_row.room_id;
+
+                    if (controller !== null)
+                        controller.abort();             
+                    controller = new AbortController();
+
+                    fetch(url, {signal: controller.signal})
+                        .then(function(resp) {
+                            // refresh data table to reflect removal of favorite
+                            $('#favorites-table').DataTable().ajax.reload();
+                        })
+                        .catch(function(err) {console.log(err);}); 
+                }
+                else {
+                    let url = '/addtofavorites?room_id=' + changing_row.room_id;
+
+                    if (controller !== null)
+                        controller.abort();             
+                    controller = new AbortController();
+
+                    fetch(url, {signal: controller.signal})
+                        .then(function(resp) {
+                            // refresh data table to reflect removal of favorite
+                            $('#favorites-table').DataTable().ajax.reload();
+                        })
+                        .catch(function(err) {console.log(err);}); 
+                }
+            });
+        }
+
+        // get favorites and set up table
+        $('document').ready(getFavorites)
+        $('document').ready(setup) 
+    </script>
+</head>
+<style>
+    .favorites-table {
+        font-size: 0.9em;
+        min-width: 800px;
+        box-shadow: 10px 10px 20px rgba(120, 132, 241, 0.15);
+        font-family: helveticaneue-light,helvetica neue light,helvetica neue,Helvetica,Arial,lucida grande,sans-serif;
+        top: 50%;
+        left: 50%;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .favorites-table thead tr {
+        background-color: #7884F1;
+        color: #FFFFFF;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      .favorites-table th,
+      .favorites-table td {
+        padding: 12px 15px;
+      }
+
+      .favorites-table tbody tr {
+        border-bottom: thin solid #7884F1;
+      }
+    .star {
+        visibility: hidden;
+        display: inline-block;
+    }
+
+    .star:before {
+        content: "\2606";
+        display: inline-block;
+        visibility: visible;
+        height: 20px;
+        width: 20px;
+    }
+
+    .star:checked:before {
+        content: "\2605";
+        display: inline-block;
+        color: #ffe135;
+    }
+
+    h2 {
+        font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
+        text-align: center;
+        font-weight: normal;
+        font-size: 2em;
+        margin-top: 20px;
+    }
+</style>
+
+<body style="background-color:#f7f8fb; height:100%;">
+    {% with page='favorites' %}
+        {% include 'navbar.html' %} 
+    {% endwith %}
+    <div class="main-container container rounded bg-white lg-13 mt-5 mb-5 shadow-sm" style="padding-bottom:50px;">
+      <div style="padding-top:25px;">
+          <h2 style="font-weight:700;">Your Favorites</h2>
+      </div>
+      <div id='table-container' style="padding-left: 75px; padding-right: 75px; padding-top:25px">
+        <div style="margin-top:20px">
+          <div class="table-responsive">
+              <table id="favorites-table" class="table table-striped table-bordered">
+                  <thead>
+                      <tr>
+                          <th>Starred</th>
+                          <!-- <th>Ranking</th> -->
+                          <th>College</th>
+                          <th>Building</th>
+                          <th>Room No.</th>
+                          <th>Occupancy</th>
+                          <th>Sq. Footage</th>
+                      </tr>
+                  </thead> 
+              </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>

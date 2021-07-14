@@ -1,0 +1,33 @@
+<div class="modal fade bd-example-modal-lg" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="addGroupModalLabel">Create Group</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+        <form id="group-form">
+            <div class="form-group">
+            <label for="group-name-field" class="col-form-label">Enter group name:</label>
+            <input type="text" class="form-control text-input" id="group-name">
+            </div>
+            <div class="form-group">
+            <label for="recipient-names" class="col-form-label">Enter group member netID, then press 'Add Member':</label>
+            <input type="text" class="form-control text-input" id="member-name">
+            <div style="padding-top:20px;">
+                <button type="button" class="btn btn-primary" id="addMemberButton">Add Member</button>
+            </div>
+            </div>
+        </form>
+        <br>
+        <ul id="memberList"></ul>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeGroupModalButton">Close</button>
+        <button type="button" class="btn btn-primary" id="createGroupModalButton">Create Group</button>
+        </div>
+    </div>
+    </div>
+</div>

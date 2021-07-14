@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #7884F1;">
+    <a style="padding-left: 20px;" href="/" class="navbar-brand">TigerDraw</a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div style="padding-left: 20px;" class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav">
+            {% if page == 'rooms' %}
+            <a href="/rooms" class="nav-item nav-link active">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+            <a href="groups" class="nav-item nav-link">Groups</a>
+            <a href="map" class="nav-item nav-link">Map</a>
+            <a href="update" class="nav-item nav-link">Live Updates</a>
+            <a href="faq" class="nav-item nav-link">FAQ</a>
+            {% elif page == 'favorites' %}
+            <a href="/rooms" class="nav-item nav-link">Rooms</a>
+            <a href="favorites" class="nav-item nav-link active">Favorites</a>
+            <a href="groups" class="nav-item nav-link">Groups</a>
+            <a href="map" class="nav-item nav-link">Map</a>
+            <a href="update" class="nav-item nav-link">Live Updates</a>
+            <a href="faq" class="nav-item nav-link">FAQ</a>
+            {% elif page == 'map' %}
+            <a href="/rooms" class="nav-item nav-link">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+            <a href="groups" class="nav-item nav-link">Groups</a>
+            <a href="map" class="nav-item nav-link active">Map</a>
+            <a href="update" class="nav-item nav-link">Live Updates</a>
+            <a href="faq" class="nav-item nav-link">FAQ</a>
+            {% elif page == 'groups' %}
+            <a href="/rooms" class="nav-item nav-link">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+            <a href="groups" class="nav-item nav-link active">Groups</a>
+            <a href="map" class="nav-item nav-link">Map</a>
+            <a href="update" class="nav-item nav-link">Live Updates</a>
+            <a href="faq" class="nav-item nav-link">FAQ</a>
+            {% elif page == 'housing' %}
+            <a href="/rooms" class="nav-item nav-link">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+            <a href="groups" class="nav-item nav-link">Groups</a>
+            <a href="map" class="nav-item nav-link">Map</a>
+            <a href="update" class="nav-item nav-link active">Live Updates</a>
+            <a href="faq" class="nav-item nav-link">FAQ</a>
+            {% elif page == 'faq' %}
+            <a href="/rooms" class="nav-item nav-link">Rooms</a>
+            <a href="favorites" class="nav-item nav-link">Favorites</a>
+            <a href="groups" class="nav-item nav-link">Groups</a>
+            <a href="map" class="nav-item nav-link">Map</a>
+            <a href="update" class="nav-item nav-link">Live Updates</a>
+            <a href="faq" class="nav-item nav-link active">FAQ</a>
+            {% endif %}
+        </div>
+        <div class="navbar-nav ml-auto">
+            <a href="/logout" class="nav-item nav-link">Logout</a>
+        </div>
+    </div>
+</nav>
