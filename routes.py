@@ -351,48 +351,48 @@ def deletegroup():
         return "true"
 
 
-@app.route("/update")
-def update():
-    response = render_template("housing.html")
-    return make_response(response)
+# @app.route("/update")
+# def update():
+#     response = render_template("housing.html")
+#     return make_response(response)
 
 # checks for 3 minutes after start is pressed
 
 
-@app.route("/start", methods=['GET'])
-def startRoomDraw():
-    clearRoomStatuses()
-    i = 0
-    while i < 18:
-        print("checking")
-        checkRooms()
-        i += 1
-        time.sleep(10)
-    print("done")
-    return "success"
+# @app.route("/start", methods=['GET'])
+# def startRoomDraw():
+#     clearRoomStatuses()
+#     i = 0
+#     while i < 18:
+#         print("checking")
+#         checkRooms()
+#         i += 1
+#         time.sleep(10)
+#     print("done")
+#     return "success"
 
-@app.route("/checkonce", methods=['GET'])
-def checkOnce():
-    print("here")
-    checkRooms()
-    print("here")
-    return "success"
-
-
-@app.route("/changerooms", methods=['GET'])
-def changeHowRoomsDrew():
-    status = request.args.get('status')
-    changeRoomPdf(status)
-    return "success"
+# @app.route("/checkonce", methods=['GET'])
+# def checkOnce():
+#     print("here")
+#     checkRooms()
+#     print("here")
+#     return "success"
 
 
-@app.route("/clearrooms", methods=['GET'])
-def clearRooms():
-    os.remove("static/pdfs/howroomsdrew.pdf")
-    clearRoomStatuses()
-    changeRoomPdf("reset")
+# @app.route("/changerooms", methods=['GET'])
+# def changeHowRoomsDrew():
+#     status = request.args.get('status')
+#     changeRoomPdf(status)
+#     return "success"
 
-    return "success"
+
+# @app.route("/clearrooms", methods=['GET'])
+# def clearRooms():
+#     os.remove("static/pdfs/howroomsdrew.pdf")
+#     clearRoomStatuses()
+#     changeRoomPdf("reset")
+
+#     return "success"
 
 
 @app.route("/isuserstudent", methods=['GET'])
