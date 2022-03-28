@@ -102,6 +102,9 @@ def allRooms(username, college, firstranking, lastranking, occupancy, building, 
 	rooms = []
 
 	query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).join(DrawTime, DrawTime.room_id == Room.room_id)
+
+	# filter out any Wilson College entries
+	query = query.filter(Room.res_college != "Wilson College")
 	
 	if college:
 		query = query.filter(Room.res_college == college)
