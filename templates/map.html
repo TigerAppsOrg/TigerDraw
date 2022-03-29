@@ -5,270 +5,315 @@
     <title>TigerDraw.com</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-    crossorigin=""/>
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
     <!-- Make sure you put this AFTER Leaflet's CSS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-    crossorigin=""></script>
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <script type="text/javascript" src="/static/assets/js/buildings.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 <style>
-    html, body {
+    html,
+    body {
         height: 100%;
     }
-    #mapid { 
+
+    #mapid {
         height: 100%;
         width: 100%;
         float: left;
         position: relative;
         z-index: 0;
     }
+
     .legend {
         line-height: 18px;
         color: #555;
-    } 
+    }
+
     .legend i {
         width: 100px;
         height: 17px;
         float: left;
         margin-right: 8px;
         opacity: 0.7;
-        padding-bottom:20px;
+        padding-bottom: 20px;
 
     }
+
     .info {
         padding: 6px 8px;
         font: 14px/16px Arial, Helvetica, sans-serif;
         background: white;
-        background: rgba(255,255,255,0.8);
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         border-radius: 5px;
     }
 
 
-  .help-tip {
-    margin:auto;
-    right:40px;
-    position: absolute;
-    text-align: center;
-    background-color: #7884F1;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    line-height: 26px;
-    cursor: default;
-    z-index: 1;
-    margin-right:-7px;
-    top:50px;
-  }
-
-  .help-tip:before {
-    content: '?';
-    font-weight: bold;
-    color: #fff;
-  }
-
-  .help-tip:hover p {
-    display: block;
-    transform-origin: 100% 0%;
-
-    -webkit-animation: fadeIn 0.3s ease-in-out;
-    animation: fadeIn 0.3s ease-in-out;
-
-  }
-
-  .help-tip p {
-    /* The tooltip */
-    display: none;
-    text-align: left;
-    background-color: #7884F1;
-    padding: 10px;
-    width: 300px;
-    position: absolute;
-    border-radius: 3px;
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-    right: -4px;
-    top:-150px;
-    color: #FFF;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .help-tip p:before {
-    /* The pointer of the tooltip */
-    position: absolute;
-    content: '';
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-bottom-color: #7884F1;
-    right: 10px;
-    top: 40px;
-  }
-
-  .help-tip p:after {
-    /* Prevents the tooltip from being hidden */
-    width: 100%;
-    height: 40px;
-    content: '';
-    position: absolute;
-    top: 40px;
-    left: 0;
-  }
-
-  .help-tip-relative {
-    right: 18px;
-    text-align: center;
-    background-color: #7884F1;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    line-height: 26px;
-    cursor: default;
-    margin:auto;
-  }
-
-  .help-tip-relative:before {
-    content: '?';
-    font-weight: bold;
-    color: #fff;
-  }
-
-  .help-tip-relative:hover p {
-    display: block;
-    transform-origin: 100% 0%;
-
-    -webkit-animation: fadeIn 0.3s ease-in-out;
-    animation: fadeIn 0.3s ease-in-out;
-
-  }
-
-  .help-tip-relative p {
-    /* The tooltip */
-    display: none;
-    text-align: left;
-    background-color: #7884F1;
-    padding: 10px;
-    width: 300px;
-    position: absolute;
-    border-radius: 3px;
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-    right: -4px;
-    color: #FFF;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .help-tip-relative p:before {
-    /* The pointer of the tooltip */
-    position: absolute;
-    content: '';
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-bottom-color: #7884F1;
-    right: 10px;
-    top: 40px;
-  }
-
-  .help-tip-relative p:after {
-    /* Prevents the tooltip from being hidden */
-    width: 100%;
-    height: 40px;
-    content: '';
-    position: absolute;
-    top: 40px;
-    left: 0;
-  }
-
-
-  /* CSS animation */
-
-  @-webkit-keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: scale(0.6);
+    .help-tip {
+        margin: auto;
+        right: 40px;
+        position: absolute;
+        text-align: center;
+        background-color: #7884F1;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        line-height: 26px;
+        cursor: default;
+        z-index: 1;
+        margin-right: -7px;
+        top: 50px;
     }
 
-    100% {
-      opacity: 100%;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
+    .help-tip:before {
+        content: '?';
+        font-weight: bold;
+        color: #fff;
     }
 
-    100% {
-      opacity: 100%;
+    .help-tip:hover p {
+        display: block;
+        transform-origin: 100% 0%;
+
+        -webkit-animation: fadeIn 0.3s ease-in-out;
+        animation: fadeIn 0.3s ease-in-out;
+
     }
-  }
+
+    .help-tip p {
+        /* The tooltip */
+        display: none;
+        text-align: left;
+        background-color: #7884F1;
+        padding: 10px;
+        width: 300px;
+        position: absolute;
+        border-radius: 3px;
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+        right: -4px;
+        top: -150px;
+        color: #FFF;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .help-tip p:before {
+        /* The pointer of the tooltip */
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        border-bottom-color: #7884F1;
+        right: 10px;
+        top: 40px;
+    }
+
+    .help-tip p:after {
+        /* Prevents the tooltip from being hidden */
+        width: 100%;
+        height: 40px;
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 0;
+    }
+
+    .help-tip-relative {
+        right: 18px;
+        text-align: center;
+        background-color: #7884F1;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        line-height: 26px;
+        cursor: default;
+        margin: auto;
+    }
+
+    .help-tip-relative:before {
+        content: '?';
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .help-tip-relative:hover p {
+        display: block;
+        transform-origin: 100% 0%;
+
+        -webkit-animation: fadeIn 0.3s ease-in-out;
+        animation: fadeIn 0.3s ease-in-out;
+
+    }
+
+    .help-tip-relative p {
+        /* The tooltip */
+        display: none;
+        text-align: left;
+        background-color: #7884F1;
+        padding: 10px;
+        width: 300px;
+        position: absolute;
+        border-radius: 3px;
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+        right: -4px;
+        color: #FFF;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .help-tip-relative p:before {
+        /* The pointer of the tooltip */
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        border-bottom-color: #7884F1;
+        right: 10px;
+        top: 40px;
+    }
+
+    .help-tip-relative p:after {
+        /* Prevents the tooltip from being hidden */
+        width: 100%;
+        height: 40px;
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 0;
+    }
+
+
+    /* CSS animation */
+
+    @-webkit-keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.6);
+        }
+
+        100% {
+            opacity: 100%;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 100%;
+        }
+    }
 
 </style>
+
 <body>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- ! TESTING -->
+    <h1>TESTING</h1>
+    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" target="_blank">1</a>
+    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" class="preview">Link</a>
+    <div class="box"><iframe src="" width="500px" height="500px" style="display:none;"></iframe></div>
+    <script>   $(document).ready(function () {
+            $(document).on('mouseover', '.preview', function () {
+                var path_source = $(this).attr('href');
+                $("iframe").attr("src", path_source);
+                $("iframe").show();
+
+            });
+            $(document).on('mouseout', '.preview', function () {
+
+                $("iframe").hide();
+
+            });
+
+        });</script>
+    <!-- ! END TESTING -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% with page='map' %}
-        {% include 'navbar.html' %} 
+    {% include 'navbar.html' %}
     {% endwith %}
     <div id="mapid"></div>
 </body>
 <script>
+    //console.log("hello world")
+    //let floorPlans = {}
+    //$.when(
+    //    $.getJSON('../static/pdfs/floor_plans.json')
+    //).done(function (json) {
+    //    floorPlans = json
+    //    console.log(json);
+    //});
+    //
+    //$.getJSON('../static/pdfs/floor_plans.json', () => {
+    //    console.log("got json")
+    //})
+
+    floorPlans = {
+        "yoseloff": ["G", "1", "2"]
+    }
+
     var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-    'Imagery © <a href="https://mapbox.com">Mapbox</a>'
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://mapbox.com">Mapbox</a>'
     var mbUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    var base = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', attribution: mbAttr})
-    var mymap = L.map('mapid', {layers: base}).setView([40.3459, -74.658], 17);
+    var base = L.tileLayer(mbUrl, { id: 'mapbox/streets-v11', attribution: mbAttr })
+    var mymap = L.map('mapid', { layers: base }).setView([40.3459, -74.658], 17);
+
 
 
     var c = {{ allrank | tojson }};
     // console.log(c)
 
-    var legend = L.control({position: 'bottomright'});
+    var legend = L.control({ position: 'bottomright' });
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 50, 100, 200, 300, 400, 500],
-        labels = [];
+            grades = [0, 50, 100, 200, 300, 400, 500],
+            labels = [];
 
-         // loop through our density intervals and generate a label with a colored square for each interval
-        div.innerHTML +=  '<i style="background:' + getColor(grades[0]) + '"></i>'+'Drawn First<br>';
-        for (var i = 1; i < grades.length-1; i++) {
-            if(grades[i] === 200){
-                div.innerHTML +=  '<i style="background:' + getColor(grades[i]) + '"></i><div class="help-tip" data-placement="right">\
+        // loop through our density intervals and generate a label with a colored square for each interval
+        div.innerHTML += '<i style="background:' + getColor(grades[0]) + '"></i>' + 'Drawn First<br>';
+        for (var i = 1; i < grades.length - 1; i++) {
+            if (grades[i] === 200) {
+                div.innerHTML += '<i style="background:' + getColor(grades[i]) + '"></i><div class="help-tip" data-placement="right">\
                             <p>The color gradient is based off the average rank (from the most recent room draw) for all rooms in the building. Red indicates that many rooms have a \'high rank\', \
                             ie. were drawn very early during room draw. Yellow indicates that many rooms have a \'low rank\', ie. were drawn very late during room draw.</p></div><br>';
             }
-            else{
-                div.innerHTML +=  '<i style="background:' + getColor(grades[i]) + '"></i><br>';
+            else {
+                div.innerHTML += '<i style="background:' + getColor(grades[i]) + '"></i><br>';
             }
         }
 
-        div.innerHTML +=  '<i style="background:' + getColor(grades[grades.length-1]) + '"></i>'+'Drawn Last'+'<br>';
-        
+        div.innerHTML += '<i style="background:' + getColor(grades[grades.length - 1]) + '"></i>' + 'Drawn Last' + '<br>';
+
         return div;
     };
     legend.addTo(mymap);
 
 
     function getColor(d) {
-    return d < 50 ? '#800026' :
-            d < 100  ? '#BD0026' :
-            d < 200  ? '#E31A1C' :
-            d < 300 ? '#FC4E2A' :
-            d < 400  ? ' #FD8D3C' :
-            d < 500  ? '#FEB24C':
-            '#FED976';
+        return d < 50 ? '#800026' :
+            d < 100 ? '#BD0026' :
+                d < 200 ? '#E31A1C' :
+                    d < 300 ? '#FC4E2A' :
+                        d < 400 ? ' #FD8D3C' :
+                            d < 500 ? '#FEB24C' :
+                                '#FED976';
     }
 
     function getcolor(name) {
@@ -288,32 +333,32 @@
         }
 
         if (name == "1927-Clapp") {
-            average = (c["1927"] + c["CLAPP"])/2;
+            average = (c["1927"] + c["CLAPP"]) / 2;
         }
         else if (name == "Bogle Hall, 1976 Hall, Wilf") {
-            average = (c["BOGLE"] + c["1976"] + c["WILF"])/3;
+            average = (c["BOGLE"] + c["1976"] + c["WILF"]) / 3;
         }
         else if (name == "Yoseloff Hall, 1967") {
-            average = (c["YOSELOFF"] + c["1967"])/2;
+            average = (c["YOSELOFF"] + c["1967"]) / 2;
         }
         else if (name == "Laughlin 1901") {
-            average = (c["LAUGHLIN"] + c["1901"])/2;
+            average = (c["LAUGHLIN"] + c["1901"]) / 2;
         }
         else if (name == "Whitman College, Hargadon") {
-            average = (c["1981"] + c["BAKER"] + c["LAURITZEN"] + c["HARGADON"] + c["MURLEY"] + c["WENDELL"])/6;
+            average = (c["1981"] + c["BAKER"] + c["LAURITZEN"] + c["HARGADON"] + c["MURLEY"] + c["WENDELL"]) / 6;
         }
         else {
             average = c[name.toUpperCase()]
-        }     
+        }
 
         var color = average < 50 ? '#800026' :
-                    average < 100  ? '#BD0026' :
-                    average < 200  ? '#E31A1C' :
+            average < 100 ? '#BD0026' :
+                average < 200 ? '#E31A1C' :
                     average < 300 ? '#FC4E2A' :
-                    average < 400  ? ' #FD8D3C' :
-                    average < 500  ? '#FEB24C':
-                    '#FED976';
-                          
+                        average < 400 ? ' #FD8D3C' :
+                            average < 500 ? '#FEB24C' :
+                                '#FED976';
+
         return color;
     }
 
@@ -341,7 +386,7 @@
             lowest2 = minrank["CLAPP"]
             highest = maxrank["1927"]
             highest2 = maxrank["CLAPP"]
-            html = '<p>Building: 1927<hr>Highest Rank: ' + String(lowest) +'<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: Clapp<hr>Highest Rank: ' + String(lowest2) +'<br />Lowest Rank: ' + String(highest2) + '<hr></p>';
+            html = '<p>Building: 1927<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: Clapp<hr>Highest Rank: ' + String(lowest2) + '<br />Lowest Rank: ' + String(highest2) + '<hr></p>';
             html += '<div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
                     of the rooms with the earliest and latest draw times in that building, respectively. \
                     E.g. If the Lowest Rank is 150, then the first room to be drawn for that building was \
@@ -353,7 +398,7 @@
             lowest2 = minrank["1901"]
             highest = maxrank["LAUGHLIN"]
             highest2 = maxrank["1901"]
-            html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) +'<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) +'<br />Lower Rank: ' + String(highest2) + '<hr></p>';
+            html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) + '<br />Lower Rank: ' + String(highest2) + '<hr></p>';
             html += '<div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
                     of the rooms with the earliest and latest draw times in that building, respectively. \
                     E.g. If the Lowest Rank is 150, then the first room to be drawn for that building was \
@@ -363,13 +408,28 @@
         else {
             lowest = minrank[name.toUpperCase()]
             highest = maxrank[name.toUpperCase()]
-            html = '<p>Building: ' + name + '<hr>Highest Rank: ' + String(lowest) +'<br />Lowest Rank: ' + String(highest) + '<hr></p>';
+            html = '<p>Building: ' + name + '<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr></p>';
+
+
+            html += '<p> Floor Plans: '
+
+            for (let i in floorPlans[name]) {
+                let floorNum = floorPlans[name][i]
+                console.log("key", floorNum)
+
+                html += `<a href="../static/pdfs/${name}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+            }
+
+            //html += `<a href="../static/pdfs/${name}/yoseloff_1.pdf" target="_blank">1</a>`
+
+            html += '</p>'
+
             html += '<div><div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
-                    of the rooms with the earliest and latest draw times in that building, respectively. \
-                    E.g. If the Highest Rank is 150, then the 1st room to be drawn for that building was \
-                    the 150th room to be drawn in the entire room draw.</p></div></div>'
+                    of the rooms with the earliest and latest draw times in that building, respectively.\
+            E.g.If the Highest Rank is 150, then the 1st room to be drawn for that building was \
+                    the 150th room to be drawn in the entire room draw.</p ></div ></div > '
             return html
-        }   
+        }
     }
 
     function style(feature) {
@@ -397,9 +457,9 @@
 
     function resetHighlight(e) {
         e.target.setStyle({
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.5,
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.5,
         });
     }
 
@@ -412,23 +472,25 @@
         if (dorms.includes(feature.properties.name)) {
             if (!problems2.includes(feature.properties.name)) {
                 layer.bindPopup(makePopupContent(feature.properties.name))
-            
+
                 layer.on({
-                    click:      zoomToFeature
+                    click: zoomToFeature
                 });
                 // console.log(feature.properties.name)
                 layer.on({
-                    mouseover:  highlightFeature,
-                    mouseout:   resetHighlight, 
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight,
                 })
             }
         }
     }
-    var bldgs = L.geoJSON(buildingData, {style: style, onEachFeature: onEachFeature});
+    var bldgs = L.geoJSON(buildingData, { style: style, onEachFeature: onEachFeature });
     function filter_dorm(building_list) {
-        return  L.geoJSON(buildingData, {style: style, onEachFeature: onEachFeature, filter: function(feature, layer) {
-                    return building_list.includes(feature.properties.name);      
-                }});
+        return L.geoJSON(buildingData, {
+            style: style, onEachFeature: onEachFeature, filter: function (feature, layer) {
+                return building_list.includes(feature.properties.name);
+            }
+        });
     }
 
     var geojsonMarkerOptions = {
@@ -438,81 +500,81 @@
         fillOpacity: 0.5,
     };
     var _1981 = L.circle([40.3436256, -74.6572412], geojsonMarkerOptions);
-    var _1981_coords = [[40.3438121, -74.6575976], [40.3438571, -74.6574527], [40.3436404, -74.6573320], [40.3437140, -74.6571013], [40.3437467, -74.6571201], [ 40.3437692, -74.6570423], [40.3436792, -74.6569941], [40.3436567, -74.6570423], [40.3436199, -74.6570289], [40.3434952, -74.6574339], [40.3436915, -74.6575385]];
+    var _1981_coords = [[40.3438121, -74.6575976], [40.3438571, -74.6574527], [40.3436404, -74.6573320], [40.3437140, -74.6571013], [40.3437467, -74.6571201], [40.3437692, -74.6570423], [40.3436792, -74.6569941], [40.3436567, -74.6570423], [40.3436199, -74.6570289], [40.3434952, -74.6574339], [40.3436915, -74.6575385]];
     var _19812 = L.polygon(_1981_coords)
-    _1981.setStyle({color:getcolor("1981")})
+    _1981.setStyle({ color: getcolor("1981") })
     _1981.bindPopup(makePopupContent("1981"))
 
     var baker = L.circle([40.3435397, -74.6578876], geojsonMarkerOptions);
     var baker_coords = [[40.3434722, -74.6583345], [40.3433542, -74.6582788], [40.3435668, -74.6574715], [40.3436915, -74.6575385], [40.3435157, -74.6581823], [40.3434722, -74.6583345]];
     var baker2 = L.polygon(baker_coords)
-    baker.setStyle({color:getcolor("baker")})
+    baker.setStyle({ color: getcolor("baker") })
     baker.bindPopup(makePopupContent("baker"))
-    
+
 
     var hargadon = L.circle([40.3439199, -74.6584213], geojsonMarkerOptions);
     var hargadon_coords = [[40.3439868, -74.6585136], [40.3439634, -74.6585953], [40.3439021, -74.6585685], [40.3439205, -74.6584934], [40.3438571, -74.6584612], [40.3438305, -74.6585417], [40.3437610, -74.6585041], [40.3437692, -74.6584746], [40.3437414, -74.6584615], [40.3437750, -74.6583052], [40.3439267, -74.6583770], [40.3439051, -74.6584748], [40.3439868, -74.6585136]]
     var hargadon2 = L.polygon(hargadon_coords)
-    hargadon.setStyle({color:getcolor("hargadon")})
+    hargadon.setStyle({ color: getcolor("hargadon") })
     hargadon.bindPopup(makePopupContent("hargadon"))
-    
+
 
     var lauritzen = L.circle([40.3435867, -74.6582738], geojsonMarkerOptions);
-    lauritzen.setStyle({color:getcolor("lauritzen")})
+    lauritzen.setStyle({ color: getcolor("lauritzen") })
     lauritzen.bindPopup(makePopupContent("lauritzen"))
     var lauritzen_coords = [[40.3437750, -74.6583052], [40.3437414, -74.6584615], [40.3434722, -74.6583345], [40.3435157, -74.6581823], [40.3437750, -74.6583052]]
     var lauritzen2 = L.polygon(lauritzen_coords);
-    
+
     var murley = L.circle([40.3439527, -74.6585528], geojsonMarkerOptions);
-    murley.setStyle({color:getcolor("murley")})
+    murley.setStyle({ color: getcolor("murley") })
     murley.bindPopup(makePopupContent("murley"))
     var murley_coords = [[40.3440459, -74.6584271], [40.3440288, -74.6584880], [40.3440002, -74.6584666], [40.3439868, -74.6585136], [40.3439051, -74.6584748], [40.3439267, -74.6583770], [40.3439348, -74.6583808], [40.3439368, -74.6583737], [40.3440459, -74.6584271]]
     var murley2 = L.polygon(murley_coords)
 
 
     var wendell = L.circle([40.3443411, -74.6583731], geojsonMarkerOptions);
-    wendell.setStyle({color:getcolor("wendell")})
+    wendell.setStyle({ color: getcolor("wendell") })
     wendell.bindPopup(makePopupContent("wendell"))
-    var wendell_coords = [[40.3445145, -74.6585009], [40.3445410, -74.6583723], [40.3440942, -74.6581984], [ 40.3442046, -74.6578014], [40.3441097, -74.6577594], [40.3439368, -74.6583737], [40.3440459, -74.6584271], [40.3440587, -74.6583771], [40.3440983, -74.6583475], [40.3445145, -74.6585009]]
+    var wendell_coords = [[40.3445145, -74.6585009], [40.3445410, -74.6583723], [40.3440942, -74.6581984], [40.3442046, -74.6578014], [40.3441097, -74.6577594], [40.3439368, -74.6583737], [40.3440459, -74.6584271], [40.3440587, -74.6583771], [40.3440983, -74.6583475], [40.3445145, -74.6585009]]
     var wendell2 = L.polygon(wendell_coords)
-    
+
 
     var yoseloff = L.circle([40.3443905, -74.6560517], geojsonMarkerOptions);
-    yoseloff.setStyle({color:getcolor("yoseloff")})
+    yoseloff.setStyle({ color: getcolor("yoseloff") })
     yoseloff.bindPopup(makePopupContent("yoseloff"))
-    var yose_coords = [[40.3442905, -74.6563745], [40.3444826, -74.6559668], [40.3442282, -74.6557649], [40.3441576, -74.6559087], [ 40.3443314, -74.6560472], [40.3442169, -74.6563315], [40.3442905, -74.6563745]];
+    var yose_coords = [[40.3442905, -74.6563745], [40.3444826, -74.6559668], [40.3442282, -74.6557649], [40.3441576, -74.6559087], [40.3443314, -74.6560472], [40.3442169, -74.6563315], [40.3442905, -74.6563745]];
     var yoseloff2 = L.polygon(yose_coords)
-    
+
 
 
     var _1967 = L.circle([40.3439571, -74.6557942], geojsonMarkerOptions);
-    _1967.setStyle({color:getcolor("1967")})
+    _1967.setStyle({ color: getcolor("1967") })
     _1967.bindPopup(makePopupContent("1967"))
-    var _1967_coords = [[40.3441576, -74.6559087], [40.3442282, -74.6557649], [40.3439757, -74.6555644], [40.3437590, -74.6560419], [ 40.3438775, -74.6561116],[40.3440329, -74.6557576], [40.3441351, -74.6558219], [40.3441024, -74.6558648], [40.3441576, -74.6559087]]
+    var _1967_coords = [[40.3441576, -74.6559087], [40.3442282, -74.6557649], [40.3439757, -74.6555644], [40.3437590, -74.6560419], [40.3438775, -74.6561116], [40.3440329, -74.6557576], [40.3441351, -74.6558219], [40.3441024, -74.6558648], [40.3441576, -74.6559087]]
     var _19672 = L.polygon(_1967_coords)
-    
+
 
     var _1976 = L.circle([40.3446071, -74.6554911], geojsonMarkerOptions);
-    _1976.setStyle({color:getcolor("1976")})
+    _1976.setStyle({ color: getcolor("1976") })
     _1976.bindPopup(makePopupContent("1976"))
-    var _1976_coords = [[40.3443988, -74.6556771], [40.3445746, -74.6557495], [40.3446932, -74.6552748], [40.3445399, -74.6551970], [40.3444908, -74.6552935], [40.3444826, -74.6553123], [40.3445746, -74.6553633], [40.3445113, -74.6555832], [40.3444111, -74.6555457], [ 40.3444050, -74.6555698], [40.3443988, -74.6556771]]
+    var _1976_coords = [[40.3443988, -74.6556771], [40.3445746, -74.6557495], [40.3446932, -74.6552748], [40.3445399, -74.6551970], [40.3444908, -74.6552935], [40.3444826, -74.6553123], [40.3445746, -74.6553633], [40.3445113, -74.6555832], [40.3444111, -74.6555457], [40.3444050, -74.6555698], [40.3443988, -74.6556771]]
     var _19762 = L.polygon(_1976_coords)
-    
+
 
     var bogle = L.circle([40.3443312, -74.6555609], geojsonMarkerOptions);
-    bogle.setStyle({color:getcolor("bogle")})
+    bogle.setStyle({ color: getcolor("bogle") })
     bogle.bindPopup(makePopupContent("bogle"))
     var bogle_coords = [[40.3441617, -74.6555403], [40.3443866, -74.6557120], [40.3443988, -74.6556771], [40.3444050, -74.6555698], [40.3441944, -74.6554250], [40.3441617, -74.6555403]]
     var bogle2 = L.polygon(bogle_coords)
-    
+
     var wilf = L.circle([40.344416, -74.655159], geojsonMarkerOptions);
-    wilf.setStyle({color:getcolor("wilf")})
+    wilf.setStyle({ color: getcolor("wilf") })
     wilf.bindPopup(makePopupContent("wilf"))
-    var wilf_coords = [[40.3444908, -74.6552935], [40.3442578, -74.6551111], [ 40.3443130, -74.6549904], [40.3445521, -74.6551675], [40.3445399, -74.6551970], [40.3444908, -74.6552935]]
+    var wilf_coords = [[40.3444908, -74.6552935], [40.3442578, -74.6551111], [40.3443130, -74.6549904], [40.3445521, -74.6551675], [40.3445399, -74.6551970], [40.3444908, -74.6552935]]
     var wilf2 = L.polygon(wilf_coords)
     var wilf3 = L.polygon(wilf_coords)
-    
-    
+
+
 
     var circles = [_1981, baker, hargadon, lauritzen, murley, wendell, yoseloff, _1967, _1976, bogle, wilf]
     var frag2 = [_19812, baker2, hargadon2, lauritzen2, murley2, wendell2, yoseloff2, _19672, _19762, bogle2, wilf2, wilf3]
@@ -525,7 +587,7 @@
     for (frag of frag2) {
         frag.on('mouseover', highlightFeature);
         frag.on('mouseout', resetHighlight);
-        frag.setStyle({color:getcolor(names[i]), weight: 3, opacity: 1, fillOpacity: 0.5}) 
+        frag.setStyle({ color: getcolor(names[i]), weight: 3, opacity: 1, fillOpacity: 0.5 })
         frag.bindPopup(makePopupContent(names[i]))
         i += 1
     }
@@ -541,7 +603,7 @@
     var upperclass = L.layerGroup([filter_dorm(upperclass_dorms), wilf3]);
 
     function reinit() {
-        
+
 
         let layers = [filter_dorm(butler_dorms), yoseloff2, _19672, _19762, bogle2, wilf2]
         for (layer of layers) {
@@ -558,10 +620,10 @@
         upperclass.addLayer(filter_dorm(upperclass_dorms))
         upperclass.addLayer(wilf3)
     }
-    
+
     var baseLayers = {
     };
-    
+
     var overlays = {
         "Butler": butler,
         "Forbes": forbes,
@@ -572,7 +634,7 @@
         "Upperclass": upperclass
     };
 
-    var layercontrol = L.control.layers(baseLayers, overlays, {collapsed: false}).addTo(mymap);
+    var layercontrol = L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(mymap);
 
     // // function that handles changing base
     // mymap.on('overlayadd', function (e) {
@@ -626,4 +688,5 @@
 
 
 </script>
+
 </html>
