@@ -9,6 +9,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, Boolean, insert
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql import exists
 import collections
+from sqlalchemy.types import DateTime
 from collections import defaultdict
 import numpy as np
 from flask import current_app as app
@@ -20,13 +21,13 @@ import config
 # TODO : make this an environ var
 DATABASE_URL = config.DATABASE_URL
 
-db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, isolation_level="READ COMMITTED")
+db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=3, pool_timeout=10, isolation_level="READ COMMITTED")
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 Base = declarative_base()
 
 
 class Room(Base):
-    __tablename__ = 'room_info_new'
+    __tablename__ = 'room_info'
     room_id = Column(Integer, primary_key=True)
     building = Column(String)
     room_no = Column(String)
@@ -36,15 +37,29 @@ class Room(Base):
     taken = Column(Boolean)
 
 
-class Room_Ben(Base):
-    __tablename__ = 'room_info'
-    room_id = Column(Integer, primary_key=True)
-    building = Column(String)
-    room_no = Column(String)
-    occupancy = Column(Integer)
-    sq_footage = Column(Integer)
-    res_college = Column(String)
+# class Room_Ben(Base):
+#     __tablename__ = 'room_info'
+#     room_id = Column(Integer, primary_key=True)
+#     building = Column(String)
+#     room_no = Column(String)
+#     occupancy = Column(Integer)
+#     sq_footage = Column(Integer)
+#     res_college = Column(String)
 
+class Reviews(Base):
+    __tablename__ = 'reviews'
+    id = Column(Integer, primary_key=True)
+    building_name = Column(String)
+    content = Column(String)
+    date = Column(DateTime)
+    rating = Column(Integer)
+    room_bathroomtype = Column(String)
+    room_floor = Column(Integer)
+    room_number = Column(String)
+    room_numrooms = Column(Integer)
+    room_occ = Column(Integer)
+    room_sqft = Column(Integer)
+    room_subfree = Column(Boolean)
 
 class FavoriteRoom(Base):
     __tablename__ = 'favorites'
@@ -610,15 +625,15 @@ def populate_rooms():
         #     room = rooms.first()
 
         # if rooms are not in database, add them into room_info_new
-        if len(rooms) == 0:
-            print(f"{room_no} {sq_footage}")
-            building, building_res_college = convert_building(room_dict["building_id"])
-            occupancy = room_dict["occ"]
-            db_session.add(Room_Ben(building=building, room_no=room_no, sq_footage=sq_footage, res_college=building_res_college,
-                                    occupancy=occupancy))
-            db_session.commit()
-            count += 1
-    print(count)
+    #     if len(rooms) == 0:
+    #         print(f"{room_no} {sq_footage}")
+    #         building, building_res_college = convert_building(room_dict["building_id"])
+    #         occupancy = room_dict["occ"]
+    #         db_session.add(Room_Ben(building=building, room_no=room_no, sq_footage=sq_footage, res_college=building_res_college,
+    #                                 occupancy=occupancy))
+    #         db_session.commit()
+    #         count += 1
+    # print(count)
 
     # if len(rooms) == 0:
     #     db_session.add(Room_Ben(room_no=room_no, building=room_dict[]))

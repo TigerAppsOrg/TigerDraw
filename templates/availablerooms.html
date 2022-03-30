@@ -172,6 +172,9 @@
 <!-- Modal for adding groups -->
 {% include 'add_room_modal.html' %}
 
+{% include 'see_reviews_modal.html' %}
+
+
 <div style="padding:10px; background: #ef5350; text-align: center;">
     <h5 style="font-weight:500; color: white; margin: 0;">TigerDraw is independent from the previous
         Rooms app, which broke due to outdated code. Visit <a
@@ -388,11 +391,17 @@
                 {"data": "occupancy"},
                 {"data": "sq_footage"},
                 {
-                    "targets": -1,
-                    "data": null,
-                    className: 'text-center',
-                    "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap">See Reviews</button>'
+                    data: null, className: 'text-center', targets: -1, render: function (data, type, row) {
+                        console.log(data);
+                        return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\')">See Reviews</button>'
+                    }
                 },
+                // {
+                //     "targets": -1,
+                //     "data": null,
+                //     className: 'text-center',
+                //     "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews()">See Reviews</button>'
+                // },
                 {
                     "targets": -1,
                     "data": null,
@@ -567,6 +576,30 @@
     $("#occupancy").append($("<option>").val("").html("All"));
     for (var i = 1; i < 11; i++) {
         $("#occupancy").append($("<option>").val(i).html(i));
+    }
+
+    async function fetchWithTimeout(resource, options = {}) {
+        const {timeout = 10000} = options;
+
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(id);
+        return response;
+    }
+
+    function getReviews(building_name, room_no) {
+        console.log(building_name, room_no);
+        fetchWithTimeout('/get_reviews?' +
+            '&building_name=' + building_name +
+            '&room_no=' + room_no)
+            .then(response => response.text()).then(data => {
+            $("#reviews-body").empty();
+            $("#reviews-body").append(data);
+        });
     }
 
 </script>
