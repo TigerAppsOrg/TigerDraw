@@ -75,7 +75,10 @@ def queryRooms():
         rankmap = collections.defaultdict(int)
         seen = set()
         for room in data:
-            rankings[room.Room.room_id].append(room.DrawTime.draw_time)
+            if room.DrawTime is not None:
+                rankings[room.Room.room_id].append(room.DrawTime.draw_time)
+            else:
+                rankings[room.Room.room_id].append(float('inf'))
         for room in data:
             if room.Room.room_id not in seen:
                 mean = sum(rankings[room.Room.room_id]) / \
@@ -98,6 +101,7 @@ def queryRooms():
         data = data[max(0, int(firstranking)):min(len(data), int(lastranking))]
 
     roomsList = []
+
     i = 1
 
     # if not year:
@@ -129,6 +133,12 @@ def queryRooms():
 
         if year:
             roomDict = {"ranking": room.DrawTime.draw_time,
+                        "res_college": room.Room.res_college, "building": room.Room.building,
+                        "room_no": room.Room.room_no, "occupancy": room.Room.occupancy,
+                        "sq_footage": room.Room.sq_footage, "favorite": room[2], "room_id": room.Room.room_id, "taken": room.Room.taken}
+            roomsList.append(roomDict)
+        elif room.DrawTime is None:
+            roomDict = {"ranking": "UNRANKED",
                         "res_college": room.Room.res_college, "building": room.Room.building,
                         "room_no": room.Room.room_no, "occupancy": room.Room.occupancy,
                         "sq_footage": room.Room.sq_footage, "favorite": room[2], "room_id": room.Room.room_id, "taken": room.Room.taken}

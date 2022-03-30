@@ -215,11 +215,10 @@
             <option value="Butler College">Butler</option>
             <option value="Forbes College">Forbes</option>
             <option value="Mathey College">Mathey</option>
+            <option value="No Res College Associated">No Res College Associated</option>
             <option value="Rockefeller College">Rocky</option>
             <option value="Whitman College">Whitman</option>
             <option value="Wilson College">Wilson</option>
-            <!--         <option value="Independent">Independent</option>
-     -->
             <option value="Upperclass">Upperclassman</option>
         </select>
     </div>
@@ -334,10 +333,28 @@
         if (request != null)
             request.abort();
 
+        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+            "formatted-num-pre": function (a) {
+                a = (a === "UNRANKED") ? Number.POSITIVE_INFINITY : parseFloat(a);
+                return a;
+            },
+
+            "formatted-num-asc": function (a, b) {
+                return a - b;
+            },
+
+            "formatted-num-desc": function (a, b) {
+                return b - a;
+            }
+        });
+
         // added button
         rt = $('#rooms-table').DataTable({
             destroy: true,
             searching: false,
+            columnDefs: [
+                {targets: 1, type: "formatted-num"},
+            ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
             "order": [[1, "asc"]],
@@ -348,6 +365,7 @@
                 "dataType": "json",
                 "dataSrc": "data",
             },
+
             "columns": [
                 {
                     targets: 0,

@@ -26,9 +26,9 @@ Base = declarative_base()
 
 
 class Room(Base):
-    __tablename__ = 'room_info'
+    __tablename__ = 'room_info_new'
     room_id = Column(Integer, primary_key=True)
-    building = Column(String)  # misspelled, TODO fix
+    building = Column(String)
     room_no = Column(String)
     occupancy = Column(Integer)
     sq_footage = Column(Integer)
@@ -37,9 +37,9 @@ class Room(Base):
 
 
 class Room_Ben(Base):
-    __tablename__ = 'room_info_new'
+    __tablename__ = 'room_info'
     room_id = Column(Integer, primary_key=True)
-    building = Column(String)  # misspelled, TODO fix
+    building = Column(String)
     room_no = Column(String)
     occupancy = Column(Integer)
     sq_footage = Column(Integer)
@@ -83,6 +83,7 @@ class Buildings(Base):
     __tablename__ = 'buildings'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    res_college = Column(String)
 
 
 meta = MetaData(db)
@@ -125,8 +126,8 @@ def allRooms(username, college, firstranking, lastranking, occupancy, building, 
 
     rooms = []
 
-    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).join(DrawTime,
-                                                                                        DrawTime.room_id == Room.room_id)
+    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).outerjoin(DrawTime,
+                                                                                             DrawTime.room_id == Room.room_id)
 
     if college:
         query = query.filter(Room.res_college == college)
@@ -191,9 +192,12 @@ def allRooms(username, college, firstranking, lastranking, occupancy, building, 
 
     # # print(rankings)
 
-    rooms.sort(key=lambda x: x.DrawTime.draw_time)
+    rooms.sort(key=lambda x: float('inf') if x.DrawTime is None else x.DrawTime.draw_time)
     for i, room in enumerate(rooms):
-        room.DrawTime.draw_time = i + 1
+        if room.DrawTime is None:
+            pass
+        else:
+            room.DrawTime.draw_time = i + 1
 
     return rooms
 
@@ -571,6 +575,14 @@ def populate_buildings():
         db_session.commit()
 
 
+def convert_building(building_id):
+    sqlalchemy_session = db_session
+
+    building = db_session.query(Buildings).filter(Buildings.id == int(building_id)).first()
+
+    return building.name, building.res_college
+
+
 def populate_rooms():
     # __tablename__ = 'room_info_new'
     # room_id = Column(Integer, primary_key=True)
@@ -596,19 +608,26 @@ def populate_rooms():
         #     print()
         # if len(rooms) == 1:
         #     room = rooms.first()
+
+        # if rooms are not in database, add them into room_info_new
         if len(rooms) == 0:
             print(f"{room_no} {sq_footage}")
+            building, building_res_college = convert_building(room_dict["building_id"])
+            occupancy = room_dict["occ"]
+            db_session.add(Room_Ben(building=building, room_no=room_no, sq_footage=sq_footage, res_college=building_res_college,
+                                    occupancy=occupancy))
+            db_session.commit()
             count += 1
     print(count)
 
-        # if len(rooms) == 0:
-        #     db_session.add(Room_Ben(room_no=room_no, building=room_dict[]))
-        # print(f"Room {rooms}")
+    # if len(rooms) == 0:
+    #     db_session.add(Room_Ben(room_no=room_no, building=room_dict[]))
+    # print(f"Room {rooms}")
 
-        # room_id = room_dict['id']
-        # building_name = room_dict['name']
-        # db_session.add(Buildings(id=room_id, name=building_name))
-        # db_session.commit()
+    # room_id = room_dict['id']
+    # building_name = room_dict['name']
+    # db_session.add(Buildings(id=room_id, name=building_name))
+    # db_session.commit()
 
 
 if __name__ == '__main__':
