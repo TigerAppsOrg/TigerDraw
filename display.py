@@ -5,7 +5,15 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import psycopg2
-from sqlalchemy import Table, Column, Integer, String, MetaData, Boolean, insert
+from sqlalchemy import (
+    Table,
+    Column,
+    Integer,
+    String,
+    MetaData,
+    Boolean,
+    insert,
+)
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql import exists
 import collections
@@ -31,7 +39,7 @@ Base = declarative_base()
 
 
 class Room(Base):
-    __tablename__ = 'room_info'
+    __tablename__ = "room_info"
     room_id = Column(Integer, primary_key=True)
     building = Column(String)
     room_no = Column(String)
@@ -39,7 +47,6 @@ class Room(Base):
     sq_footage = Column(Integer)
     res_college = Column(String)
     taken = Column(Boolean)
-
 
 # class Room_Ben(Base):
 #     __tablename__ = 'room_info'
@@ -65,6 +72,7 @@ class Reviews(Base):
     room_sqft = Column(Integer)
     room_subfree = Column(Boolean)
 
+    
 class FavoriteRoom(Base):
     __tablename__ = 'favorites'
     room_id = Column(Integer, primary_key=True)
@@ -75,21 +83,21 @@ class FavoriteRoom(Base):
 
 
 class DrawTime(Base):
-    __tablename__ = 'draw_time'
+    __tablename__ = "draw_time"
     room_id = Column(Integer)
     year = Column(Integer)
     draw_time = Column(Integer, primary_key=True)
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     username = Column(String, primary_key=True)
     rooms = Column(postgresql.ARRAY(Integer))
     group_ids = Column(postgresql.ARRAY(Integer))
 
 
 class Groups(Base):
-    __tablename__ = 'groups'
+    __tablename__ = "groups"
     group_id = Column(Integer, primary_key=True)
     name = Column(String)
     accepted = Column(postgresql.ARRAY(String))
@@ -104,10 +112,10 @@ class Buildings(Base):
     name = Column(String)
     res_college = Column(String)
 
-
 meta = MetaData(db)
 
 # Base.metadata.create_all(db)
+
 
 
 def getUserRooms(username):
@@ -118,18 +126,24 @@ def getUserRooms(username):
     username = username.strip()
 
     # check is user is in user table
-    user_exists = sqlalchemy_session.query(exists().where(User.username == username)).scalar()
+    user_exists = sqlalchemy_session.query(
+        exists().where(User.username == username)
+    ).scalar()
 
     # if not, add them to user table
     if not user_exists:
-        table = Table('users', meta, autoload=True, autoload_with=db)
-        ins_command = table.insert().values(username=username, rooms=[], group_ids=[])
+        table = Table("users", meta, autoload=True, autoload_with=db)
+        ins_command = table.insert().values(
+            username=username, rooms=[], group_ids=[]
+        )
         conn = db.connect()
         conn.execute(ins_command)
 
     # get user's favorite rooms
     user_fav_room_query = sqlalchemy_session.query(User.rooms)
-    user_fav_room_query = user_fav_room_query.filter(User.username == username)
+    user_fav_room_query = user_fav_room_query.filter(
+        User.username == username
+    )
     user_rooms = user_fav_room_query.all()
 
     # IT RETURNS AN array, inside a tuple, inside...an array? whatever.
@@ -137,7 +151,15 @@ def getUserRooms(username):
     return user_rooms
 
 
-def allRooms(username, college, firstranking, lastranking, occupancy, building, year):
+def allRooms(
+    username,
+    college,
+    firstranking,
+    lastranking,
+    occupancy,
+    building,
+    year,
+):
     sqlalchemy_session = db_session
 
     # get user's favorite rooms
@@ -147,6 +169,8 @@ def allRooms(username, college, firstranking, lastranking, occupancy, building, 
 
     query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).outerjoin(DrawTime,
                                                                                              DrawTime.room_id == Room.room_id)
+    # filter out any Wilson College entries
+    query = query.filter(Room.res_college != "Wilson College")
 
     if college:
         query = query.filter(Room.res_college == college)
@@ -263,7 +287,7 @@ def getFavoriteRooms(username):
 
 def allFavoriteRooms(username):
     sqlalchemy_session = db_session
-
+    
     # get list ids for user's favorite rooms
     user_rooms = getUserRooms(username)
 
@@ -295,7 +319,9 @@ def changeFavorite(room_id, username, remove):
             user.rooms.remove(int(room_id))
     else:
         user.rooms.append(int(room_id))
-    flag_modified(user, 'rooms')  # this is needed b/c we're changing an array
+    flag_modified(
+        user, "rooms"
+    )  # this is needed b/c we're changing an array
 
     sqlalchemy_session.commit()
 
@@ -363,7 +389,15 @@ def addNewGroup(members, name, username):
         new_id = r.max_score + 1
 
     sqlalchemy_session.add(
-        Groups(group_id=new_id, name=name, accepted=members, pending=[], room_ids=[], users_that_added=[]))
+        Groups(
+            group_id=new_id,
+            name=name,
+            accepted=members,
+            pending=[],
+            room_ids=[],
+            users_that_added=[],
+        )
+    )
 
     # now that we added the group, we need to add the group ids to the corresponding users
     sqlalchemy_session = db_session
@@ -395,7 +429,7 @@ def addNewGroup(members, name, username):
         else:
             member_data.group_ids.remove(int(new_id))
 
-        flag_modified(member_data, 'group_ids')
+        flag_modified(member_data, "group_ids")
 
     sqlalchemy_session.commit()
 
@@ -404,17 +438,23 @@ def getUserGroups(username):
     username = username.strip()
 
     # check is user is in user table
-    user_exists = db_session.query(exists().where(User.username == username)).scalar()
+    user_exists = db_session.query(
+        exists().where(User.username == username)
+    ).scalar()
 
     # if not, add them to user table
     if not user_exists:
-        table = Table('users', meta, autoload=True, autoload_with=db)
-        ins_command = table.insert().values(username=username, rooms=[], group_ids=[])
+        table = Table("users", meta, autoload=True, autoload_with=db)
+        ins_command = table.insert().values(
+            username=username, rooms=[], group_ids=[]
+        )
         conn = db.connect()
         conn.execute(ins_command)
 
     # get user's groups
-    query = db_session.query(User.group_ids).where(User.username == username)
+    query = db_session.query(User.group_ids).where(
+        User.username == username
+    )
     groups = query.first()
     groups = groups[0]
 
@@ -431,19 +471,21 @@ def getUserGroups(username):
         # TODO - error handling where the group somehow doesn't exist?
         group = query.first()
         group_dict = {}
-        group_dict['name'] = group.name
+        group_dict["name"] = group.name
 
         # get group's users names
         user_ids = group.accepted
-        query = db_session.query(User.username).where(User.username.in_(user_ids))
+        query = db_session.query(User.username).where(
+            User.username.in_(user_ids)
+        )
         users = query.all()
-        group_dict['accepted'] = list(zip(*users))[0]
+        group_dict["accepted"] = list(zip(*users))[0]
 
         # get group's rooms' details
         room_ids = group.room_ids
         query = db_session.query(Room).where(Room.room_id.in_(room_ids))
         rooms = query.all()
-        group_dict['rooms'] = rooms
+        group_dict["rooms"] = rooms
 
         groups_dict[g_id] = group_dict
 
@@ -475,31 +517,38 @@ def changeGroupRooms(room_id, username, group_id, remove):
     else:
         groups.room_ids.append(int(room_id))
         groups.users_that_added.append(username)
-    flag_modified(groups, 'room_ids')  # this is needed b/c we're changing an array
-    flag_modified(groups, 'users_that_added')
+    flag_modified(
+        groups, "room_ids"
+    )  # this is needed b/c we're changing an array
+    flag_modified(groups, "users_that_added")
 
     sqlalchemy_session.commit()
 
-
-# rooms = []
-# room_query = db_session.query(Room)
+    # rooms = []
+    # room_query = db_session.query(Room)
 
 
 def getUserGroupsJSON(username):
     username = username.strip()
 
     # check is user is in user table
-    user_exists = db_session.query(exists().where(User.username == username)).scalar()
+    user_exists = db_session.query(
+        exists().where(User.username == username)
+    ).scalar()
 
     # if not, add them to user table
     if not user_exists:
-        table = Table('users', meta, autoload=True, autoload_with=db)
-        ins_command = table.insert().values(username=username, rooms=[], group_ids=[])
+        table = Table("users", meta, autoload=True, autoload_with=db)
+        ins_command = table.insert().values(
+            username=username, rooms=[], group_ids=[]
+        )
         conn = db.connect()
         conn.execute(ins_command)
 
     # get user's groups
-    query = db_session.query(User.group_ids).where(User.username == username)
+    query = db_session.query(User.group_ids).where(
+        User.username == username
+    )
     groups = query.first()
     groups = groups[0]
 
@@ -515,14 +564,16 @@ def getUserGroupsJSON(username):
 
         # TODO - error handling where the group somehow doesn't exist?
         group = query.first()
-        group_dict = {'group_id': g_id}
-        group_dict['name'] = group.name
+        group_dict = {"group_id": g_id}
+        group_dict["name"] = group.name
 
         # get group's users names
         user_ids = group.accepted
-        query = db_session.query(User.username).where(User.username.in_(user_ids))
+        query = db_session.query(User.username).where(
+            User.username.in_(user_ids)
+        )
         users = query.all()
-        group_dict['accepted'] = list(zip(*users))[0]
+        group_dict["accepted"] = list(zip(*users))[0]
 
         # get group's rooms' details
         room_ids = group.room_ids
@@ -531,12 +582,21 @@ def getUserGroupsJSON(username):
         room_array = []
         for idx, room in enumerate(rooms):
             user_that_added = group.users_that_added[idx]
-            room_dict = {'room_id': room.room_id, 'building': room.building, 'room_no': room.room_no,
-                         'res_college': room.res_college, 'occupancy': room.occupancy,
-                         'sq_footage': room.sq_footage, 'user_that_added': user_that_added, 'taken': room.taken,
-                         'favorited': True if int(room.room_id) in room_ids else False}
+            room_dict = {
+                "room_id": room.room_id,
+                "building": room.building,
+                "room_no": room.room_no,
+                "res_college": room.res_college,
+                "occupancy": room.occupancy,
+                "sq_footage": room.sq_footage,
+                "user_that_added": user_that_added,
+                "taken": room.taken,
+                "favorited": True
+                if int(room.room_id) in room_ids
+                else False,
+            }
             room_array.append(room_dict)
-        group_dict['rooms'] = room_array
+        group_dict["rooms"] = room_array
 
         groups_array.append(group_dict)
 
@@ -545,7 +605,11 @@ def getUserGroupsJSON(username):
 
 def deleteGroup(group_id):
     # get all members in the group
-    members = db_session.query(Groups.accepted).where(Groups.group_id == group_id).first()
+    members = (
+        db_session.query(Groups.accepted)
+        .where(Groups.group_id == group_id)
+        .first()
+    )
     if members is not None and len(members) > 0:
         members = members[0]
     else:
@@ -573,6 +637,10 @@ def updateTakenRooms(room_ids):
         room.taken = True
     db_session.commit()
 
+    rooms = db_session.query(Room).all()
+    for room in rooms:
+        room.taken = False
+    db_session.commit()
 
 def clearRoomStatuses():
     sqlalchemy_session = db_session
