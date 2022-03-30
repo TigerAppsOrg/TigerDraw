@@ -271,6 +271,19 @@
         "bogle": ["G", "1", "2"],
         "scully": ["1", "2", "3", "4"],
         "wilf": ["G", "1", "2", "3", "4"],
+        "forbes": {
+            "annex": ["A", "1", "2", "3", "4"],
+            "main": ["A", "1", "2", "3", "4"]
+        },
+        "blair": ["A", "1", "2", "3", "4"],
+        "campbell": ["A", "1", "2", "3"],
+        "edwards": ["A", "1", "2", "3", "4", "5"],
+        "hamilton": ["G", "1", "2"],
+        "joline": ["A", "1", "2", "3"],
+        "little": ["A", "G", "1", "2", "3", "4", "5"],
+        "buyers": ["A", "1", "2", "3"],
+        "holder": ["A", "1", "2", "3", "4", "5"],
+        "witherspoon": ["G", "1", "2", "3", "4", "5", "6"],
     }
 
     var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -422,16 +435,35 @@
 
             if (floorPlans.hasOwnProperty(nameJSON)) {
                 html += '<p> Floor Plans: '
-            }
 
-            for (let i in floorPlans[nameJSON]) {
-                let floorNum = floorPlans[nameJSON][i]
-                console.log("key", floorNum)
+                if (nameJSON == "forbes") {
+                    html += `<div>Annex: `
+                    for (let i in floorPlans[nameJSON]['annex']) {
+                        let floorNum = floorPlans[nameJSON]['annex'][i]
+                        console.log("key", floorNum)
 
-                html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
-            }
+                        html += `<a href="../static/pdfs/${nameJSON}/annex/${floorNum}.pdf" target="_blank">${floorNum}</a>`
 
-            if (floorPlans.hasOwnProperty(nameJSON)) {
+                    }
+                    html += `</div>`
+                    html += `<div>Main: `
+                    for (let i in floorPlans[nameJSON]['main']) {
+                        let floorNum = floorPlans[nameJSON]['main'][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                    }
+                    html += `</div>`
+                }
+                else {
+                    for (let i in floorPlans[nameJSON]) {
+                        let floorNum = floorPlans[nameJSON][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                    }
+                }
+
                 html += '</p><hr/>'
             }
 
