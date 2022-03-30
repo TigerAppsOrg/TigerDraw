@@ -18,6 +18,4 @@ CONSUMER_KEY = environ["CONSUMER_KEY"]
 CONSUMER_SECRET = b"\xe7\xa3\x1c\xf2\n\xe9\xb6\xd0\xcd\xbcI\xa9\x14\x8a\x91\x86"  # environ["CONSUMER_SECRET"]
 REFRESH_TOKEN_URL = "https://api.princeton.edu:443/token"
 
-DATABASE_URL = (
-    environ["DATABASE_URL"][:8] + "ql" + environ["DATABASE_URL"][8:]
-)
+DATABASE_URL = environ["DATABASE_URL"]
