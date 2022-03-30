@@ -163,10 +163,10 @@
     }
 </style>
 
-<body data-username={{username}}>
+<body data-username={{ username }}>
 
 {% with page='rooms' %}
-{% include 'navbar.html' %}
+    {% include 'navbar.html' %}
 {% endwith %}
 
 <!-- Modal for adding groups -->
@@ -219,10 +219,13 @@
             <option value="Forbes College">Forbes</option>
             <option value="Mathey College">Mathey</option>
             <option value="No Res College Associated">No Res College Associated</option>
+            <option value="New College East">New College East</option>
+            <option value="New College West">New College West</option>
             <option value="Rockefeller College">Rocky</option>
             <option value="Whitman College">Whitman</option>
             <option value="Wilson College">Wilson</option>
             <option value="Upperclass">Upperclassman</option>
+
         </select>
     </div>
     <div class="col-auto my-1">
