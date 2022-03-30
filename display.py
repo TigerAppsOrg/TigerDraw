@@ -21,6 +21,10 @@ import config
 # TODO : make this an environ var
 DATABASE_URL = config.DATABASE_URL
 
+# avoid sqlalchemy error for old postgres URIs
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=3, pool_timeout=10, isolation_level="READ COMMITTED")
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 Base = declarative_base()
