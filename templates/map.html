@@ -436,12 +436,12 @@
             highest2 = maxrank["1901"]
             html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) + '<br />Lower Rank: ' + String(highest2) + '<hr></p>';
 
-            html += '<p> Floor Plans: '
+            html += '<p> Floor Plans:</br>'
             console.log("LAUGHLIN: name=", name)
 
             for (let i in floorPlans['laughlin']) {
                 let floorNum = floorPlans['laughlin'][i]
-                html += `<a href="../static/pdfs/laughlin/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                html += `<a href="../static/pdfs/laughlin/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
             }
             html += '</p><hr/>'
 
@@ -461,14 +461,14 @@
             nameJSON = nameJSON.replace(/\s+/g, '')
 
             if (floorPlans.hasOwnProperty(nameJSON)) {
-                html += '<p> Floor Plans: '
+                html += '<p> Floor Plans:</br>'
 
                 if (nameJSON == "forbes") {
                     html += `<div>Annex: `
                     for (let i in floorPlans[nameJSON]['annex']) {
                         let floorNum = floorPlans[nameJSON]['annex'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/annex/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/annex/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
 
                     }
                     html += `</div>`
@@ -476,7 +476,7 @@
                     for (let i in floorPlans[nameJSON]['main']) {
                         let floorNum = floorPlans[nameJSON]['main'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
@@ -485,7 +485,7 @@
                     for (let i in floorPlans[nameJSON]['B']) {
                         let floorNum = floorPlans[nameJSON]['B'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/B/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/B/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
 
                     }
                     html += `</div>`
@@ -493,7 +493,7 @@
                     for (let i in floorPlans[nameJSON]['C']) {
                         let floorNum = floorPlans[nameJSON]['C'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/C/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/C/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
@@ -502,7 +502,7 @@
                     for (let i in floorPlans[nameJSON]['E']) {
                         let floorNum = floorPlans[nameJSON]['E'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/E/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/E/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
 
                     }
                     html += `</div>`
@@ -510,7 +510,7 @@
                     for (let i in floorPlans[nameJSON]['S']) {
                         let floorNum = floorPlans[nameJSON]['S'][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/S/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/S/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
@@ -519,7 +519,7 @@
                     for (let i in floorPlans[nameJSON]) {
                         let floorNum = floorPlans[nameJSON][i]
 
-                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
                     }
                 }
 
