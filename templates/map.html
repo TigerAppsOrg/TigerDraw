@@ -264,7 +264,13 @@
     //})
 
     floorPlans = {
-        "yoseloff": ["G", "1", "2"]
+        "yoseloff": ["G", "1", "2"],
+        "1967": ["G", "1", "2", "3"],
+        "1976": ["G", "1", "2", "3"],
+        "bloomberg": ["A", "1", "2", "3", "4"],
+        "bogle": ["G", "1", "2"],
+        "scully": ["1", "2", "3", "4"],
+        "wilf": ["G", "1", "2", "3", "4"],
     }
 
     var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -411,18 +417,24 @@
             html = '<p>Building: ' + name + '<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr></p>';
 
 
-            html += '<p> Floor Plans: '
+            nameJSON = name.toLowerCase()
+            nameJSON = nameJSON.replace(/\s+/g, '')
 
-            for (let i in floorPlans[name]) {
-                let floorNum = floorPlans[name][i]
-                console.log("key", floorNum)
-
-                html += `<a href="../static/pdfs/${name}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+            if (floorPlans.hasOwnProperty(nameJSON)) {
+                html += '<p> Floor Plans: '
             }
 
-            //html += `<a href="../static/pdfs/${name}/yoseloff_1.pdf" target="_blank">1</a>`
+            for (let i in floorPlans[nameJSON]) {
+                let floorNum = floorPlans[nameJSON][i]
+                console.log("key", floorNum)
 
-            html += '</p>'
+                html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+            }
+
+            if (floorPlans.hasOwnProperty(nameJSON)) {
+                html += '</p><hr/>'
+            }
+
 
             html += '<div><div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
                     of the rooms with the earliest and latest draw times in that building, respectively.\
