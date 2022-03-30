@@ -159,8 +159,8 @@ def queryRooms():
                 i += 1
                 continue
         if building:
-            if building != room.Room.buiding:
-                # print(room.Room.buiding)
+            if building != room.Room.building:
+                # print(room.Room.building)
                 i += 1
                 continue
 
@@ -168,7 +168,7 @@ def queryRooms():
             roomDict = {
                 "ranking": room.DrawTime.draw_time,
                 "res_college": room.Room.res_college,
-                "building": room.Room.buiding,
+                "building": room.Room.building,
                 "room_no": room.Room.room_no,
                 "occupancy": room.Room.occupancy,
                 "sq_footage": room.Room.sq_footage,
@@ -181,7 +181,7 @@ def queryRooms():
             roomDict = {
                 "ranking": i,
                 "res_college": room.Room.res_college,
-                "building": room.Room.buiding,
+                "building": room.Room.building,
                 "room_no": room.Room.room_no,
                 "occupancy": room.Room.occupancy,
                 "sq_footage": room.Room.sq_footage,
@@ -210,7 +210,7 @@ def queryFavorites():
     for room in data:
         roomDict = {
             "res_college": room.Room.res_college,
-            "building": room.Room.buiding,
+            "building": room.Room.building,
             "room_no": room.Room.room_no,
             "occupancy": room.Room.occupancy,
             "sq_footage": room.Room.sq_footage,
@@ -306,7 +306,7 @@ def map():
     for i in dorms:
         data = allRooms("", i, "", "", "", "", "2019")
         for room in data:
-            building = room.Room.buiding
+            building = room.Room.building
             buildingrank[building].append(int(room.DrawTime.draw_time))
 
     for building in buildingrank:
