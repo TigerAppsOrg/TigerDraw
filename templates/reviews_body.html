@@ -1,0 +1,13 @@
+{% if not reviews %}
+    <p>There are currently no reviews for this room</p>
+
+{% else %}
+    {% for review in reviews %}
+        <h3> <strong>Review #{{ loop.index }}</strong></h3>
+        <h5>Posted on {{ get_time_string_from_utc_dt(review.date) }} </h5>
+        <h6>Rating: {{ review.rating }} out of 5</h6>
+        <p> {{ review.content }} </p>
+        <hr>
+    {% endfor %}
+
+{% endif %}

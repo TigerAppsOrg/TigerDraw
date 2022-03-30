@@ -1,5 +1,6 @@
-import PyPDF2 
+import PyPDF2
 import datetime
+
 
 def load_txt(file):
     fp = open(file, 'r')
@@ -9,6 +10,7 @@ def load_txt(file):
         print(line.split())
 
     return draws
+
 
 load_txt('roomdraw-2017.txt')
 '''
