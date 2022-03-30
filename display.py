@@ -24,15 +24,16 @@ db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, isolation_level="
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 Base = declarative_base()
 
+
 class Room(Base):
-	__tablename__ = 'room_info'
-	room_id = Column(Integer, primary_key=True)
-	buiding = Column(String)  # misspelled, TODO fix
-	room_no = Column(String)
-	occupancy = Column(Integer)
-	sq_footage = Column(Integer)
-	res_college = Column(String)
-	taken = Column(Boolean)
+    __tablename__ = 'room_info'
+    room_id = Column(Integer, primary_key=True)
+    building = Column(String)  # misspelled, TODO fix
+    room_no = Column(String)
+    occupancy = Column(Integer)
+    sq_footage = Column(Integer)
+    res_college = Column(String)
+    taken = Column(Boolean)
 
 class FavoriteRoom(Base):
 	__tablename__ = 'favorites'
@@ -467,19 +468,19 @@ def getUserGroupsJSON(username):
 		users = query.all()
 		group_dict['accepted'] = list(zip(*users))[0]
 
-		# get group's rooms' details
-		room_ids = group.room_ids 
-		query = db_session.query(Room).where(Room.room_id.in_(room_ids)) 
-		rooms = query.all()
-		room_array = []
-		for idx, room in enumerate(rooms):
-			user_that_added = group.users_that_added[idx]
-			room_dict = {'room_id':room.room_id, 'building':room.buiding, 'room_no':room.room_no,
-						'res_college': room.res_college, 'occupancy': room.occupancy,
-						'sq_footage': room.sq_footage, 'user_that_added': user_that_added, 'taken': room.taken,
-						'favorited': True if int(room.room_id) in room_ids else False}
-			room_array.append(room_dict)
-		group_dict['rooms'] = room_array
+        # get group's rooms' details
+        room_ids = group.room_ids
+        query = db_session.query(Room).where(Room.room_id.in_(room_ids))
+        rooms = query.all()
+        room_array = []
+        for idx, room in enumerate(rooms):
+            user_that_added = group.users_that_added[idx]
+            room_dict = {'room_id': room.room_id, 'building': room.building, 'room_no': room.room_no,
+                         'res_college': room.res_college, 'occupancy': room.occupancy,
+                         'sq_footage': room.sq_footage, 'user_that_added': user_that_added, 'taken': room.taken,
+                         'favorited': True if int(room.room_id) in room_ids else False}
+            room_array.append(room_dict)
+        group_dict['rooms'] = room_array
 
 		groups_array.append(group_dict)
 

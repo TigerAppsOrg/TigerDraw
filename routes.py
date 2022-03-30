@@ -122,20 +122,20 @@ def queryRooms():
                 i += 1
                 continue
         if building:
-            if building != room.Room.buiding:
+            if building != room.Room.building:
                 # print(room.Room.buiding)
                 i += 1
                 continue
 
         if year:
             roomDict = {"ranking": room.DrawTime.draw_time,
-                        "res_college": room.Room.res_college, "building": room.Room.buiding,
+                        "res_college": room.Room.res_college, "building": room.Room.building,
                         "room_no": room.Room.room_no, "occupancy": room.Room.occupancy,
                         "sq_footage": room.Room.sq_footage, "favorite": room[2], "room_id": room.Room.room_id, "taken": room.Room.taken}
             roomsList.append(roomDict)
         else:
             roomDict = {"ranking": i,
-                        "res_college": room.Room.res_college, "building": room.Room.buiding,
+                        "res_college": room.Room.res_college, "building": room.Room.building,
                         "room_no": room.Room.room_no, "occupancy": room.Room.occupancy,
                         "sq_footage": room.Room.sq_footage, "favorite": room[2], "room_id": room.Room.room_id, "taken": room.Room.taken}
             roomsList.append(roomDict)
@@ -158,7 +158,7 @@ def queryFavorites():
     roomsList = []
     for room in data:
         roomDict = {
-            "res_college": room.Room.res_college, "building": room.Room.buiding,
+            "res_college": room.Room.res_college, "building": room.Room.building,
             "room_no": room.Room.room_no, "occupancy": room.Room.occupancy,
             "sq_footage": room.Room.sq_footage, "favorite": room[2], "room_id": room.Room.room_id, "taken": room.Room.taken}
         roomsList.append(roomDict)
@@ -233,7 +233,7 @@ def map():
     for i in dorms:
         data = allRooms("", i, "", "", "", "", "2019")
         for room in data:
-            building = room.Room.buiding
+            building = room.Room.building
             buildingrank[building].append(int(room.DrawTime.draw_time))
 
     for building in buildingrank:
