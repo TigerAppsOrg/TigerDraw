@@ -107,7 +107,7 @@ class Buildings(Base):
 
 meta = MetaData(db)
 
-Base.metadata.create_all(db)
+# Base.metadata.create_all(db)
 
 
 def getUserRooms(username):
