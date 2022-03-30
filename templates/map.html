@@ -222,22 +222,44 @@
 
 <body>
     <!-- ! TESTING -->
-    <h1>TESTING</h1>
-    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" target="_blank">1</a>
-    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" class="preview">Link</a>
-    <div class="box"><iframe src="" width="500px" height="500px" style="display:none;"></iframe></div>
     <script>   $(document).ready(function () {
             $(document).on('mouseover', '.preview', function () {
                 var path_source = $(this).attr('href');
-                $("iframe").attr("src", path_source);
+                $("iframe").attr("src", path_source + "#zoom=50");
                 $("iframe").show();
 
             });
+            < !-- ! FIX LOGIC HERE-- >
+                function checkHover() {
+                    //setTimeout(checkHover, 2000)
+                    if ($("iframe").is(":hover")) {
+                        console.log("A")
+                        checkHover()
+                    } else {
+                        console.log("B")
+                        $("iframe").hide();
+                    }
+                    //$("iframe").hover(
+                    //    () => { //hover
+                    //        console.log("A")
+                    //        $("iframe").show();
+                    //        setTimeout(checkHover, 3000)
+                    //    },
+                    //    () => { //out
+                    //        console.log("B")
+                    //        $("iframe").hide();
+                    //    }
+                    //);
+                }
             $(document).on('mouseout', '.preview', function () {
+                console.log("mouseout")
+                setTimeout(checkHover, 2000)
+                //checkHover()
+                //  $("iframe").hide();
+            }
 
-                $("iframe").hide();
 
-            });
+            );
 
         });</script>
     <!-- ! END TESTING -->
@@ -248,6 +270,8 @@
     {% include 'navbar.html' %}
     {% endwith %}
     <div id="mapid"></div>
+    <div class="box"><iframe src="" width="500px" height="500px" style="display:none; position: absolute; bottom: 0; left:
+    0;"></iframe></div>
 </body>
 <script>
     //console.log("hello world")
@@ -533,7 +557,7 @@
                         let floorNum = floorPlans[nameJSON][i]
                         console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" class="preview" target="_blank">${floorNum}</a>`
                     }
                 }
 
