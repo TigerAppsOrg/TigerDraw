@@ -283,7 +283,32 @@
         "little": ["A", "G", "1", "2", "3", "4", "5"],
         "buyers": ["A", "1", "2", "3"],
         "holder": ["A", "1", "2", "3", "4", "5"],
-        "witherspoon": ["G", "1", "2", "3", "4", "5", "6"],
+        "witherspoon": ["G", "1", "2", "3", "4"],
+        "laughlin": ["G", "1", "2", "3", "4"],
+        "1903": ["A", "1", "2", "3", "4"],
+        "brown": ["A", "1", "2", "3", "4"],
+        "cuyler": ["A", "1", "2", "3"],
+        "dod": ["A", "1", "2", "3", "4", "5"],
+        "foulke": ["G", "1", "2", "3", "4"],
+        "henry": ["G", "1", "2", "3", "4", "5"],
+        "lockhart": ["G", "1", "2", "3", "4"],
+        "patton": ["A", "G", "1", "2", "3", "4"],
+        "pyne": ["A", "1", "2", "3", "4", "5"],
+        "spelman": ["A", "1", "2", "3", "4"],
+        "wright": ["A", "1", "2", "3", "4"],
+        "1981": ["A", "G", "1", "2", "3", "4"],
+        "wendell": {
+            "B": ["G", "1", "2", "3", "4"],
+            "C": ["G", "1", "2", "3", "4"]
+        },
+        "fisher": ["G", "1", "2", "3"],
+        "hargadon": ["G", "1", "2", "3", "4"],
+        "lauritzen": ["G", "1", "2", "3", "4"],
+        "baker": {
+            "E": ["G", "1", "2", "3", "4"],
+            "S": ["G", "1", "2", "3", "4"]
+        },
+        "murley": ["G", "1", "2", "3", "4"],
     }
 
     var mbAttr = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -418,6 +443,16 @@
             highest = maxrank["LAUGHLIN"]
             highest2 = maxrank["1901"]
             html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) + '<br />Lower Rank: ' + String(highest2) + '<hr></p>';
+
+            html += '<p> Floor Plans: '
+            for (let i in floorPlans['laughlin']) {
+                let floorNum = floorPlans['laughlin'][i]
+                console.log("key", floorNum)
+
+                html += `<a href="../static/pdfs/'laughlin'/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+            }
+            html += '</p><hr/>'
+
             html += '<div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
                     of the rooms with the earliest and latest draw times in that building, respectively. \
                     E.g. If the Lowest Rank is 150, then the first room to be drawn for that building was \
@@ -452,6 +487,44 @@
                         console.log("key", floorNum)
 
                         html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                    }
+                    html += `</div>`
+                }
+                else if (nameJSON == "wendell") {
+                    html += `<div>Hall B: `
+                    for (let i in floorPlans[nameJSON]['B']) {
+                        let floorNum = floorPlans[nameJSON]['B'][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/B/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+
+                    }
+                    html += `</div>`
+                    html += `<div>Hall C: `
+                    for (let i in floorPlans[nameJSON]['C']) {
+                        let floorNum = floorPlans[nameJSON]['C'][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/C/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                    }
+                    html += `</div>`
+                }
+                else if (nameJSON == "baker") {
+                    html += `<div>Hall E: `
+                    for (let i in floorPlans[nameJSON]['E']) {
+                        let floorNum = floorPlans[nameJSON]['E'][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/E/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+
+                    }
+                    html += `</div>`
+                    html += `<div>Hall S: `
+                    for (let i in floorPlans[nameJSON]['S']) {
+                        let floorNum = floorPlans[nameJSON]['S'][i]
+                        console.log("key", floorNum)
+
+                        html += `<a href="../static/pdfs/${nameJSON}/S/${floorNum}.pdf" target="_blank">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
