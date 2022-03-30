@@ -221,26 +221,28 @@
 </style>
 
 <body>
-    <!-- ! TESTING -->
-    <h1>TESTING</h1>
-    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" target="_blank">1</a>
-    <a href="../static/pdfs/yoseloff/yoseloff_1.pdf" class="preview">Link</a>
-    <div class="box"><iframe src="" width="500px" height="500px" style="display:none;"></iframe></div>
-    <script>   $(document).ready(function () {
+    <script>
+        // Show pdf iframe on hover
+        $(document).ready(function () {
             $(document).on('mouseover', '.preview', function () {
-                var path_source = $(this).attr('href');
-                $("iframe").attr("src", path_source);
-                $("iframe").show();
-
+                if ($(window).width() > 1000) {
+                    var path_source = $(this).attr('href');
+                    $("iframe").hide();
+                    $("iframe").attr("src", path_source + "#zoom=60");
+                    $("iframe").show();
+                }
             });
-            $(document).on('mouseout', '.preview', function () {
-
-                $("iframe").hide();
-
-            });
-
-        });</script>
-    <!-- ! END TESTING -->
+        });
+    </script>
+    <script>
+        // Triggers on click outside of pdf iframe (to hide it)
+        $(document).click(function (e) {
+            if ($(e.target).closest("#pdf-container").length > 0) {
+                return false;
+            }
+            $("iframe").hide();
+        });
+    </script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -248,21 +250,11 @@
     {% include 'navbar.html' %}
     {% endwith %}
     <div id="mapid"></div>
+    <div class="box" id="pdf-container"><iframe src="" width="650px" height="650px" style="display:none; position: absolute; left: 0;
+    bottom: 0;"></iframe></div>
 </body>
 <script>
-    //console.log("hello world")
-    //let floorPlans = {}
-    //$.when(
-    //    $.getJSON('../static/pdfs/floor_plans.json')
-    //).done(function (json) {
-    //    floorPlans = json
-    //    console.log(json);
-    //});
-    //
-    //$.getJSON('../static/pdfs/floor_plans.json', () => {
-    //    console.log("got json")
-    //})
-
+    // Constant JSON used to map floors to pdfs
     floorPlans = {
         "yoseloff": ["G", "1", "2"],
         "1967": ["G", "1", "2", "3"],
@@ -445,11 +437,11 @@
             html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) + '<br />Lower Rank: ' + String(highest2) + '<hr></p>';
 
             html += '<p> Floor Plans: '
+            console.log("LAUGHLIN: name=", name)
+
             for (let i in floorPlans['laughlin']) {
                 let floorNum = floorPlans['laughlin'][i]
-                console.log("key", floorNum)
-
-                html += `<a href="../static/pdfs/'laughlin'/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                html += `<a href="../static/pdfs/laughlin/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
             }
             html += '</p><hr/>'
 
@@ -475,18 +467,16 @@
                     html += `<div>Annex: `
                     for (let i in floorPlans[nameJSON]['annex']) {
                         let floorNum = floorPlans[nameJSON]['annex'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/annex/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/annex/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
 
                     }
                     html += `</div>`
                     html += `<div>Main: `
                     for (let i in floorPlans[nameJSON]['main']) {
                         let floorNum = floorPlans[nameJSON]['main'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/main/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
@@ -494,18 +484,16 @@
                     html += `<div>Hall B: `
                     for (let i in floorPlans[nameJSON]['B']) {
                         let floorNum = floorPlans[nameJSON]['B'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/B/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/B/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
 
                     }
                     html += `</div>`
                     html += `<div>Hall C: `
                     for (let i in floorPlans[nameJSON]['C']) {
                         let floorNum = floorPlans[nameJSON]['C'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/C/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/C/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
@@ -513,27 +501,25 @@
                     html += `<div>Hall E: `
                     for (let i in floorPlans[nameJSON]['E']) {
                         let floorNum = floorPlans[nameJSON]['E'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/E/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/E/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
 
                     }
                     html += `</div>`
                     html += `<div>Hall S: `
                     for (let i in floorPlans[nameJSON]['S']) {
                         let floorNum = floorPlans[nameJSON]['S'][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/S/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/S/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
                     }
                     html += `</div>`
                 }
+                // Applies to MOST rooms
                 else {
                     for (let i in floorPlans[nameJSON]) {
                         let floorNum = floorPlans[nameJSON][i]
-                        console.log("key", floorNum)
 
-                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank">${floorNum}</a>`
+                        html += `<a href="../static/pdfs/${nameJSON}/${floorNum}.pdf" target="_blank" class="preview">${floorNum}</a>`
                     }
                 }
 
