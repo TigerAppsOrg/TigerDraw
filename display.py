@@ -33,7 +33,7 @@ DATABASE_URL = config.DATABASE_URL
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=3, pool_timeout=10,
+db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=60, pool_timeout=180,
                    isolation_level="READ COMMITTED")
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 Base = declarative_base()
@@ -44,7 +44,7 @@ class Room(Base):
     room_id = Column(Integer, primary_key=True)
     building = Column(String)
     room_no = Column(String)
-    occupancy = Column(Integer)
+    occupancy = Column(String)
     sq_footage = Column(Integer)
     res_college = Column(String)
     taken = Column(Boolean)
