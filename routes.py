@@ -162,8 +162,8 @@ def queryRooms():
 
     if year:
         data = data[
-            max(0, int(firstranking)) : min(len(data), int(lastranking))
-        ]
+               max(0, int(firstranking)): min(len(data), int(lastranking))
+               ]
 
     roomsList = []
 
@@ -196,6 +196,9 @@ def queryRooms():
                 i += 1
                 continue
 
+        review_count = db_session.query(Reviews).filter(Reviews.room_number == room.Room.room_no,
+                                                        Reviews.building_name == room.Room.building).count()
+
         if year:
             roomDict = {
                 "ranking": room.DrawTime.draw_time,
@@ -207,8 +210,7 @@ def queryRooms():
                 "favorite": room[2],
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
-                "number_of_reviews": db_session.query(ReviewCount).filter(ReviewCount.room_number == room.Room.room_no,
-                                                                          ReviewCount.building_name == room.Room.building).first().count
+                "number_of_reviews": review_count
             }
             roomsList.append(roomDict)
         elif room.DrawTime is None:
@@ -229,8 +231,7 @@ def queryRooms():
                 "favorite": room[2],
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
-                "number_of_reviews": db_session.query(ReviewCount).filter(ReviewCount.room_number == room.Room.room_no,
-                                                                          ReviewCount.building_name == room.Room.building).first().count
+                "number_of_reviews": review_count
             }
             roomsList.append(roomDict)
             i += 1
