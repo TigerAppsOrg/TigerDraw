@@ -38,7 +38,7 @@ import collections
 from updateavailable import checkRooms, changeRoomPdf
 from api_access import check_is_undergrad
 from collections import defaultdict
-from display import db_session, Reviews, ReviewCount
+from display import db_session, Reviews
 import time
 import config
 

@@ -50,12 +50,12 @@ class Room(Base):
     taken = Column(Boolean)
 
 
-class ReviewCount(Base):
-    __tablename__ = "review_count"
-    building_name = Column(String)
-    room_number = Column(String)
-    cnt = Column(Integer)
-    id = Column(Integer, primary_key=True)
+# class ReviewCount(Base):
+#     __tablename__ = "review_count"
+#     building_name = Column(String)
+#     room_number = Column(String)
+#     cnt = Column(Integer)
+#     id = Column(Integer, primary_key=True)
 
 
 # class Room_Ben(Base):
