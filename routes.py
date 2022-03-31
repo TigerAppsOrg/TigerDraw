@@ -38,7 +38,7 @@ import collections
 from updateavailable import checkRooms, changeRoomPdf
 from api_access import check_is_undergrad
 from collections import defaultdict
-from display import db_session, Reviews
+from display import db_session, Reviews, ReviewCount
 import time
 import config
 
@@ -96,7 +96,7 @@ def index():
 @app.route("/rooms", methods=["GET", "POST"])
 def getRooms():
     username = CASClient().authenticate()
-    username = username.strip()
+    username = username.lower().strip()
     return make_response(
         render_template("availablerooms.html", username=username)
     )
@@ -104,13 +104,14 @@ def getRooms():
 
 @app.route("/faq")
 def faq():
-    username = CASClient().authenticate()
+    CASClient().authenticate()
     return make_response(render_template("faq.html"))
 
 
 @app.route("/queryrooms", methods=["GET", "POST"])
 def queryRooms():
     username = CASClient().authenticate()
+    username = username.lower().strip()
 
     college = request.args.get("college", default="")
     firstranking = request.args.get("firstranking", default="")
@@ -206,6 +207,8 @@ def queryRooms():
                 "favorite": room[2],
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
+                "number_of_reviews": db_session.query(ReviewCount).filter(ReviewCount.room_number == room.Room.room_no,
+                                                                          ReviewCount.building_name == room.Room.building).first().count
             }
             roomsList.append(roomDict)
         else:
@@ -219,6 +222,8 @@ def queryRooms():
                 "favorite": room[2],
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
+                "number_of_reviews": db_session.query(ReviewCount).filter(ReviewCount.room_number == room.Room.room_no,
+                                                                          ReviewCount.building_name == room.Room.building).first().count
             }
             roomsList.append(roomDict)
             i += 1
@@ -235,6 +240,7 @@ def queryRooms():
 @app.route("/queryfavorites", methods=["GET", "POST"])
 def queryFavorites():
     username = CASClient().authenticate()
+    username = username.lower().strip()
     data = getFavoriteRooms(username)
 
     roomsList = []
@@ -265,6 +271,7 @@ def addToFavorites():
     # TODO
     # and fix this in other places too.
     username = CASClient().authenticate()
+    username = username.lower().strip()
     room_id = request.args.get("room_id")
 
     # ajax to add favorite
@@ -283,6 +290,7 @@ def removeFromFravorites():
     # TODO
     # and fix this in other places too.
     username = CASClient().authenticate()
+    username = username.lower().strip()
     room_id = request.args.get("room_id")
 
     # ajax to remove favorite
@@ -298,6 +306,7 @@ def removeFromFravorites():
 @app.route("/favorites", methods=["GET"])
 def favorites():
     username = CASClient().authenticate()
+    username = username.lower().strip()
 
     # get all of the user's favorite
     fav = allFavoriteRooms(username)
@@ -315,7 +324,7 @@ def favorites():
 
 @app.route("/map")
 def map():
-    username = CASClient().authenticate()
+    CASClient().authenticate()
 
     allrank = defaultdict(int)
     buildingrank = defaultdict(list)
@@ -331,7 +340,7 @@ def map():
         "Mathey College",
         "Rockefeller College",
         "Whitman College",
-        "Wilson College",
+        "First College",
         "Upperclass",
     ]
     for i in dorms:
@@ -388,6 +397,7 @@ def shutdown_session(exception=None):
 @app.route("/populategroups", methods=["GET"])
 def populategroups():
     username = CASClient().authenticate()
+    username = username.lower().strip()
     groups = getUserGroups(username)
 
     room_id = request.args.get("room_id", default="")
@@ -412,6 +422,7 @@ def populategroups():
 @app.route("/groups", methods=["GET", "POST"])
 def groups():
     username = CASClient().authenticate()
+    username = username.lower().strip()
     groups = getUserGroups(username)
 
     has_groups = True
@@ -448,6 +459,7 @@ def removeroomfromgroup():
     # TODO
     # and fix this in other places too.
     username = CASClient().authenticate()
+    username = username.lower().strip()
     room_id = request.args.get("room_id")
     group_id = request.args.get("group_id")
     # ajax to add favorite
@@ -545,6 +557,7 @@ def editGroup():
 @app.route("/getgroupsjson", methods=["GET"])
 def getGroupsJSON():
     username = CASClient().authenticate()
+    username = username.lower().strip()
     groups = getUserGroupsJSON(username)
     username = username.strip()
 

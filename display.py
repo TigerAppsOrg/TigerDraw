@@ -33,7 +33,8 @@ DATABASE_URL = config.DATABASE_URL
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=3, pool_timeout=10, isolation_level="READ COMMITTED")
+db = create_engine(DATABASE_URL, pool_size=20, max_overflow=0, pool_recycle=3, pool_timeout=10,
+                   isolation_level="READ COMMITTED")
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=db))
 Base = declarative_base()
 
@@ -47,6 +48,15 @@ class Room(Base):
     sq_footage = Column(Integer)
     res_college = Column(String)
     taken = Column(Boolean)
+
+
+class ReviewCount(Base):
+    __tablename__ = "review_count"
+    building_name = Column(String)
+    room_number = Column(String)
+    cnt = Column(Integer)
+    id = Column(Integer, primary_key=True)
+
 
 # class Room_Ben(Base):
 #     __tablename__ = 'room_info'
@@ -72,7 +82,7 @@ class Reviews(Base):
     room_sqft = Column(Integer)
     room_subfree = Column(Boolean)
 
-    
+
 class FavoriteRoom(Base):
     __tablename__ = 'favorites'
     room_id = Column(Integer, primary_key=True)
@@ -112,10 +122,11 @@ class Buildings(Base):
     name = Column(String)
     res_college = Column(String)
 
+
 meta = MetaData(db)
 
-# Base.metadata.create_all(db)
 
+# Base.metadata.create_all(db)
 
 
 def getUserRooms(username):
@@ -152,13 +163,13 @@ def getUserRooms(username):
 
 
 def allRooms(
-    username,
-    college,
-    firstranking,
-    lastranking,
-    occupancy,
-    building,
-    year,
+        username,
+        college,
+        firstranking,
+        lastranking,
+        occupancy,
+        building,
+        year,
 ):
     sqlalchemy_session = db_session
 
@@ -287,7 +298,7 @@ def getFavoriteRooms(username):
 
 def allFavoriteRooms(username):
     sqlalchemy_session = db_session
-    
+
     # get list ids for user's favorite rooms
     user_rooms = getUserRooms(username)
 
@@ -607,8 +618,8 @@ def deleteGroup(group_id):
     # get all members in the group
     members = (
         db_session.query(Groups.accepted)
-        .where(Groups.group_id == group_id)
-        .first()
+            .where(Groups.group_id == group_id)
+            .first()
     )
     if members is not None and len(members) > 0:
         members = members[0]
@@ -641,6 +652,7 @@ def updateTakenRooms(room_ids):
     for room in rooms:
         room.taken = False
     db_session.commit()
+
 
 def clearRoomStatuses():
     sqlalchemy_session = db_session
