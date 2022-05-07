@@ -72,7 +72,7 @@ class Reviews(Base):
     id = Column(Integer, primary_key=True)
     building_name = Column(String)
     content = Column(String)
-    date = Column(DateTime)
+    date = Column(DateTime(timezone=True), default=func.now())
     rating = Column(Integer)
     room_bathroomtype = Column(String)
     room_floor = Column(Integer)
@@ -81,6 +81,7 @@ class Reviews(Base):
     room_occ = Column(Integer)
     room_sqft = Column(Integer)
     room_subfree = Column(Boolean)
+    net_id = Column(String)
 
 
 class FavoriteRoom(Base):

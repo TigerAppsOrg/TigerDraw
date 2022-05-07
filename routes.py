@@ -46,7 +46,7 @@ app = Flask(__name__)
 
 
 def get_time_string_from_utc_dt(utc_dt):
-    local_dt = utc_dt.replace(tzinfo=pytz.utc)
+    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(tz=pytz.timezone("America/New_York"))
     local_dt_string = local_dt.strftime('%b %d, %Y')
     return local_dt_string
 
@@ -83,7 +83,8 @@ def get_reviews():
                                                Reviews.room_number == room_number).order_by(
         Reviews.date.desc()).all()
 
-    html = render_template("reviews_body.html", reviews=reviews)
+    html = render_template("reviews_body.html", reviews=reviews, building_name=building_name,
+                           room_number=room_number)
     response = make_response(html)
     return response
 
@@ -579,3 +580,24 @@ def getGroupsJSON():
             "username": username,
         }
     )
+
+
+@app.route('/submitReview', methods=['POST'])
+def submit_review():
+    username = "proxy"
+    # username = CASClient().authenticate()
+    valid_ratings = ['1', '2', '3', '4', '5']
+    building_name = request.form['building-name']
+    room_no = request.form['room-number']
+    overall_rating = request.form['overall-rating']
+    written_review = request.form['written-review']
+    if overall_rating not in valid_ratings:
+        message = "Your review rating was not between 1 and 5. Please submit again with" \
+                  " a valid rating."
+        return jsonify(message=message), 400
+    review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
+                     content=written_review, net_id=username)
+    db_session.add(review)
+    db_session.commit()
+    message = "Your review was successfully submitted!"
+    return jsonify(message=message), 200

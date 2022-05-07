@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+
+    <!-- Link Notyf CSS Library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+    <!-- Link Notyf JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
 </head>
 <style>
     .rooms-table {
@@ -190,18 +195,20 @@
                 href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
           </h5>
           <br> -->
-    <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have to wait at most 3 minutes for the site to fully load.</h3>
-
+    <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have to
+        wait at most 3 minutes for the site to fully load.</h3>
 
 
 </div>
 
 <div class="container" style="margin-top: 25px;">
-  <div class="row">
-    <div class="col text-center">
-      <button class="btn btn-primary" style="background: #474bc9;font-weight: bold" data-toggle="modal" data-target="#updatesModal">View TigerDraw Updates</button>
+    <div class="row">
+        <div class="col text-center">
+            <button class="btn btn-primary" style="background: #474bc9;font-weight: bold" data-toggle="modal"
+                    data-target="#updatesModal">View TigerDraw Updates
+            </button>
+        </div>
     </div>
-  </div>
 </div>
 
 <div style="padding-top:25px;">
@@ -233,9 +240,9 @@
             <option value="First College">First</option>
             <option value="Forbes College">Forbes</option>
             <option value="Mathey College">Mathey</option>
-            <option value="No Res College Associated">No Res College Associated</option>
             <option value="New College East">New College East</option>
             <option value="New College West">New College West</option>
+            <option value="No Res College Associated">No Res College Associated</option>
             <option value="Rockefeller College">Rocky</option>
             <option value="Whitman College">Whitman</option>
             <option value="Upperclass">Upperclassman</option>
@@ -410,7 +417,7 @@
                 {"data": "sq_footage"},
                 {
                     data: null, targets: -1, render: function (data, type, row) {
-                        return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\')">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
+                        return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
                     }
                 },
                 // {
@@ -608,15 +615,61 @@
         return response;
     }
 
-    function getReviews(building_name, room_no) {
-        console.log(building_name, room_no);
-        fetchWithTimeout('/get_reviews?' +
-            '&building_name=' + building_name +
-            '&room_no=' + room_no)
-            .then(response => response.text()).then(data => {
-            $("#reviews-body").empty();
-            $("#reviews-body").append(data);
-        });
+    function incrementReviewButton() {
+        let originalDigit = window.review_button.lastChild.innerText;
+        let newDigit = parseInt(originalDigit) + 1;
+        window.review_button.lastChild.innerText = newDigit;
+    }
+
+    function getReviews(building_name, room_no, clicked_review_button) {
+        if (clicked_review_button !== null) {
+            window.review_button = clicked_review_button;
+        }
+        window.curr_building_name = building_name;
+        window.curr_room_no = room_no;
+        $("#reviews-body").empty();
+        setTimeout(function () {
+            fetchWithTimeout('/get_reviews?' +
+                '&building_name=' + building_name +
+                '&room_no=' + room_no)
+                .then(response => response.text()).then(data => {
+                $("#reviews-body").append(data);
+            });
+        }, 1000);
+    }
+
+    const notyf = new Notyf({
+        duration: 10000,
+        dismissible: true,
+        position: {
+            x: 'right',
+            y: 'bottom',
+        },
+    });
+
+    function submitReviewWithoutRefresh() {
+        let reviewForm = $("form#submit-review-form")[0];
+        let formData = new FormData(reviewForm);
+        if (reviewForm.checkValidity()) {
+            $.ajax({
+                type: 'POST',
+                url: '/submitReview',
+                contentType: false,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                data: formData,
+                success: function (data, textStatus, jqXHR) {
+                    $('#submit-review-form').trigger("reset");
+                    notyf.success(jqXHR.responseJSON.message);
+                },
+                error: function (jqXHR) {
+                    notyf.error(jqXHR.responseJSON.message);
+                }
+            })
+        } else {
+            reviewForm.reportValidity();
+        }
     }
 
 </script>
