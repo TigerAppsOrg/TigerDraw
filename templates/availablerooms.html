@@ -650,26 +650,24 @@
     function submitReviewWithoutRefresh() {
         let reviewForm = $("form#submit-review-form")[0];
         let formData = new FormData(reviewForm);
-        if (reviewForm.checkValidity()) {
-            $.ajax({
-                type: 'POST',
-                url: '/submitReview',
-                contentType: false,
-                dataType: "json",
-                cache: false,
-                processData: false,
-                data: formData,
-                success: function (data, textStatus, jqXHR) {
-                    $('#submit-review-form').trigger("reset");
-                    notyf.success(jqXHR.responseJSON.message);
-                },
-                error: function (jqXHR) {
-                    notyf.error(jqXHR.responseJSON.message);
-                }
-            })
-        } else {
-            reviewForm.reportValidity();
-        }
+        $.ajax({
+            type: 'POST',
+            url: '/submitReview',
+            contentType: false,
+            dataType: "json",
+            cache: false,
+            processData: false,
+            data: formData,
+            success: function (data, textStatus, jqXHR) {
+                $('#submit-review-form').trigger("reset");
+                notyf.success(jqXHR.responseJSON.message);
+                incrementReviewButton();
+            },
+            error: function (jqXHR) {
+                $('#submit-review-form').trigger("reset");
+                notyf.error(jqXHR.responseJSON.message);
+            }
+        })
     }
 
 </script>
