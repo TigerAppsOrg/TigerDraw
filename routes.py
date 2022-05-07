@@ -595,6 +595,9 @@ def submit_review():
         message = "Your review rating was not between 1 and 5. Please submit again with" \
                   " a valid rating."
         return jsonify(message=message), 400
+    if written_review == "":
+        message = "You cannot leave your review empty. Please submit again with text."
+        return jsonify(message=message), 400
     review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
                      content=written_review, net_id=username)
     db_session.add(review)
