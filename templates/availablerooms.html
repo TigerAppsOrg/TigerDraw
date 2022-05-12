@@ -622,18 +622,18 @@
     }
 
     function getReviews(building_name, room_no, clicked_review_button) {
+        $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        $("#reviews-body").empty();
         setTimeout(function () {
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
                 .then(response => response.text()).then(data => {
-                $("#reviews-body").append(data);
+                $("#reviews-body").html(data);
             });
         }, 1000);
     }
