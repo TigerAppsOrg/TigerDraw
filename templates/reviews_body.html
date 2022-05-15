@@ -5,9 +5,9 @@
     {% for review in reviews %}
         <h3><strong>Review #{{ loop.index }}</strong></h3>
         <h5>Posted on {{ get_time_string_from_utc_dt(review.date) }} </h5>
-        { % if review.net_id % }
+        {% if review.net_id %}
             <h6> Posted by: {{ review.net_id }}</h6>
-        { % endif % }
+        {% endif %}
         <h6>Rating: {{ review.rating }} out of 5</h6>
         <p> {{ review.content }} </p>
         <hr>
