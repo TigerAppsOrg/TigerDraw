@@ -75,7 +75,7 @@ def not_found(e):
 
 @app.route("/get_reviews", methods=['GET', 'POST'])
 def get_reviews():
-    CASClient().authenticate()
+    # CASClient().authenticate()
     building_name = request.args.get('building_name')
     room_number = request.args.get('room_no')
 
@@ -96,7 +96,8 @@ def index():
 
 @app.route("/rooms", methods=["GET", "POST"])
 def getRooms():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     return make_response(
         render_template("availablerooms.html", username=username)
@@ -105,13 +106,14 @@ def getRooms():
 
 @app.route("/faq")
 def faq():
-    CASClient().authenticate()
+    # CASClient().authenticate()
     return make_response(render_template("faq.html"))
 
 
 @app.route("/queryrooms", methods=["GET", "POST"])
 def queryRooms():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
 
     college = request.args.get("college", default="")
@@ -248,7 +250,8 @@ def queryRooms():
 
 @app.route("/queryfavorites", methods=["GET", "POST"])
 def queryFavorites():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     data = getFavoriteRooms(username)
 
@@ -279,7 +282,8 @@ def addToFavorites():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
 
@@ -298,7 +302,8 @@ def removeFromFravorites():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
 
@@ -314,7 +319,8 @@ def removeFromFravorites():
 
 @app.route("/favorites", methods=["GET"])
 def favorites():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
 
     # get all of the user's favorite
@@ -333,7 +339,7 @@ def favorites():
 
 @app.route("/map")
 def map():
-    CASClient().authenticate()
+    # CASClient().authenticate()
 
     allrank = defaultdict(int)
     buildingrank = defaultdict(list)
@@ -405,7 +411,8 @@ def shutdown_session(exception=None):
 
 @app.route("/populategroups", methods=["GET"])
 def populategroups():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroups(username)
 
@@ -430,7 +437,8 @@ def populategroups():
 
 @app.route("/groups", methods=["GET", "POST"])
 def groups():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroups(username)
 
@@ -467,7 +475,8 @@ def removeroomfromgroup():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
     group_id = request.args.get("group_id")
@@ -565,7 +574,8 @@ def editGroup():
 
 @app.route("/getgroupsjson", methods=["GET"])
 def getGroupsJSON():
-    username = CASClient().authenticate()
+    username = "ben"
+    # username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroupsJSON(username)
     username = username.strip()
