@@ -652,7 +652,7 @@
 
     function submitReviewWithoutRefresh() {
         let rating = $("#overall-rating").val()
-        let review = $("written-review").val()
+        let review = $("#written-review").val()
         let reviewForm = $("form#submit-review-form")[0];
         let formData = new FormData(reviewForm);
         $.ajax({
