@@ -8,7 +8,7 @@
         <h6>Rating: {{ review.rating }} out of 5</h6>
         <p> {{ review.content }} </p>
         {% if review.net_id %}
-            <h6 style="margin-top: 0px"> <em>Posted by: {{ review.net_id }}</em> </h6>
+            <span style="margin-top: 0px"> <em>Posted by: {{ review.net_id }}</em> </span>
         {% endif %}
         <hr>
     {% endfor %}
