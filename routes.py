@@ -592,7 +592,9 @@ def submit_review():
     overall_rating = request.form['overall-rating']
     written_review = request.form['written-review']
     first_checkbox = request.form.getlist('submission-check-1')
+    print(first_checkbox)
     second_checkbox = request.form.getlist('submission-check-2')
+    print(second_checkbox)
     # restrict user to one review per room
     user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
                                                    Reviews.room_number == room_no,
@@ -601,7 +603,7 @@ def submit_review():
         message = "You can only submit at most one review per room. Contact it.admin@tigerapps.org to edit your current review."
         return jsonify(message=message), 400
     if overall_rating not in valid_ratings:
-        message = "Your review rating was not between 1 and 5. Please submit again with" \
+        message = "Your review rating was not between 0 and 5. Please submit again with" \
                   " a valid rating."
         return jsonify(message=message), 400
     if written_review == "":
