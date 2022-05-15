@@ -591,6 +591,11 @@ def submit_review():
     room_no = request.form['room-number']
     overall_rating = request.form['overall-rating']
     written_review = request.form['written-review']
+    first_checkbox = request.form['submission-check-1']
+    second_checkbox = request.form['submission-check-2']
+    if not first_checkbox and not second_checkbox:
+        message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
+        return jsonify(message=message), 400
     if overall_rating not in valid_ratings:
         message = "Your review rating was not between 1 and 5. Please submit again with" \
                   " a valid rating."
