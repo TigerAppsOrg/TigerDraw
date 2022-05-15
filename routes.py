@@ -595,7 +595,8 @@ def submit_review():
     second_checkbox = request.form.getlist('submission-check-2')
     # restrict user to one review per room
     user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
-                                                   Reviews.room_number == room_no).first()
+                                                   Reviews.room_number == room_no,
+                                                   Reviews.net_id == username).first()
     if user_search:
         message = "You can only submit at most one review per room. Contact it.admin@tigerapps.org to edit your current review."
         return jsonify(message=message), 400
