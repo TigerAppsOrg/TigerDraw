@@ -607,7 +607,7 @@ def submit_review():
     if written_review == "":
         message = "You cannot leave your review empty. Please submit again with text."
         return jsonify(message=message), 400
-    if not first_checkbox and not second_checkbox:
+    if first_checkbox is None or second_checkbox is None:
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
         return jsonify(message=message), 400
     review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
