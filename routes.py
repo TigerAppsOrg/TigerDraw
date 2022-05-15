@@ -96,8 +96,7 @@ def index():
 
 @app.route("/rooms", methods=["GET", "POST"])
 def getRooms():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     return make_response(
         render_template("availablerooms.html", username=username)
@@ -112,8 +111,7 @@ def faq():
 
 @app.route("/queryrooms", methods=["GET", "POST"])
 def queryRooms():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
 
     college = request.args.get("college", default="")
@@ -250,8 +248,7 @@ def queryRooms():
 
 @app.route("/queryfavorites", methods=["GET", "POST"])
 def queryFavorites():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     data = getFavoriteRooms(username)
 
@@ -282,8 +279,7 @@ def addToFavorites():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
 
@@ -302,8 +298,7 @@ def removeFromFravorites():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
 
@@ -319,8 +314,7 @@ def removeFromFravorites():
 
 @app.route("/favorites", methods=["GET"])
 def favorites():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
 
     # get all of the user's favorite
@@ -411,8 +405,7 @@ def shutdown_session(exception=None):
 
 @app.route("/populategroups", methods=["GET"])
 def populategroups():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroups(username)
 
@@ -437,8 +430,7 @@ def populategroups():
 
 @app.route("/groups", methods=["GET", "POST"])
 def groups():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroups(username)
 
@@ -475,8 +467,7 @@ def removeroomfromgroup():
     # we should probably just pass this from the client rather than continually authenticating
     # TODO
     # and fix this in other places too.
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     room_id = request.args.get("room_id")
     group_id = request.args.get("group_id")
@@ -574,8 +565,7 @@ def editGroup():
 
 @app.route("/getgroupsjson", methods=["GET"])
 def getGroupsJSON():
-    username = "ben"
-    # username = CASClient().authenticate()
+    username = CASClient().authenticate()
     username = username.lower().strip()
     groups = getUserGroupsJSON(username)
     username = username.strip()
