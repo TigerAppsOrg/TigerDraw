@@ -586,6 +586,7 @@ def getGroupsJSON():
 def submit_review():
     username = "proxy"
     # username = CASClient().authenticate()
+    # restrict user to one review per room
     valid_ratings = ['0', '1', '2', '3', '4', '5']
     building_name = request.form['building-name']
     room_no = request.form['room-number']
@@ -593,7 +594,7 @@ def submit_review():
     written_review = request.form['written-review']
     first_checkbox = request.form['submission-check-1']
     second_checkbox = request.form['submission-check-2']
-    if not first_checkbox and not second_checkbox:
+    if not first_checkbox == 'on' and not second_checkbox == 'on':
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
         return jsonify(message=message), 400
     if overall_rating not in valid_ratings:
