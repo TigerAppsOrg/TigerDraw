@@ -586,7 +586,6 @@ def getGroupsJSON():
 def submit_review():
     username = "proxy"
     # username = CASClient().authenticate()
-    # restrict user to one review per room
     valid_ratings = ['0', '1', '2', '3', '4', '5']
     building_name = request.form['building-name']
     room_no = request.form['room-number']
@@ -594,6 +593,12 @@ def submit_review():
     written_review = request.form['written-review']
     first_checkbox = request.form['submission-check-1']
     second_checkbox = request.form['submission-check-2']
+    # restrict user to one review per room
+    user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
+                                                   Reviews.room_number == room_no).first()
+    if user_search:
+        message = "You can only submit at most one review per room. Contact it.admin@tigerapps.org to edit your current review."
+        return jsonify(message=message), 400
     if not first_checkbox == 'on' and not second_checkbox == 'on':
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
         return jsonify(message=message), 400
