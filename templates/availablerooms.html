@@ -673,8 +673,8 @@
                 notyf.error(jqXHR.responseJSON.message);
                 setTimeout(function () {
                     $("#overall-rating").val(rating)
-                    $("written-review").val(review)
-                }, 2000);
+                    $("written-review").text(review)
+                }, 1500);
             }
         })
     }
