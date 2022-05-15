@@ -171,7 +171,7 @@
 <body data-username={{ username }}>
 
 {% with page='rooms' %}
-    {% include 'navbar.html' %}
+{% include 'navbar.html' %}
 {% endwith %}
 
 <!-- Modal for adding groups -->
@@ -182,7 +182,8 @@
 {% include 'updates_modal.html' %}
 
 
-{#<div style="padding:10px; background: #474bc9; text-align: center;">#}
+{#
+<div style="padding:10px; background: #474bc9; text-align: center;">#}
     <!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
                 style="color: white; text-decoration: underline; font-weight: bold;"
                 target="_blank"
@@ -195,11 +196,14 @@
                 href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
           </h5>
           <br> -->
-{#    <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have to#}
-{#        wait at most 3 minutes for the site to fully load.</h3>#}
+    {# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have
+        to#}
+        {# wait at most 3 minutes for the site to fully load.</h3>#}
 
 
-{#</div>#}
+    {#
+</div>
+#}
 
 <div class="container" style="margin-top: 25px;">
     <div class="row">
@@ -647,6 +651,8 @@
     });
 
     function submitReviewWithoutRefresh() {
+        let rating = $("#overall-rating").val()
+        let review = $("written-review").val()
         let reviewForm = $("form#submit-review-form")[0];
         let formData = new FormData(reviewForm);
         $.ajax({
@@ -665,6 +671,10 @@
             error: function (jqXHR) {
                 $('#submit-review-form').trigger("reset");
                 notyf.error(jqXHR.responseJSON.message);
+                setTimeout(function () {
+                    $("#overall-rating").val(rating)
+                    $("written-review").val(review)
+                }, 2000);
             }
         })
     }
