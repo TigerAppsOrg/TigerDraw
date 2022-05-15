@@ -592,9 +592,7 @@ def submit_review():
     overall_rating = request.form['overall-rating']
     written_review = request.form['written-review']
     first_checkbox = request.form.getlist('submission-check-1')
-    print(first_checkbox)
     second_checkbox = request.form.getlist('submission-check-2')
-    print(second_checkbox)
     # restrict user to one review per room
     user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
                                                    Reviews.room_number == room_no,
@@ -609,7 +607,7 @@ def submit_review():
     if written_review == "":
         message = "You cannot leave your review empty. Please submit again with text."
         return jsonify(message=message), 400
-    if first_checkbox is not None or second_checkbox is not None:
+    if len(first_checkbox) == 0 or len(second_checkbox) == 0:
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
         return jsonify(message=message), 400
     review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
