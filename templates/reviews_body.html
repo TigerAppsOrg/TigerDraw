@@ -6,7 +6,7 @@
 <!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
 <h5>Posted on {{ get_time_string_from_utc_dt(review.date) }}
     {% if review.net_id %}
-    <em> by: {{ review.net_id }}</em>
+    by <em>{{ review.net_id }}</em>
     {% endif %}
 </h5>
 <h6>Rating: {{ review.rating }} out of 5</h6>
