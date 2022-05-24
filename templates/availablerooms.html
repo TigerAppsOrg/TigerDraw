@@ -732,6 +732,7 @@
                 setTimeout(function () {
                     $("#overall-rating").val(rating)
                     $("#written-review").val(review)
+                    $('#count_message').html($('#written-review').val().length + ' / ' + text_max);
                 }, 1500);
             }
         })
