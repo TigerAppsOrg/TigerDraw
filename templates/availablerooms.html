@@ -218,7 +218,7 @@
 <body data-username={{ username }}>
 
 {% with page='rooms' %}
-    {% include 'navbar.html' %}
+{% include 'navbar.html' %}
 {% endwith %}
 
 <!-- Modal for adding groups -->
@@ -229,21 +229,20 @@
 {% include 'updates_modal.html' %}
 
 
-
 <!--{#-->
 <!--<div style="padding:10px; background: #474bc9; text-align: center;">#}-->
-    <!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
-                style="color: white; text-decoration: underline; font-weight: bold;"
-                target="_blank"
-                href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
-              search/sort through the 2022-2023 rooms list!</h5>
-          <br>
-          <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
-              buildings can be accessed <a style="color: white; text-decoration: underline;"
-                target="_blank"
-                href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
-          </h5>
-          <br> -->
+<!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
+            style="color: white; text-decoration: underline; font-weight: bold;"
+            target="_blank"
+            href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
+          search/sort through the 2022-2023 rooms list!</h5>
+      <br>
+      <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
+          buildings can be accessed <a style="color: white; text-decoration: underline;"
+            target="_blank"
+            href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
+      </h5>
+      <br> -->
 <!--    {# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have-->
 <!--        to#}-->
 <!--        {# wait at most 3 minutes for the site to fully load.</h3>#}-->
@@ -379,6 +378,17 @@
         crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    let text_max = 5000;
+    $('#count_message').html('0 / ' + text_max);
+
+    $('#written-review').keyup(function () {
+        let text_length = $('#written-review').val().length;
+        let text_remaining = text_max - text_length;
+
+        $('#count_message').html(text_length + ' / ' + text_max);
+    });
+</script>
 <script>
 
     var rt;
