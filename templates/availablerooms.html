@@ -752,13 +752,49 @@
                 getReviews(window.curr_building_name, window.curr_room_no, null);
             },
             error: function (jqXHR) {
-                // $('#submit-review-form').trigger("reset");
-                notyf.error(jqXHR.responseJSON.message);
-                getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
-                //
-                // if (jqXHR.responseJSON.message === 'override') {
-                //
-                // }
+                if (jqXHR.responseJSON.message === 'override') {
+                    $.confirm({
+                        title: 'You will override your old review with this new review. Are you' +
+                            ' sure you want to do this?',
+                        buttons: {
+                            confirm: {
+                                action: function () {
+                                    $("#override").val('yes')
+                                    reviewForm = $("form#submit-review-form")[0];
+                                    formData = new FormData(reviewForm);
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '/submitReview',
+                                        contentType: false,
+                                        dataType: "json",
+                                        cache: false,
+                                        processData: false,
+                                        data: formData,
+                                        success: function (data, textStatus, jqXHR) {
+                                            $('#submit-review-form').trigger("reset");
+                                            notyf.success(jqXHR.responseJSON.message);
+                                            incrementReviewButton();
+                                            getReviews(window.curr_building_name, window.curr_room_no, null);
+                                        },
+                                        error: function (jqXHR) {
+                                            notyf.error(jqXHR.responseJSON.message);
+                                            getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
+                                        }
+                                    });
+                                },
+                                btnClass: 'btn-blue',
+                            },
+                            cancel: {
+                                action: function () {
+                                },
+                                btnClass: 'btn-red',
+                            },
+                        }
+                    });
+                } else {
+                    notyf.error(jqXHR.responseJSON.message);
+                    getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
+                }
             }
         })
     }
