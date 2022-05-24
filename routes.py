@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 import os
 import pytz
+import datetime
 from display import (
     allRooms,
     allFavoriteRooms,
@@ -623,7 +624,8 @@ def submit_review():
         return jsonify(message=message), 400
     if user_search.first() and override == 'yes':
         user_search.update(
-            {"rating": int(overall_rating),
+            {"date": datetime.datetime.utcnow(),
+             "rating": int(overall_rating),
              "content": written_review},
             synchronize_session=False)
         db_session.commit()
