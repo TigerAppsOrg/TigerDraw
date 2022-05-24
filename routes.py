@@ -611,6 +611,9 @@ def submit_review():
         message = "Be sure to check the checkbox accepting the condition that your Princeton netID" \
                   " will not be anonymous alongside your review."
         return jsonify(message=message), 400
+    if clean_html(written_review):
+        message = "Your review contains HTML tags. Please remove them before submitting your review again."
+        return jsonify(message=message), 400
     # restrict user to one review per room
     user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
                                                    Reviews.room_number == room_no,
@@ -620,7 +623,8 @@ def submit_review():
         return jsonify(message=message), 400
     if user_search.first() and override == 'yes':
         user_search.update(
-            {"content": written_review},
+            {"rating": int(overall_rating),
+             "content": written_review},
             synchronize_session=False)
         db_session.commit()
         message = "Your review was successfully overridden!"
@@ -631,3 +635,9 @@ def submit_review():
     db_session.commit()
     message = "Your review was successfully submitted!"
     return jsonify(message=message), 200
+
+
+def clean_html(raw_html):
+    import re
+    html_tags = re.findall('<.*?>', raw_html)
+    return html_tags
