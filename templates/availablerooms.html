@@ -682,6 +682,9 @@
         window.review_button.lastChild.innerText = newDigit;
     }
 
+    let rating;
+    let review;
+
     function getReviews(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
         if (clicked_review_button !== null) {
@@ -699,6 +702,26 @@
         }, 1000);
     }
 
+    function getReviewsWithError(building_name, room_no, clicked_review_button) {
+        $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        if (clicked_review_button !== null) {
+            window.review_button = clicked_review_button;
+        }
+        window.curr_building_name = building_name;
+        window.curr_room_no = room_no;
+        setTimeout(function () {
+            fetchWithTimeout('/get_reviews?' +
+                '&building_name=' + building_name +
+                '&room_no=' + room_no)
+                .then(response => response.text()).then(data => {
+                $("#reviews-body").html(data);
+                $("#overall-rating").val(rating);
+                $("#written-review").val(review);
+                $('#count_message').html(review.length + ' / ' + text_max);
+            });
+        }, 1000);
+    }
+
     const notyf = new Notyf({
         duration: 10000,
         dismissible: true,
@@ -708,9 +731,10 @@
         },
     });
 
+
     function submitReviewWithoutRefresh() {
-        let rating = $("#overall-rating").val()
-        let review = $("#written-review").val()
+        rating = $("#overall-rating").val()
+        review = $("#written-review").val()
         let reviewForm = $("form#submit-review-form")[0];
         let formData = new FormData(reviewForm);
         $.ajax({
@@ -725,18 +749,16 @@
                 $('#submit-review-form').trigger("reset");
                 notyf.success(jqXHR.responseJSON.message);
                 incrementReviewButton();
+                getReviews(window.curr_building_name, window.curr_room_no, null);
             },
             error: function (jqXHR) {
                 // $('#submit-review-form').trigger("reset");
                 notyf.error(jqXHR.responseJSON.message);
-                // setTimeout(function () {
-                //     $("#overall-rating").val(rating);
-                //     $("#written-review").val(review);
-                //     $('#count_message').html(review.length + ' / ' + text_max);
-                // }, 1000);
-                if (jqXHR.responseJSON.message === 'override') {
-
-                }
+                getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
+                //
+                // if (jqXHR.responseJSON.message === 'override') {
+                //
+                // }
             }
         })
     }
