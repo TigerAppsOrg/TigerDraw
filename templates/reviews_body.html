@@ -1,19 +1,19 @@
 {% if not reviews %}
-    <p>There are currently no reviews for this room</p>
-    <hr>
+<p>There are currently no reviews for this room</p>
+<hr>
 {% else %}
-    {% for review in reviews %}
-        <!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
-        <h5>Posted on {{ get_time_string_from_utc_dt(review.date) }}
-            {% if review.net_id %}
-                by <em>{{ review.net_id }}</em>
-            {% endif %}
-        </h5>
-        <h6>Rating: {{ review.rating }} out of 5</h6>
-        <p> {{ review.content }} </p>
+{% for review in reviews %}
+<!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
+<h5>Posted on {{ get_time_string_from_utc_dt(review.date) }}
+    {% if review.net_id %}
+    by <em>{{ review.net_id }}</em>
+    {% endif %}
+</h5>
+<h6>Rating: {{ review.rating }} out of 5</h6>
+<p> {{ review.content }} </p>
 
-        <hr>
-    {% endfor %}
+<hr>
+{% endfor %}
 
 {% endif %}
 
@@ -56,11 +56,11 @@
         <span class="float-right badge badge-light" id="count_message"></span>
 
     </div>
-<!--    <div class="form-check" style="margin-bottom: 0.5rem">-->
-<!--        <input type="checkbox" class="form-check-input" id="submission-check-1" name="submission-check-1">-->
-<!--        <label class="form-check-label" for="submission-check-1"> <small>I understand that my review, once submitted,-->
-<!--            cannot be edited. If I wish to delete it, I should contact it.admin@tigerapps.org.</small></label>-->
-<!--    </div>-->
+    <!--    <div class="form-check" style="margin-bottom: 0.5rem">-->
+    <!--        <input type="checkbox" class="form-check-input" id="submission-check-1" name="submission-check-1">-->
+    <!--        <label class="form-check-label" for="submission-check-1"> <small>I understand that my review, once submitted,-->
+    <!--            cannot be edited. If I wish to delete it, I should contact it.admin@tigerapps.org.</small></label>-->
+    <!--    </div>-->
     <div class="form-check">
         <input type="checkbox" class="form-check-input" id="submission-check-2" name="submission-check-2">
         <label class="form-check-label" for="submission-check-2"> <small>I understand that my Princeton netID will be
@@ -74,3 +74,5 @@
         Submit
     </button>
 </form>
+<!-- Link jQuery Confirm -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
