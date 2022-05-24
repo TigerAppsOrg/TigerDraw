@@ -608,8 +608,8 @@ def submit_review():
         message = "Please submit a review with a length of less than 5000 characters."
         return jsonify(message=message), 400
     if len(second_checkbox) == 0:
-        message = "Be sure to check the checkbox accepting the condition that your Princeton netID" \
-                  " will not be anonymous alongside your review."
+        message = "Be sure to check the condition that your Princeton netID" \
+                  " will be shown alongside your review."
         return jsonify(message=message), 400
     if clean_html(written_review):
         message = "Your review contains HTML tags. Please remove them before submitting your review again."
