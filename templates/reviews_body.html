@@ -21,7 +21,7 @@
     text_max = 5000;
     $('#count_message').html('0 / ' + text_max);
 
-    $('#written-review').keyup(function () {
+    $('#written-review').change(function () {
         let text_length = $('#written-review').val().length;
         let text_remaining = text_max - text_length;
 
