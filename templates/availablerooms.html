@@ -379,17 +379,7 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
-    let text_max = 5000;
-    $('#count_message').html('0 / ' + text_max);
-
-    $('#written-review').keyup(function () {
-        let text_length = $('#written-review').val().length;
-        let text_remaining = text_max - text_length;
-
-        $('#count_message').html(text_length + ' / ' + text_max);
-    });
-</script>
-<script>
+    let text_max;
 
     var rt;
     var gt;
