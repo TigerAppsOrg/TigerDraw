@@ -774,7 +774,6 @@
                                         success: function (data, textStatus, jqXHR) {
                                             $('#submit-review-form').trigger("reset");
                                             notyf.success(jqXHR.responseJSON.message);
-                                            incrementReviewButton();
                                             getReviews(window.curr_building_name, window.curr_room_no, null);
                                         },
                                         error: function (jqXHR) {
