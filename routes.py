@@ -591,15 +591,9 @@ def submit_review():
     room_no = request.form['room-number']
     overall_rating = request.form['overall-rating']
     written_review = request.form['written-review']
+    override = request.form['override']
     first_checkbox = request.form.getlist('submission-check-1')
     second_checkbox = request.form.getlist('submission-check-2')
-    # restrict user to one review per room
-    user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
-                                                   Reviews.room_number == room_no,
-                                                   Reviews.net_id == username).first()
-    if user_search:
-        message = "You can only submit at most one review per room. Contact it.admin@tigerapps.org to edit your current review."
-        return jsonify(message=message), 400
     if overall_rating not in valid_ratings:
         message = "Your review rating was not between 0 and 5. Please submit again with" \
                   " a valid rating."
@@ -616,6 +610,20 @@ def submit_review():
     if len(first_checkbox) == 0 or len(second_checkbox) == 0:
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
         return jsonify(message=message), 400
+    # restrict user to one review per room
+    user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
+                                                   Reviews.room_number == room_no,
+                                                   Reviews.net_id == username)
+    if user_search.first() and override == 'no':
+        message = "override"
+        return jsonify(message=message), 400
+    if user_search.first() and override == 'yes':
+        user_search.update(
+            {"content": written_review},
+            synchronize_session=False)
+        db_session.commit()
+        message = "Your review was successfully overridden!"
+        return jsonify(message=message), 200
     review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
                      content=written_review, net_id=username)
     db_session.add(review)
