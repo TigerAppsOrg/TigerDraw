@@ -727,7 +727,7 @@
                 incrementReviewButton();
             },
             error: function (jqXHR) {
-                $('#submit-review-form').trigger("reset");
+                // $('#submit-review-form').trigger("reset");
                 notyf.error(jqXHR.responseJSON.message);
                 setTimeout(function () {
                     $("#overall-rating").val(rating);
