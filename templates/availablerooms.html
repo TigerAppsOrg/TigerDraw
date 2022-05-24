@@ -19,11 +19,15 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2P8PYDHQZ7"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
 
-    gtag('config', 'G-2P8PYDHQZ7');
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-2P8PYDHQZ7');
     </script>
 
 </head>
@@ -99,6 +103,15 @@
         color: #ffe135;
     }
 
+    textarea {
+        resize: none;
+    }
+
+    #count_message {
+        background-color: #777;
+        margin-top: -20px;
+        margin-right: 5px;
+    }
 
     h2 {
         font-family: helveticaneue-light, helvetica neue light, helvetica neue, Helvetica, Arial, lucida grande, sans-serif;
@@ -205,7 +218,7 @@
 <body data-username={{ username }}>
 
 {% with page='rooms' %}
-{% include 'navbar.html' %}
+    {% include 'navbar.html' %}
 {% endwith %}
 
 <!-- Modal for adding groups -->
@@ -216,27 +229,26 @@
 {% include 'updates_modal.html' %}
 
 
-
 {#
 <div style="padding:10px; background: #474bc9; text-align: center;">#}
-    <!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
-                style="color: white; text-decoration: underline; font-weight: bold;"
-                target="_blank"
-                href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
-              search/sort through the 2022-2023 rooms list!</h5>
-          <br>
-          <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
-              buildings can be accessed <a style="color: white; text-decoration: underline;"
-                target="_blank"
-                href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
-          </h5>
-          <br> -->
-    {# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have
+<!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
+            style="color: white; text-decoration: underline; font-weight: bold;"
+            target="_blank"
+            href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
+          search/sort through the 2022-2023 rooms list!</h5>
+      <br>
+      <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
+          buildings can be accessed <a style="color: white; text-decoration: underline;"
+            target="_blank"
+            href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
+      </h5>
+      <br> -->
+{# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have
         to#}
-        {# wait at most 3 minutes for the site to fully load.</h3>#}
+{# wait at most 3 minutes for the site to fully load.</h3>#}
 
 
-    {#
+{#
 </div>
 #}
 

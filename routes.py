@@ -605,7 +605,13 @@ def submit_review():
                   " a valid rating."
         return jsonify(message=message), 400
     if written_review.strip() == "":
-        message = "You cannot leave your review empty. Please submit again with text."
+        message = "You cannot leave your review empty. Please submit a review with a minimum length of 100 characters."
+        return jsonify(message=message), 400
+    if len(written_review) < 100:
+        message = "Please submit a review with a minimum length of 100 characters."
+        return jsonify(message=message), 400
+    if len(written_review) > 5000:
+        message = "Please submit a review with a length of less than 5000 characters."
         return jsonify(message=message), 400
     if len(first_checkbox) == 0 or len(second_checkbox) == 0:
         message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
