@@ -27,6 +27,12 @@
 
         $('#count_message').html(text_length + ' / ' + text_max);
     });
+    $('#written-review').keyup(function () {
+        let text_length = $('#written-review').val().length;
+        let text_remaining = text_max - text_length;
+
+        $('#count_message').html(text_length + ' / ' + text_max);
+    });
 </script>
 
 <form action="{{ url_for('submit_review') }}"
