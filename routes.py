@@ -592,7 +592,7 @@ def submit_review():
     overall_rating = request.form['overall-rating']
     written_review = request.form['written-review']
     override = request.form['override']
-    first_checkbox = request.form.getlist('submission-check-1')
+    # first_checkbox = request.form.getlist('submission-check-1')
     second_checkbox = request.form.getlist('submission-check-2')
     if overall_rating not in valid_ratings:
         message = "Your review rating was not between 0 and 5. Please submit again with" \
@@ -607,8 +607,9 @@ def submit_review():
     if len(written_review) > 5000:
         message = "Please submit a review with a length of less than 5000 characters."
         return jsonify(message=message), 400
-    if len(first_checkbox) == 0 or len(second_checkbox) == 0:
-        message = "Both checkboxes were not checked. Be sure to understand both conditions before submitting."
+    if len(second_checkbox) == 0:
+        message = "Be sure to check the checkbox accepting the condition that your Princeton netID" \
+                  " will not be anonymous alongside your review."
         return jsonify(message=message), 400
     # restrict user to one review per room
     user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
