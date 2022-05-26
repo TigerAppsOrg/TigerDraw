@@ -755,8 +755,7 @@
             error: function (jqXHR) {
                 if (jqXHR.responseJSON.message === 'override') {
                     $.confirm({
-                        title: 'You will override your old review with this new review. Are you' +
-                            ' sure you want to do this?',
+                        title: 'You will override your old review with this new review.',
                         buttons: {
                             confirm: {
                                 action: function () {
