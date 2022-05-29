@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 import os
 import pytz
+import datetime
 from display import (
     allRooms,
     allFavoriteRooms,
@@ -46,7 +47,7 @@ app = Flask(__name__)
 
 
 def get_time_string_from_utc_dt(utc_dt):
-    local_dt = utc_dt.replace(tzinfo=pytz.utc)
+    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(tz=pytz.timezone("America/New_York"))
     local_dt_string = local_dt.strftime('%b %d, %Y')
     return local_dt_string
 
@@ -75,7 +76,7 @@ def not_found(e):
 
 @app.route("/get_reviews", methods=['GET', 'POST'])
 def get_reviews():
-    CASClient().authenticate()
+    # CASClient().authenticate()
     building_name = request.args.get('building_name')
     room_number = request.args.get('room_no')
 
@@ -83,7 +84,8 @@ def get_reviews():
                                                Reviews.room_number == room_number).order_by(
         Reviews.date.desc()).all()
 
-    html = render_template("reviews_body.html", reviews=reviews)
+    html = render_template("reviews_body.html", reviews=reviews, building_name=building_name,
+                           room_number=room_number)
     response = make_response(html)
     return response
 
@@ -104,7 +106,7 @@ def getRooms():
 
 @app.route("/faq")
 def faq():
-    CASClient().authenticate()
+    # CASClient().authenticate()
     return make_response(render_template("faq.html"))
 
 
@@ -332,7 +334,7 @@ def favorites():
 
 @app.route("/map")
 def map():
-    CASClient().authenticate()
+    # CASClient().authenticate()
 
     allrank = defaultdict(int)
     buildingrank = defaultdict(list)
@@ -579,3 +581,65 @@ def getGroupsJSON():
             "username": username,
         }
     )
+
+
+@app.route('/submitReview', methods=['POST'])
+def submit_review():
+    # username = "proxy"
+    username = CASClient().authenticate()
+    valid_ratings = ['0', '1', '2', '3', '4', '5']
+    building_name = request.form['building-name']
+    room_no = request.form['room-number']
+    overall_rating = request.form['overall-rating']
+    written_review = request.form['written-review']
+    override = request.form['override']
+    # first_checkbox = request.form.getlist('submission-check-1')
+    second_checkbox = request.form.getlist('submission-check-2')
+    if overall_rating not in valid_ratings:
+        message = "Your review rating was not between 0 and 5. Please submit again with" \
+                  " a valid rating."
+        return jsonify(message=message), 400
+    if written_review.strip() == "":
+        message = "You cannot leave your review empty. Please submit a review with a minimum length of 100 characters."
+        return jsonify(message=message), 400
+    if len(written_review) < 100:
+        message = "Please submit a review with a minimum length of 100 characters."
+        return jsonify(message=message), 400
+    if len(written_review) > 5000:
+        message = "Please submit a review with a length of less than 5000 characters."
+        return jsonify(message=message), 400
+    if len(second_checkbox) == 0:
+        message = "Be sure to check the condition that your Princeton netID" \
+                  " will be shown alongside your review."
+        return jsonify(message=message), 400
+    if clean_html(written_review):
+        message = "Your review contains HTML tags. Please remove them before submitting your review again."
+        return jsonify(message=message), 400
+    # restrict user to one review per room
+    user_search = db_session.query(Reviews).filter(Reviews.building_name == building_name,
+                                                   Reviews.room_number == room_no,
+                                                   Reviews.net_id == username)
+    if user_search.first() and override == 'no':
+        message = "override"
+        return jsonify(message=message), 400
+    if user_search.first() and override == 'yes':
+        user_search.update(
+            {"date": datetime.datetime.utcnow(),
+             "rating": int(overall_rating),
+             "content": written_review},
+            synchronize_session=False)
+        db_session.commit()
+        message = "Your review was successfully overridden!"
+        return jsonify(message=message), 200
+    review = Reviews(building_name=building_name, room_number=room_no, rating=int(overall_rating),
+                     content=written_review, net_id=username)
+    db_session.add(review)
+    db_session.commit()
+    message = "Your review was successfully submitted!"
+    return jsonify(message=message), 200
+
+
+def clean_html(raw_html):
+    import re
+    html_tags = re.findall('<.*?>', raw_html)
+    return html_tags
