@@ -92,6 +92,9 @@ def get_reviews():
 
 @app.route("/")
 def index():
+    if CASClient().is_logged_in():
+        return redirect("/rooms")
+
     return make_response(render_template("index.html"))
 
 

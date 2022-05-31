@@ -25,6 +25,13 @@ class CASClient:
 
     #-------------------------------------------------------------------
 
+    # Return True if user is logged in
+
+    def is_logged_in(self):
+        return "username" in session
+
+    #-------------------------------------------------------------------
+
     # Return the URL of the current request after stripping out the
     # "ticket" parameter added by the CAS server.
 	
