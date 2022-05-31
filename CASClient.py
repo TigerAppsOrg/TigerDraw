@@ -25,6 +25,13 @@ class CASClient:
 
     #-------------------------------------------------------------------
 
+    # Return True if user is logged in
+
+    def is_logged_in(self):
+        return "username" in session
+
+    #-------------------------------------------------------------------
+
     # Return the URL of the current request after stripping out the
     # "ticket" parameter added by the CAS server.
 	
@@ -89,13 +96,10 @@ class CASClient:
     # Logout the user.
     
     def logout(self):
-        
         # Delete the user's username from the session.
-        session.pop('username')
-        
-        # Redirect the browser to the logout page.
-        logout_url = self.cas_url + 'logout'
-        abort(redirect(logout_url))
+        session.pop("username")
+        # Redirect the browser to the application's home page.
+        abort(redirect("/"))
         
 #-----------------------------------------------------------------------
 
