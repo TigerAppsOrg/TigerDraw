@@ -150,6 +150,7 @@ def getUserRooms(username):
         )
         conn = db.connect()
         conn.execute(ins_command)
+        conn.close()
 
     # get user's favorite rooms
     user_fav_room_query = sqlalchemy_session.query(User.rooms)
@@ -427,6 +428,7 @@ def addNewGroup(members, name, username):
             ins_command = table.insert().values({"username": username, "rooms": [], "group_ids": []})
             conn = db.connect()
             conn.execute(ins_command)
+            conn.close()
 
         member_data = member_query.filter(User.username == member).first()
 
@@ -462,6 +464,7 @@ def getUserGroups(username):
         )
         conn = db.connect()
         conn.execute(ins_command)
+        conn.close()
 
     # get user's groups
     query = db_session.query(User.group_ids).where(
@@ -556,6 +559,7 @@ def getUserGroupsJSON(username):
         )
         conn = db.connect()
         conn.execute(ins_command)
+        conn.close()
 
     # get user's groups
     query = db_session.query(User.group_ids).where(
