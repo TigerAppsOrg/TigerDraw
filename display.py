@@ -144,7 +144,7 @@ def getUserRooms(username):
 
     # if not, add them to user table
     if not user_exists:
-        table = Table("users", meta, autoload=True, autoload_with=db)
+        table = Table("users", meta)
         ins_command = table.insert().values(
             username=username, rooms=[], group_ids=[]
         )
@@ -422,7 +422,7 @@ def addNewGroup(members, name, username):
         user_exists = sqlalchemy_session.query(exists().where(User.username == member)).scalar()
 
         if not user_exists:
-            table = Table('users', meta, autoload=True, autoload_with=db)
+            table = Table('users', meta)
             # TODO remember to change this when we add the user_that_added
             ins_command = table.insert().values(username=member, group_ids=[], rooms=[])
             conn = db.connect()
@@ -456,7 +456,7 @@ def getUserGroups(username):
 
     # if not, add them to user table
     if not user_exists:
-        table = Table("users", meta, autoload=True, autoload_with=db)
+        table = Table("users", meta)
         ins_command = table.insert().values(
             username=username, rooms=[], group_ids=[]
         )
@@ -550,7 +550,7 @@ def getUserGroupsJSON(username):
 
     # if not, add them to user table
     if not user_exists:
-        table = Table("users", meta, autoload=True, autoload_with=db)
+        table = Table("users", meta)
         ins_command = table.insert().values(
             username=username, rooms=[], group_ids=[]
         )
