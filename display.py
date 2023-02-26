@@ -19,7 +19,6 @@ from sqlalchemy.sql import exists
 import collections
 from sqlalchemy.types import DateTime
 from collections import defaultdict
-import numpy as np
 from flask import current_app as app
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.pool import QueuePool
