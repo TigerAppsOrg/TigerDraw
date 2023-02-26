@@ -146,7 +146,7 @@ def getUserRooms(username):
     if not user_exists:
         table = Table("users", meta)
         ins_command = table.insert().values(
-            username=username, rooms=[], group_ids=[]
+            {"username": username, "rooms": [], "group_ids": []}
         )
         conn = db.connect()
         conn.execute(ins_command)
@@ -424,7 +424,7 @@ def addNewGroup(members, name, username):
         if not user_exists:
             table = Table('users', meta)
             # TODO remember to change this when we add the user_that_added
-            ins_command = table.insert().values(username=member, group_ids=[], rooms=[])
+            ins_command = table.insert().values({"username": username, "rooms": [], "group_ids": []})
             conn = db.connect()
             conn.execute(ins_command)
 
@@ -458,7 +458,7 @@ def getUserGroups(username):
     if not user_exists:
         table = Table("users", meta)
         ins_command = table.insert().values(
-            username=username, rooms=[], group_ids=[]
+            {"username": username, "rooms": [], "group_ids": []}
         )
         conn = db.connect()
         conn.execute(ins_command)
@@ -552,7 +552,7 @@ def getUserGroupsJSON(username):
     if not user_exists:
         table = Table("users", meta)
         ins_command = table.insert().values(
-            username=username, rooms=[], group_ids=[]
+            {"username": username, "rooms": [], "group_ids": []}
         )
         conn = db.connect()
         conn.execute(ins_command)
