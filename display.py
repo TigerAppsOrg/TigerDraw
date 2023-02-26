@@ -154,7 +154,9 @@ def getUserRooms(username):
     user_fav_room_query = user_fav_room_query.filter(
         User.username == username
     )
-    user_rooms = user_fav_room_query.all()
+    user_rooms = list(user_fav_room_query.all())
+    if len(user_rooms) == 0 or len(user_rooms[0] == 0):
+        return []
 
     # IT RETURNS AN array, inside a tuple, inside...an array? whatever.
     user_rooms = user_rooms[0][0]
