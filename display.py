@@ -478,6 +478,10 @@ def getUserGroups(username):
     # get user's groups
     query = db_session.query(User.group_ids).where(User.username == username)
     groups = query.first()
+
+    if not groups:
+        return False
+
     groups = groups[0]
 
     # user has a "groups" column but it's an empty array
@@ -565,10 +569,14 @@ def getUserGroupsJSON(username):
     # get user's groups
     query = db_session.query(User.group_ids).where(User.username == username)
     groups = query.first()
+
+    if not groups:
+        return []
+
     groups = groups[0]
 
     # user has a "groups" column but it's an empty array
-    if len(groups) == 0:
+    if not groups:
         return []
 
     # user has groups, so we should get the data for it
