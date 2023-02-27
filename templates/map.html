@@ -695,7 +695,6 @@
     var mathey = L.layerGroup([filter_dorm(mathey_dorms)]);
     var rockefeller = L.layerGroup([filter_dorm(rockefeller_dorms)]);
     var whitman = L.layerGroup([filter_dorm(whitman_dorms), _19812, baker2, hargadon2, lauritzen2, murley2, wendell2]);
-    var first = L.layerGroup([filter_dorm(first_dorms)]);
     var upperclass = L.layerGroup([filter_dorm(upperclass_dorms), wilf3]);
 
     function reinit() {
@@ -712,7 +711,6 @@
         for (layer of layers) {
             whitman.addLayer(layer)
         }
-        first.addLayer(filter_dorm(first_dorms));
         upperclass.addLayer(filter_dorm(upperclass_dorms))
         upperclass.addLayer(wilf3)
     }
@@ -726,7 +724,6 @@
         "Mathey": mathey,
         "Rockefeller": rockefeller,
         "Whitman": whitman,
-        "First": first,
         "Upperclass": upperclass
     };
 
@@ -779,7 +776,6 @@
     mymap.addLayer(mathey);
     mymap.addLayer(rockefeller);
     mymap.addLayer(whitman);
-    mymap.addLayer(first);
     mymap.addLayer(upperclass);
 
 
