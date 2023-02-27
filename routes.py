@@ -126,8 +126,6 @@ def queryRooms():
     username = username.lower().strip()
 
     college = request.args.get("college", default="")
-    firstranking = request.args.get("firstranking", default="")
-    lastranking = request.args.get("lastranking", default="")
     occupancy = request.args.get("occupancy", default="")
     year = request.args.get("year", default="")
     building = request.args.get("building", default="")
@@ -135,8 +133,8 @@ def queryRooms():
     data = allRooms(
         username,
         college,
-        firstranking,
-        lastranking,
+        "",
+        "",
         occupancy,
         building,
         year,
@@ -165,12 +163,7 @@ def queryRooms():
     average_rank = list(range(1, len(data) + 1))
     ########################
 
-    if not firstranking:
-        firstranking = 0
-    else:
-        firstranking = int(firstranking) - 1
-    if not lastranking:
-        lastranking = len(data)
+    firstranking, lastranking = 0, len(data)
 
     if year:
         data = data[max(0, int(firstranking)) : min(len(data), int(lastranking))]
@@ -217,7 +210,6 @@ def queryRooms():
 
         if year:
             roomDict = {
-                "ranking": room.DrawTime.draw_time,
                 "res_college": room.Room.res_college,
                 "building": room.Room.building,
                 "room_no": room.Room.room_no,
@@ -231,7 +223,6 @@ def queryRooms():
             roomsList.append(roomDict)
         elif room.DrawTime is None:
             roomDict = {
-                "ranking": "UNRANKED",
                 "res_college": room.Room.res_college,
                 "building": room.Room.building,
                 "room_no": room.Room.room_no,
@@ -245,7 +236,6 @@ def queryRooms():
             roomsList.append(roomDict)
         else:
             roomDict = {
-                "ranking": i,
                 "res_college": room.Room.res_college,
                 "building": room.Room.building,
                 "room_no": room.Room.room_no,

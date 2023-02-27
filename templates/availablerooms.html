@@ -277,24 +277,7 @@
     <h2 style="font-weight:700;">Rooms</h2>
 </div>
 <div class="form-inline" style="padding-left: 75px; padding-right: 75px; padding-top:25px">
-    <div class="col-auto">
-        <label class="college">Ranking Range</label>
-        <div class="help-tip" data-placement="top">
-            <p>Rankings are based on previous draw times. Ex: if a room was picked by the first draw group, it will have
-                a
-                ranking of 1. If a college is chosen, we reorder rankings for rooms within the college from 1-last. If a
-                college is not chosen, the ranking is taken from the overall room draw.</p>
-        </div>
-        <input id="firstranking" class="form-control" placeholder="Start Rank" maxlength="4" data-rule-maxlength="4"
-               style="width: 130px;" type="number"
-               onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))"/>
-        to
-        <input id="lastranking" class="form-control" placeholder="End Rank" maxlength="4" data-rule-maxlength="4"
-               style="width: 130px;" type="number"
-               onkeydown="javascript: return event.keyCode === 8 || event.keyCode === 46 ? true : !isNaN(Number(event.key))"/>
-    </div>
-    <div class="col-auto my-1">
-
+    <div class="col-auto my-1 pl-0">
         <label class="college">College</label>
         <select class="form-control" name="college" id="college">
             <option value="">All</option>
@@ -342,7 +325,6 @@
                 <thead>
                 <tr>
                     <th>Favorite</th>
-                    <th>Ranking</th>
                     <th>College</th>
                     <th>Building</th>
                     <th>Room No.</th>
@@ -355,7 +337,6 @@
                 <tfoot>
                 <tr>
                     <th>Favorite</th>
-                    <th>Ranking</th>
                     <th>College</th>
                     <th>Building</th>
                     <th>Room No.</th>
@@ -396,10 +377,6 @@
         $.fn.dataTable.ext.errMode = 'throw';
         let college = $('#college').val();
         college = encodeURIComponent(college);
-        let firstranking = $('#firstranking').val();
-        firstranking = encodeURIComponent(firstranking);
-        let lastranking = $('#lastranking').val();
-        lastranking = encodeURIComponent(lastranking);
         let occupancy = $('#occupancy').val();
         occupancy = encodeURIComponent(occupancy);
         let year = $('#year').val();
@@ -411,14 +388,7 @@
         }
         building = encodeURIComponent(building);
 
-        // regex to check for ints only, datavalidation
-        // let isranknum = /^\d+$/.test(ranking);
-        // let isoccnum = /^\d+$/.test(occupancy);
-        // if (!((isranknum || ranking == "")&& (isoccnum || occupancy == ""))) {
-        //   return
-        // }
-
-        let url = '/queryrooms?college=' + college + "&firstranking=" + firstranking + "&lastranking=" + lastranking + "&occupancy=" + occupancy + "&year=" + year + "&building=" + building
+        let url = '/queryrooms?college=' + college + "&occupancy=" + occupancy + "&year=" + year + "&building=" + building
 
         if (request != null)
             request.abort();
@@ -471,7 +441,6 @@
                         }
                     },
                 },
-                {"data": "ranking"},
                 {"data": "res_college"},
                 {"data": "building"},
                 {"data": "room_no"},
@@ -583,8 +552,6 @@
     function setup() {
 
         $('#college').on('change', {change: true}, getResults)
-        $('#firstranking').on('input', {}, getResults)
-        $('#lastranking').on('input', {}, getResults)
         $('#occupancy').on('change', {}, getResults)
         $('#year').on('change', {}, getResults)
         $('#building').on('change', {}, getResults)
