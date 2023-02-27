@@ -433,11 +433,6 @@
             lowest2 = minrank["CLAPP"]
             highest = maxrank["1927"]
             highest2 = maxrank["CLAPP"]
-            html = '<p>Building: 1927<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: Clapp<hr>Highest Rank: ' + String(lowest2) + '<br />Lowest Rank: ' + String(highest2) + '<hr></p>';
-            html += '<div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
-                    of the rooms with the earliest and latest draw times in that building, respectively. \
-                    E.g. If the Lowest Rank is 150, then the first room to be drawn for that building was \
-                    the 150th room to be drawn in the entire room draw.</p></div>'
             return html;
         }
         else if (name == "Laughlin 1901") {
@@ -445,7 +440,6 @@
             lowest2 = minrank["1901"]
             highest = maxrank["LAUGHLIN"]
             highest2 = maxrank["1901"]
-            html = '<p>Building: Laughlin<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr>' + 'Building: 1901<hr>Highest Rank: ' + String(lowest2) + '<br />Lower Rank: ' + String(highest2) + '<hr></p>';
 
             html += '<p> Floor Plans:</br>'
             console.log("LAUGHLIN: name=", name)
@@ -455,18 +449,12 @@
                 html += `<a href="../static/pdfs/laughlin/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
             }
             html += '</p><hr/>'
-
-            html += '<div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
-                    of the rooms with the earliest and latest draw times in that building, respectively. \
-                    E.g. If the Lowest Rank is 150, then the first room to be drawn for that building was \
-                    the 150th room to be drawn in the entire room draw.</p></div>'
             return html
         }
         else {
             lowest = minrank[name.toUpperCase()]
             highest = maxrank[name.toUpperCase()]
-            html = '<p>Building: ' + name + '<hr>Highest Rank: ' + String(lowest) + '<br />Lowest Rank: ' + String(highest) + '<hr></p>';
-
+            html = '';
 
             nameJSON = name.toLowerCase()
             nameJSON = nameJSON.replace(/\s+/g, '')
@@ -534,14 +522,8 @@
                     }
                 }
 
-                html += '</p><hr/>'
+                html += '</p>'
             }
-
-
-            html += '<div><div class="help-tip-relative" data-placement="top"><p>\'Highest Rank\' and \'Lowest Rank\' indicate the ranks\
-                    of the rooms with the earliest and latest draw times in that building, respectively.\
-            E.g.If the Highest Rank is 150, then the 1st room to be drawn for that building was \
-                    the 150th room to be drawn in the entire room draw.</p ></div ></div > '
             return html
         }
     }
