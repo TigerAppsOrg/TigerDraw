@@ -456,11 +456,6 @@
                     "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add Room</button>'
                 },
             ],
-            "rowCallback": function (row, data, index) {
-                if (data["taken"] === true) {
-                    $('td', row).css('background-color', '#ffcccb');
-                }
-            }
         })
 
         if (e.data.change === true || typeof (e.data) === "function") {
