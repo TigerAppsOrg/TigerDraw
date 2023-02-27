@@ -127,7 +127,6 @@ def queryRooms():
 
     college = request.args.get("college", default="")
     occupancy = request.args.get("occupancy", default="")
-    year = request.args.get("year", default="")
     building = request.args.get("building", default="")
 
     data = allRooms(
@@ -137,45 +136,33 @@ def queryRooms():
         "",
         occupancy,
         building,
-        year,
+        "",
     )
     roomids = []
 
     # averaging code
-    if not year:
-        rankings = collections.defaultdict(list)
-        rankmap = collections.defaultdict(int)
-        seen = set()
-        for room in data:
-            if room.DrawTime is not None:
-                rankings[room.Room.room_id].append(room.DrawTime.draw_time)
-            else:
-                rankings[room.Room.room_id].append(float("inf"))
-        for room in data:
-            if room.Room.room_id not in seen:
-                mean = sum(rankings[room.Room.room_id]) / len(
-                    rankings[room.Room.room_id]
-                )
-                rankmap[room.Room.room_id] = mean
-                seen.add(room.Room.room_id)
-        data.sort(key=lambda x: rankmap[x.Room.room_id])
-
-    average_rank = list(range(1, len(data) + 1))
-    ########################
-
-    firstranking, lastranking = 0, len(data)
-
-    if year:
-        data = data[max(0, int(firstranking)) : min(len(data), int(lastranking))]
+    rankings = collections.defaultdict(list)
+    rankmap = collections.defaultdict(int)
+    seen = set()
+    for room in data:
+        if room.DrawTime is not None:
+            rankings[room.Room.room_id].append(room.DrawTime.draw_time)
+        else:
+            rankings[room.Room.room_id].append(float("inf"))
+    for room in data:
+        if room.Room.room_id not in seen:
+            mean = sum(rankings[room.Room.room_id]) / len(rankings[room.Room.room_id])
+            rankmap[room.Room.room_id] = mean
+            seen.add(room.Room.room_id)
+    data.sort(key=lambda x: rankmap[x.Room.room_id])
 
     roomsList = []
-
     i = 1
 
     # if not year:
     #     i = max(0, int(firstranking) - 1)
     for room in data:
-        if not year and i > min(len(data), int(lastranking)):
+        if i > len(data):
             break
 
         # deduplication
@@ -184,8 +171,7 @@ def queryRooms():
         roomids.append(room.Room.room_id)
 
         # only continue if ranking permits
-        if not year and i - 1 < int(firstranking):
-            print(int(firstranking))
+        if i - 1 < 0:
             i += 1
             continue
 
@@ -208,20 +194,7 @@ def queryRooms():
             .count()
         )
 
-        if year:
-            roomDict = {
-                "res_college": room.Room.res_college,
-                "building": room.Room.building,
-                "room_no": room.Room.room_no,
-                "occupancy": room.Room.occupancy,
-                "sq_footage": room.Room.sq_footage,
-                "favorite": room[2],
-                "room_id": room.Room.room_id,
-                "taken": room.Room.taken,
-                "number_of_reviews": review_count,
-            }
-            roomsList.append(roomDict)
-        elif room.DrawTime is None:
+        if room.DrawTime is None:
             roomDict = {
                 "res_college": room.Room.res_college,
                 "building": room.Room.building,
