@@ -70,9 +70,7 @@ def main():
         try:
             # inserting values into the date_time table
             if row:
-                dt = str(
-                    datetime.date(int(year), int(month), int(row[2]))
-                )
+                dt = str(datetime.date(int(year), int(month), int(row[2])))
                 timestr = row[3]
 
                 if len(timestr) == 5:

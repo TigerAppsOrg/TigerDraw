@@ -3,7 +3,7 @@ import datetime
 
 
 def load_txt(file):
-    fp = open(file, 'r')
+    fp = open(file, "r")
     draws = []
     for line in fp.readlines():
         draws.append(line.split())
@@ -12,8 +12,8 @@ def load_txt(file):
     return draws
 
 
-load_txt('roomdraw-2017.txt')
-'''
+load_txt("roomdraw-2017.txt")
+"""
 fp = open('roomdraw-2017.txt', 'r')
 draws = []
 for line in fp.readlines():
@@ -35,4 +35,4 @@ print(text)
     
 # closing the pdf file object  
 pdfFileObj.close()  
-'''
+"""
