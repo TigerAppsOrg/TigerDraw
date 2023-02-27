@@ -481,7 +481,7 @@ def getUserGroups(username):
     groups = groups[0]
 
     # user has a "groups" column but it's an empty array
-    if len(groups) == 0:
+    if not groups:
         return False
 
     # user has groups, so we should get the data for it
