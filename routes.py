@@ -39,7 +39,7 @@ import collections
 from updateavailable import checkRooms, changeRoomPdf
 from api_access import check_is_undergrad
 from collections import defaultdict
-from display import db_session, Reviews
+from display import db_session, Reviews, Room
 import time
 import config
 
@@ -111,7 +111,18 @@ def index():
 def getRooms():
     username = CASClient().authenticate()
     username = username.lower().strip()
-    return make_response(render_template("availablerooms.html", username=username))
+
+    total_reviews = db_session.query(Reviews).count()
+    total_rooms = db_session.query(Room).count()
+
+    return make_response(
+        render_template(
+            "availablerooms.html",
+            username=username,
+            total_reviews=total_reviews,
+            total_rooms=total_rooms,
+        )
+    )
 
 
 @app.route("/faq")
