@@ -51,32 +51,17 @@
                                                                 </thead>
                                                                 <tbody>
                                                                     {{#rooms}}
-                                                                        {{#taken}}
-                                                                            <tr style="background-color:#ffcccb">
-                                                                                <td>{{res_college}}</td>
-                                                                                <td>{{building}}</td>
-                                                                                <td>{{room_no}}</td>
-                                                                                <td>{{occupancy}}</td>
-                                                                                <td>{{sq_footage}}</td>
-                                                                                {{#favorited}}
-                                                                                    <td><input type="checkbox" id = {{room_id}} value = {{group_id}} class="checkbox" name="star" checked="true"></td>
-                                                                                {{/favorited}}
-                                                                                <td>{{user_that_added}}</td>
-                                                                            </tr>
-                                                                        {{/taken}}
-                                                                        {{^taken}}
-                                                                            <tr>
-                                                                                <td>{{res_college}}</td>
-                                                                                <td>{{building}}</td>
-                                                                                <td>{{room_no}}</td>
-                                                                                <td>{{occupancy}}</td>
-                                                                                <td>{{sq_footage}}</td>
-                                                                                {{#favorited}}
-                                                                                    <td><input type="checkbox" id = {{room_id}} value = {{group_id}} class="checkbox" name="star" checked="true"></td>
-                                                                                {{/favorited}}
-                                                                                <td>{{user_that_added}}</td>
-                                                                            </tr>
-                                                                        {{/taken}}
+                                                                        <tr>
+                                                                            <td>{{res_college}}</td>
+                                                                            <td>{{building}}</td>
+                                                                            <td>{{room_no}}</td>
+                                                                            <td>{{occupancy}}</td>
+                                                                            <td>{{sq_footage}}</td>
+                                                                            {{#favorited}}
+                                                                                <td><input type="checkbox" id = {{room_id}} value = {{group_id}} class="checkbox" name="star" checked="true"></td>
+                                                                            {{/favorited}}
+                                                                            <td>{{user_that_added}}</td>
+                                                                        </tr>
                                                                     {{/rooms}}
                                                                 </tbody>
                                                             </table>

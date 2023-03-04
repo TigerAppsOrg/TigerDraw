@@ -70,11 +70,6 @@
                     {"data": "occupancy"},
                     {"data": "sq_footage"},
                 ],
-                "rowCallback": function (row, data, index) {
-                    if (data["taken"] === true) {
-                        $('td', row).css('background-color', '#ffcccb');
-                    }
-                }
             });
             changing_row = rt.row(this).data()
             rt.ajax.url(url).load()
