@@ -230,7 +230,9 @@
 </style>
 
 <body>
-    <script>
+    <!-- Turned these off due to personal preference, it makes selecting specific floor a bit annoying. 
+             TODO: Give users the option to enable/disable this -->
+    <!-- <script>
         // Show pdf iframe on hover
         $(document).ready(function () {
             $(document).on('mouseover', '.preview', function () {
@@ -251,7 +253,7 @@
             }
             $("iframe").hide();
         });
-    </script>
+    </script> -->
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -265,27 +267,42 @@
 <script>
     // Constant JSON used to map floors to pdfs
     floorPlans = {
+        // BUTLER
         "yoseloff": ["G", "1", "2"],
-        "1967": ["G", "1", "2", "3"],
-        "1976": ["G", "1", "2", "3"],
-        "bloomberg": ["A", "1", "2", "3", "4"],
         "bogle": ["G", "1", "2"],
-        "scully": ["1", "2", "3", "4"],
+        "1976": ["G", "1", "2", "3"],
+        "1967": ["G", "1", "2", "3"],
+        "bloomberg": ["A", "1", "2", "3", "4"],
         "wilf": ["G", "1", "2", "3", "4"],
+        "scully": ["1", "2", "3", "4"],
+        // FORBES
         "forbes": {
             "annex": ["A", "1", "2", "3", "4"],
             "main": ["A", "1", "2", "3", "4"]
         },
+        // MATHEY
         "blair": ["A", "1", "2", "3", "4"],
         "campbell": ["A", "1", "2", "3"],
         "edwards": ["A", "1", "2", "3", "4", "5"],
         "hamilton": ["G", "1", "2"],
         "joline": ["A", "1", "2", "3"],
         "little": ["A", "G", "1", "2", "3", "4", "5"],
+        // YEH
+        "fu": ["G", "1", "2", "3", "4", "5"],
+        "grousebeck": ["1", "2", "3", "4", "5"],
+        "hariri": ["3", "4", "5", "6"],
+        "mannion": ["G", "1", "2", "3", "4", "5"],
+        // NEW COLLEGE WEST
+        "addy": ["3", "4", "5", "6", "7"],
+        "kanji": ["G", "2", "3", "4", "5", "6"],
+        "kwanzajones": ["G", "1", "2", "3", "4", "5", "6"],
+        "josefeliciano": ["G", "1", "2", "3", "4", "5", "6"],
+        // ROCKY
         "buyers": ["A", "1", "2", "3"],
         "holder": ["A", "1", "2", "3", "4", "5"],
-        "witherspoon": ["G", "1", "2", "3", "4"],
-        "laughlin": ["G", "1", "2", "3", "4"],
+        "witherspoon": ["G", "1", "2", "3", "4", "5", "6"],
+        // UPPERCLASS
+        "laughlin1901": ["G", "1", "2", "3", "4"],
         "1903": ["A", "1", "2", "3", "4"],
         "brown": ["A", "1", "2", "3", "4"],
         "cuyler": ["A", "1", "2", "3"],
@@ -369,9 +386,6 @@
         if (name.includes("Spelman")) {
             name = "Spelman Hall";
         }
-        if (name == "Forbes Main") {
-            name = "Forbes";
-        }
         if (name.includes("Hall")) {
             name = name.substring(0, name.length - 5)
         }
@@ -416,11 +430,9 @@
         highest = null
         lowest2 = null
         highest2 = null
+        orig_name = name
         if (name.includes("Spelman")) {
             name = "Spelman Hall";
-        }
-        if (name == "Forbes Main") {
-            name = "Forbes";
         }
         if (name.includes("Hall")) {
             name = name.substring(0, name.length - 5);
@@ -435,22 +447,6 @@
             highest2 = maxrank["CLAPP"]
             return html;
         }
-        else if (name == "Laughlin 1901") {
-            lowest = minrank["LAUGHLIN"]
-            lowest2 = minrank["1901"]
-            highest = maxrank["LAUGHLIN"]
-            highest2 = maxrank["1901"]
-
-            html += '<p> Floor Plans:</br>'
-            console.log("LAUGHLIN: name=", name)
-
-            for (let i in floorPlans['laughlin']) {
-                let floorNum = floorPlans['laughlin'][i]
-                html += `<a href="../static/pdfs/laughlin/${floorNum}.pdf" target="_blank" class="preview" style="margin-right: 2px;">${floorNum}</a>`
-            }
-            html += '</p><hr/>'
-            return html
-        }
         else {
             lowest = minrank[name.toUpperCase()]
             highest = maxrank[name.toUpperCase()]
@@ -460,8 +456,9 @@
             nameJSON = nameJSON.replace(/\s+/g, '')
 
             if (floorPlans.hasOwnProperty(nameJSON)) {
-                html += '<p> Floor Plans:</br>'
-
+                html += '<p>'
+                html += orig_name
+                html += ' Floor Plans:</br>'
                 if (nameJSON == "forbes") {
                     html += `<div>Annex: `
                     for (let i in floorPlans[nameJSON]['annex']) {
@@ -670,11 +667,14 @@
     var wilf2 = L.polygon(wilf_coords)
     var wilf3 = L.polygon(wilf_coords)
 
+    // Just going to add Yeh and NCW buildings here cuz I don't want to touch buildings.js
+
+
 
 
     var circles = [_1981, baker, hargadon, lauritzen, murley, wendell, yoseloff, _1967, _1976, bogle, wilf]
     var frag2 = [_19812, baker2, hargadon2, lauritzen2, murley2, wendell2, yoseloff2, _19672, _19762, bogle2, wilf2, wilf3]
-    var names = ["1981", "baker", "hargadon", "lauritzen", "murley", "wendell", "yoseloff", "1967", "1976", "bogle", "wilf", "wilf"]
+    var names = ["1981", "Baker Hall", "Hargadon Hall", "Lauritzen Hall", "Murley Hall", "Wendell Hall", "Yoseloff Hall", "1967 Hall", "1976 Hall", "Bogle Hall", "Wilf Hall", "Wilf Hall"]
     for (circle of circles) {
         circle.on('mouseover', highlightFeature);
         circle.on('mouseout', resetHighlight);
