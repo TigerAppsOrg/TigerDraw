@@ -357,6 +357,19 @@ def map():
         maxrank[building] = max(buildingrank[building])
         minrank[building] = min(buildingrank[building])
 
+    # hardcoded colors for ncw and yeh, assuming buildings closer
+    # to the rest of campus are better. (we have no pick data for them)
+    # NCW
+    allrank["ADDY"] = 90
+    allrank["KANJI"] = 140
+    allrank["JONES"] = 240
+    allrank["FELICIANO"] = 290
+    # YEH
+    allrank["HARIRI"] = 90
+    allrank["FU"] = 140
+    allrank["GROUSBECK"] = 240
+    allrank["MANNION"] = 290
+
     return make_response(
         render_template(
             "map.html",

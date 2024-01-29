@@ -287,16 +287,16 @@
         "hamilton": ["G", "1", "2"],
         "joline": ["A", "1", "2", "3"],
         "little": ["A", "G", "1", "2", "3", "4", "5"],
-        // YEH
-        "fu": ["G", "1", "2", "3", "4", "5"],
-        "grousebeck": ["1", "2", "3", "4", "5"],
-        "hariri": ["3", "4", "5", "6"],
-        "mannion": ["G", "1", "2", "3", "4", "5"],
         // NEW COLLEGE WEST
         "addy": ["3", "4", "5", "6", "7"],
         "kanji": ["G", "2", "3", "4", "5", "6"],
-        "kwanzajones": ["G", "1", "2", "3", "4", "5", "6"],
-        "josefeliciano": ["G", "1", "2", "3", "4", "5", "6"],
+        "jones": ["G", "1", "2", "3", "4", "5", "6"],
+        "feliciano": ["G", "1", "2", "3", "4", "5", "6"],
+        // YEH
+        "fu": ["G", "1", "2", "3", "4", "5"],
+        "grousbeck": ["1", "2", "3", "4", "5"],
+        "hariri": ["3", "4", "5", "6"],
+        "mannion": ["G", "1", "2", "3", "4", "5"],
         // ROCKY
         "buyers": ["A", "1", "2", "3"],
         "holder": ["A", "1", "2", "3", "4", "5"],
@@ -409,7 +409,12 @@
             average = (c["1981"] + c["BAKER"] + c["LAURITZEN"] + c["HARGADON"] + c["MURLEY"] + c["WENDELL"]) / 6;
         }
         else {
-            average = c[name.toUpperCase()]
+            average = c[name.toUpperCase()];
+        }
+        
+        // default color is red-orange
+        if (!average) {
+            average = 190;
         }
 
         var color = average < 50 ? '#800026' :
@@ -668,13 +673,57 @@
     var wilf3 = L.polygon(wilf_coords)
 
     // Just going to add Yeh and NCW buildings here cuz I don't want to touch buildings.js
+    var addy = L.circle([40.3425, -74.65516], geojsonMarkerOptions);
+    addy.setStyle({ color: getcolor("addy") })
+    addy.bindPopup(makePopupContent("addy"))
+    var addy_coords = [[40.3426246, -74.6556793], [40.3425674, -74.6557058], [40.3425532, -74.6556531], [40.3425154, -74.6556706], [40.3424554, -74.6554483], [40.3424560, -74.6551458], [40.34231, -74.65509], [40.34236, -74.65493], [40.3425200, -74.6549952], [40.3425198, -74.6550154], [40.3425554, -74.6550156], [40.3425553, -74.6550527], [40.3425833, -74.6550528], [40.3425828, -74.6553948], [40.3425542, -74.6553947], [40.3425541, -74.6554169], [40.3426246, -74.6556793]]
+    var addy2 = L.polygon(addy_coords)
 
+    var kanji = L.circle([40.34213, -74.65507], geojsonMarkerOptions);
+    kanji.setStyle({ color: getcolor("kanji") })
+    kanji.bindPopup(makePopupContent("kanji"))
+    var kanji_coords = [[40.34231, -74.65509], [40.3422334, -74.6550387], [40.3421863, -74.6550395], [40.3421876, -74.6551721], [40.3420906, -74.6555405], [40.3420510, -74.6555225], [40.3420441, -74.6555486], [40.3419840, -74.6555213], [40.3420890, -74.6551271], [40.3420866, -74.6548778], [40.3422534, -74.6548751], [40.34236, -74.65493]]
+    var kanji2 = L.polygon(kanji_coords)
 
+    var jones = L.circle([40.34166, -74.65489], geojsonMarkerOptions)
+    jones.setStyle({ color: getcolor("jones") })
+    jones.bindPopup(makePopupContent("jones"))
+    var jones_coords = [[40.3416393, -74.6554748], [40.3417346, -74.6550971], [40.3417377, -74.6547468], [40.3416375, -74.6547453], [40.3416367, -74.6548059], [40.3415861, -74.6548063], [40.3413924, -74.6547118], [40.3413566, -74.6548382], [40.3415660, -74.6549404], [40.3416360, -74.6549411], [40.3416347, -74.6550537], [40.3415392, -74.6554313], [40.3416393, -74.6554748]]
+    var jones2 = L.polygon(jones_coords)
 
+    var feliciano = L.circle([40.34122, -74.65496], geojsonMarkerOptions)
+    feliciano.setStyle({ color: getcolor("feliciano")})
+    feliciano.bindPopup(makePopupContent("feliciano"))
+    var feliciano_coords = [[40.3411594, -74.6553403], [40.3410456, -74.6552885], [40.3411370, -74.6548667], [40.3413121, -74.6545923], [40.3413924, -74.6547118], [40.3413566, -74.6548382], [40.3412586, -74.6549876], [40.3411594, -74.6553403]]
+    var feliciano2 = L.polygon(feliciano_coords)
 
-    var circles = [_1981, baker, hargadon, lauritzen, murley, wendell, yoseloff, _1967, _1976, bogle, wilf]
-    var frag2 = [_19812, baker2, hargadon2, lauritzen2, murley2, wendell2, yoseloff2, _19672, _19762, bogle2, wilf2, wilf3]
-    var names = ["1981", "Baker Hall", "Hargadon Hall", "Lauritzen Hall", "Murley Hall", "Wendell Hall", "Yoseloff Hall", "1967 Hall", "1976 Hall", "Bogle Hall", "Wilf Hall", "Wilf Hall"]
+    var hariri = L.circle([40.34271, -74.65436], geojsonMarkerOptions)
+    hariri.setStyle({ color: getcolor("hariri")})
+    hariri.bindPopup(makePopupContent("hariri"))
+    var hariri_coords = [[40.3428141, -74.6543544], [40.3427746, -74.6543364], [40.3426632, -74.6547579], [40.3425660, -74.6547137], [40.3426433, -74.6544202], [40.3426774, -74.6542922], [40.3427154, -74.6543097], [40.3428083, -74.6539583], [40.3429069, -74.6540032], [40.3428141, -74.6543544]]
+    var hariri2 = L.polygon(hariri_coords)
+
+    var fu = L.circle([40.34239, -74.65422], geojsonMarkerOptions)
+    fu.setStyle({ color: getcolor("fu")})
+    fu.bindPopup(makePopupContent("fu"))
+    var fu_coords = [[40.3426433, -74.6544202], [40.3426774, -74.6542922], [40.3424389, -74.6541827], [40.3424712, -74.6540617], [40.3424341, -74.6540446], [40.3424995, -74.6537954], [40.3424024, -74.6537515], [40.3423369, -74.6540007], [40.3423700, -74.6540152], [40.3423166, -74.6542153], [40.3423054, -74.6542129], [40.3422355, -74.6543235], [40.3421467, -74.6544640], [40.3421125, -74.6545180], [40.3421950, -74.6546079], [40.3423880, -74.6543028]]
+    var fu2 = L.polygon(fu_coords)
+
+    var grousbeck = L.circle([40.34184, -74.65399], geojsonMarkerOptions)
+    grousbeck.setStyle({ color: getcolor("grousbeck")})
+    grousbeck.bindPopup(makePopupContent("grousbeck"))
+    var grousbeck_coords = [[40.3416333, -74.6540997], [40.3416781, -74.6539285], [40.3417794, -74.6535625], [40.3419149, -74.6536294], [40.3419153, -74.6534899], [40.3420222, -74.6534951], [40.3420237, -74.6537130], [40.3419828, -74.6537144], [40.3419817, -74.6541569], [40.3419756, -74.6541998], [40.3422355, -74.6543235], [40.3421467, -74.6544640], [40.3419492, -74.6543724], [40.3419167, -74.6544333], [40.3418066, -74.6543522], [40.3418446, -74.6542028], [40.3416333, -74.6540997]]
+    var grousbeck2 = L.polygon(grousbeck_coords)
+
+    var mannion = L.circle([40.34156, -74.65383], geojsonMarkerOptions)
+    mannion.setStyle({ color: getcolor("mannion")})
+    mannion.bindPopup(makePopupContent("mannion"))
+    var mannion_coords = [[40.3415058, -74.6539918], [40.3415069, -74.6536476], [40.3415479, -74.6536486], [40.3415478, -74.6533825], [40.3416558, -74.6533867], [40.3416545, -74.6537323], [40.3416263, -74.6537317], [40.3416233, -74.6539069], [40.3416781, -74.6539285], [40.3416333, -74.6540997], [40.3415968, -74.6540699], [40.3415283, -74.6543114], [40.3414308, -74.6542706], [40.3415058, -74.6539918]]
+    var mannion2 = L.polygon(mannion_coords)
+
+    var circles = [_1981, baker, hargadon, lauritzen, murley, wendell, yoseloff, _1967, _1976, bogle, wilf, addy, kanji, jones, feliciano, hariri, fu, grousbeck, mannion]
+    var frag2 = [_19812, baker2, hargadon2, lauritzen2, murley2, wendell2, yoseloff2, _19672, _19762, bogle2, wilf2, wilf3, addy2, kanji2, jones2, feliciano2, hariri2, fu2, grousbeck2, mannion2]
+    var names = ["1981", "Baker Hall", "Hargadon Hall", "Lauritzen Hall", "Murley Hall", "Wendell Hall", "Yoseloff Hall", "1967 Hall", "1976 Hall", "Bogle Hall", "Wilf Hall", "Wilf Hall", "Addy Hall", "Kanji Hall", "Jones Hall", "Feliciano Hall", "Hariri Hall", "Fu Hall", "Grousbeck Hall", "Mannion Hall"]
     for (circle of circles) {
         circle.on('mouseover', highlightFeature);
         circle.on('mouseout', resetHighlight);
@@ -688,18 +737,16 @@
         i += 1
     }
 
-    // var all = L.layerGroup([bldgs, _1981, baker, hargadon, lauritzen, murley, wendell, yoseloff, _1967, _1976, bogle, wilf]);
-    var all = L.layerGroup()
     var butler = L.layerGroup([filter_dorm(butler_dorms), yoseloff2, _19672, _19762, bogle2, wilf2]);
     var forbes = L.layerGroup([filter_dorm(forbes_dorms)]);
     var mathey = L.layerGroup([filter_dorm(mathey_dorms)]);
     var rockefeller = L.layerGroup([filter_dorm(rockefeller_dorms)]);
     var whitman = L.layerGroup([filter_dorm(whitman_dorms), _19812, baker2, hargadon2, lauritzen2, murley2, wendell2]);
+    var ncw = L.layerGroup([addy2, kanji2, jones2, feliciano2])
+    var yeh = L.layerGroup([hariri2, fu2, grousbeck2, mannion2])
     var upperclass = L.layerGroup([filter_dorm(upperclass_dorms), wilf3]);
 
     function reinit() {
-
-
         let layers = [filter_dorm(butler_dorms), yoseloff2, _19672, _19762, bogle2, wilf2]
         for (layer of layers) {
             butler.addLayer(layer)
@@ -711,74 +758,33 @@
         for (layer of layers) {
             whitman.addLayer(layer)
         }
+        ncw.addLayer([addy2, kanji2, jones2, feliciano2])
+        yeh.addLayer([hariri2, fu2, grousbeck2, mannion2])
         upperclass.addLayer(filter_dorm(upperclass_dorms))
         upperclass.addLayer(wilf3)
     }
 
-    var baseLayers = {
-    };
-
+    var baseLayers = {};
     var overlays = {
         "Butler": butler,
         "Forbes": forbes,
         "Mathey": mathey,
         "Rockefeller": rockefeller,
         "Whitman": whitman,
+        "New College West": ncw,
+        "Yeh": yeh,
         "Upperclass": upperclass
     };
 
     var layercontrol = L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(mymap);
-
-    // // function that handles changing base
-    // mymap.on('overlayadd', function (e) {
-    //     if (e.name == "All") {
-    //         console.log("add")
-    //         reinit()
-    //         mymap.addLayer(butler)
-    //         mymap.addLayer(forbes)
-    //         mymap.addLayer(mathey)
-    //         mymap.addLayer(rockefeller)
-    //         mymap.addLayer(whitman)
-    //         mymap.addLayer(wilson)
-    //         mymap.addLayer(upperclass)
-    //         layercontrol.remove()
-    //         layercontrol.addTo(mymap)
-    //     }   
-    //     else {
-    //         console.log(e.name)
-    //     }
-    // });
-
-    // mymap.on('overlayremove', function (e) {
-    //     if (e.name == "All") {
-    //         console.log("remove")
-    //         butler.clearLayers()
-    //         mymap.removeLayer(butler)
-    //         forbes.clearLayers()
-    //         mymap.removeLayer(forbes)
-    //         mathey.clearLayers()
-    //         mymap.removeLayer(mathey)
-    //         rockefeller.clearLayers()
-    //         mymap.removeLayer(rockefeller)
-    //         whitman.clearLayers()
-    //         mymap.removeLayer(whitman)
-    //         wilson.clearLayers()
-    //         mymap.removeLayer(wilson)
-    //         upperclass.clearLayers()
-    //         mymap.removeLayer(upperclass)
-    //         layercontrol.remove()
-    //         layercontrol.addTo(mymap)
-    //     }
-    // });
-
     mymap.addLayer(butler);
     mymap.addLayer(forbes);
     mymap.addLayer(mathey);
     mymap.addLayer(rockefeller);
     mymap.addLayer(whitman);
+    mymap.addLayer(ncw);
+    mymap.addLayer(yeh);
     mymap.addLayer(upperclass);
-
-
 </script>
 
 </html>
