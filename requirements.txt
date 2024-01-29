@@ -25,4 +25,3 @@ urllib3==1.26.6
 selenium==3.141.0
 PyPDF2==1.26.0
 regex==2021.11.2
-python-dotenv==1.0.1
