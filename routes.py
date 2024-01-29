@@ -375,9 +375,9 @@ def addGroup():
 
     # add to groups
     if request.method == "POST":
-        addNewGroup(data[0], data[1], username)
+        addNewGroup(data[0], data[1])
     else:
-        addNewGroup(data[0], data[1], username)
+        addNewGroup(data[0], data[1])
 
     # TODO - should this actually return something meaningful?
     return "success"
