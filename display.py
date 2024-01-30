@@ -10,7 +10,6 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    MetaData,
     Boolean,
     insert,
 )
@@ -130,12 +129,6 @@ class Buildings(Base):
     res_college = Column(String)
 
 
-meta = MetaData(db)
-
-
-# Base.metadata.create_all(db)
-
-
 def getUserRooms(username):
     sqlalchemy_session = db_session
 
@@ -150,7 +143,6 @@ def getUserRooms(username):
 
     # if not, add them to user table
     if not user_exists:
-        table = Table("users", meta)
         ins_command = insert(User).values(username=username, rooms=[], group_ids=[])
         conn = db.connect()
         conn.execute(ins_command)
@@ -560,7 +552,6 @@ def getUserGroupsJSON(username):
 
     # if not, add them to user table
     if not user_exists:
-        table = Table("users", meta)
         ins_command = insert(User).values(username=username, rooms=[], group_ids=[])
         conn = db.connect()
         conn.execute(ins_command)
