@@ -1,10 +1,11 @@
 from os import environ
+# from dotenv import load_dotenv
 
+# load_dotenv()
 # Keys for access to the Princeton API
 DIRECTORY_BASE_URL = "https://api.princeton.edu:443/active-directory/1.0.3"
 USERS = "/users/basic"
 ACCESS_TOKEN = ""
-
 
 CONSUMER_KEY = environ["CONSUMER_KEY"]
 CONSUMER_SECRET = environ["CONSUMER_SECRET"]
