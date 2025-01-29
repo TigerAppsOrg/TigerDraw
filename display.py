@@ -179,9 +179,23 @@ def allRooms(
 
     rooms = []
 
+    ratings_query = (
+        db_session.query(
+            Reviews.building_name,
+            Reviews.room_number,
+            func.count(Reviews.id).label("num_reviews"),
+            func.avg(Reviews.rating).label("avg_rating")
+        )
+        .group_by(Reviews.building_name, Reviews.room_number)
+    ).subquery()
+
     query = sqlalchemy_session.query(
-        Room, DrawTime, Room.room_id.in_(user_rooms)
-    ).outerjoin(DrawTime, DrawTime.room_id == Room.room_id)
+        Room, DrawTime, Room.room_id.in_(user_rooms), ratings_query.c.num_reviews, ratings_query.c.avg_rating
+    ).outerjoin(DrawTime, DrawTime.room_id == Room.room_id).outerjoin(
+        ratings_query,
+        (ratings_query.c.building_name == Room.building) &
+        (ratings_query.c.room_number == Room.room_no)
+    )
     # filter out any Wilson College entries
     query = query.filter(Room.res_college != "Wilson College")
 

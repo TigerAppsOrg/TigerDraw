@@ -149,6 +149,8 @@ def queryRooms():
         building,
         "",
     )
+    #oom_obj, draw_time_obj, favorite_value, num_reviews, avg_rating = data[0]
+    #print(num_reviews)
     roomids = []
 
     # averaging code
@@ -195,27 +197,29 @@ def queryRooms():
                 # print(room.Room.building)
                 i += 1
                 continue
+        
+        review_count = 0 if not room[3] else room[3]
+        average_rating = None if not room[4] else float(room[4])
+        # review_count = ( # TODO: bro why is this done in a for loop
+        #     db_session.query(Reviews)
+        #     .filter(
+        #         Reviews.room_number == room.Room.room_no,
+        #         Reviews.building_name == room.Room.building,
+        #     )
+        #     .count()
+        # )
 
-        review_count = ( # TODO: bro why is this done in a for loop
-            db_session.query(Reviews)
-            .filter(
-                Reviews.room_number == room.Room.room_no,
-                Reviews.building_name == room.Room.building,
-            )
-            .count()
-        )
-
-        if review_count == 0:
-            average_rating = None
-        else:
-            average_rating = (
-                db_session.query(func.sum(Reviews.rating))
-                .filter(
-                    Reviews.room_number == room.Room.room_no,
-                    Reviews.building_name == room.Room.building,
-                )
-                .scalar()
-            ) / review_count
+        # if review_count == 0:
+        #     average_rating = None
+        # else:
+        #     average_rating = (
+        #         db_session.query(func.sum(Reviews.rating))
+        #         .filter(
+        #             Reviews.room_number == room.Room.room_no,
+        #             Reviews.building_name == room.Room.building,
+        #         )
+        #         .scalar()
+        #     ) / review_count
 
         if room.DrawTime is None:
             roomDict = {
