@@ -199,7 +199,7 @@ def allRooms(
     # filter out any Wilson College entries
     query = query.filter(Room.res_college != "Wilson College")
 
-    if college:
+    if college and college != "null":
         query = query.filter(Room.res_college == college)
     # if occupancy:
     # 	query = query.filter(Room.occupancy == int(occupancy))
@@ -262,9 +262,10 @@ def allRooms(
 
     # # print(rankings)
 
-    rooms.sort(
-        key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
-    )
+    if college and college != "null":
+        rooms.sort(
+            key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
+        )
     for i, room in enumerate(rooms):
         if room.DrawTime is None:
             pass
