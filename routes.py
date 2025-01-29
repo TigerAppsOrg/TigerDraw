@@ -8,7 +8,7 @@ from flask import (
 )
 from flask import render_template, session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 import os
 import pytz
 import datetime
@@ -196,7 +196,7 @@ def queryRooms():
                 i += 1
                 continue
 
-        review_count = (
+        review_count = ( # TODO: bro why is this done in a for loop
             db_session.query(Reviews)
             .filter(
                 Reviews.room_number == room.Room.room_no,
@@ -204,6 +204,18 @@ def queryRooms():
             )
             .count()
         )
+
+        if review_count == 0:
+            average_rating = None
+        else:
+            average_rating = (
+                db_session.query(func.sum(Reviews.rating))
+                .filter(
+                    Reviews.room_number == room.Room.room_no,
+                    Reviews.building_name == room.Room.building,
+                )
+                .scalar()
+            ) / review_count
 
         if room.DrawTime is None:
             roomDict = {
@@ -216,6 +228,7 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
+                "average_rating": average_rating
             }
             roomsList.append(roomDict)
         else:
@@ -229,6 +242,7 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
+                "average_rating": average_rating
             }
             roomsList.append(roomDict)
             i += 1
