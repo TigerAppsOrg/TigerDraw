@@ -282,35 +282,35 @@ def getFavoriteRooms(username):
     user_rooms = getUserRooms(username)
 
     # get favorite rooms, with the relevant ranking
-    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).join(
+    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).outerjoin(
         DrawTime, DrawTime.room_id == Room.room_id
     )
     query = query.filter(Room.room_id.in_(user_rooms))
     fav_rooms = query.all()
 
     # averaging the rankings so that one room shows up
-    rankings = collections.defaultdict(list)
-    rankings_list = collections.defaultdict(int)
+    # rankings = collections.defaultdict(list)
+    # rankings_list = collections.defaultdict(int)
     seen = set()
 
     # getting a list of all the rankings with the room id as key
-    for room in fav_rooms:
-        rankings[room.Room.room_id].append(room.DrawTime.draw_time)
-    for room in rankings:
-        curr_sum = 0
-        num_rooms = 0
-        for r in rankings[room]:
-            curr_sum += r
-            num_rooms += 1
-        avg_rank = curr_sum / num_rooms
-        rankings_list[room] = int(avg_rank)
+    # for room in fav_rooms:
+    #     rankings[room.Room.room_id].append(room.DrawTime.draw_time)
+    # for room in rankings:
+    #     curr_sum = 0
+    #     num_rooms = 0
+    #     for r in rankings[room]:
+    #         curr_sum += r
+    #         num_rooms += 1
+    #     avg_rank = curr_sum / num_rooms
+    #     rankings_list[room] = int(avg_rank)
 
     # got the average rankings, now to remove the duplicate roomids
     deduped_list = []
     for room in fav_rooms:
         if room.Room.room_id not in seen:
             seen.add(room.Room.room_id)
-            room.DrawTime.draw_time = rankings_list[room.Room.room_id]
+            # room.DrawTime.draw_time = rankings_list[room.Room.room_id]
             deduped_list.append(room)
 
     return deduped_list
