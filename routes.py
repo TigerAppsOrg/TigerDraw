@@ -605,7 +605,7 @@ def getGroupsJSON():
 def submit_review():
     # username = "proxy"
     username = CASClient().authenticate()
-    valid_ratings = ["0", "1", "2", "3", "4", "5"]
+    valid_ratings = ["1", "2", "3", "4", "5"]
     building_name = request.form["building-name"]
     room_no = request.form["room-number"]
     overall_rating = request.form["overall-rating"]
