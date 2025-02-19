@@ -6,6 +6,7 @@ from flask import (
     url_for,
     jsonify,
 )
+import json
 from flask import render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, func
@@ -106,6 +107,30 @@ def index():
 
     return make_response(render_template("index.html"))
 
+@app.route("/review")
+def review():
+    username = CASClient().authenticate()
+    username = username.lower().strip()
+
+    data = allRooms(
+        username,
+        "null",
+        "",
+        "",
+        "",
+        "",
+        "",
+    )
+
+    room_names = []
+    for row in data:
+        room_names.append(f"{row[0].building} {row[0].room_no}")
+
+    html = render_template(
+        "review.html",
+        items=json.dumps(room_names)
+    )
+    return make_response(html)
 
 @app.route("/rooms", methods=["GET", "POST"])
 def getRooms():

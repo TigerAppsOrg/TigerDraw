@@ -1,18 +1,20 @@
-{% if not reviews %}
-<p>There are currently no reviews for this room</p>
-<hr />
-{% else %} {% for review in reviews %}
-<!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
-<h5>
-  Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
-  %} by <em>{{ review.net_id }}</em>
-  {% endif %}
-</h5>
-<h6>Rating: {{ review.rating }} out of 5</h6>
-<p>{{ review.content }}</p>
+<div id="reviews-div">
+  {% if not reviews %}
+  <p>There are currently no reviews for this room</p>
+  <hr />
+  {% else %} {% for review in reviews %}
+  <!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
+  <h5>
+    Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
+    %} by <em>{{ review.net_id }}</em>
+    {% endif %}
+  </h5>
+  <h6>Rating: {{ review.rating }} out of 5</h6>
+  <p>{{ review.content }}</p>
 
-<hr />
-{% endfor %} {% endif %}
+  <hr />
+  {% endfor %} {% endif %}
+</div>
 
 <script>
   text_max = 5000;
