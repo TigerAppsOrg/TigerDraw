@@ -326,6 +326,7 @@
       <ul class="list-group" id="searchResults"></ul>
 
       <div id="reviews-body"></div>
+      <div style="text-align: left; max-width: 75%" id="message"></div>
     </div>
   </body>
 </html>
@@ -350,7 +351,9 @@
       data: formData,
       success: function (data, textStatus, jqXHR) {
         $("#submit-review-form").trigger("reset");
-        console.log("success!!");
+        $("#message")
+          .text("Review submitted, thank you!")
+          .css("color", "green");
       },
       error: function (jqXHR) {
         if (jqXHR.responseJSON.message === "override") {
@@ -372,10 +375,13 @@
                     data: formData,
                     success: function (data, textStatus, jqXHR) {
                       $("#submit-review-form").trigger("reset");
-                      notyf.success(jqXHR.responseJSON.message);
+                      $("#message")
+                        .text("Review submitted, thank you!")
+                        .css("color", "green");
                     },
                     error: function (jqXHR) {
-                      notyf.error(jqXHR.responseJSON.message);
+                      $("#message").text(jqXHR.responseJSON.message);
+                      $("#message").css("color", "red");
                     },
                   });
                 },
@@ -388,7 +394,8 @@
             },
           });
         } else {
-          notyf.error(jqXHR.responseJSON.message);
+          $("#message").text(jqXHR.responseJSON.message);
+          $("#message").css("color", "red");
         }
       },
     });
@@ -428,6 +435,7 @@
   function handleSelection(selectedText) {
     const resultsContainer = $("#searchResults");
     resultsContainer.empty().css("display", "none");
+    $("#message").empty();
     selectedIndex = -1;
     building_name = selectedText.split(" ")[0];
     room_no = selectedText.split(" ")[1];
@@ -470,6 +478,7 @@
     $("#searchInput").on("keydown", function (e) {
       const visibleItems = $("#searchResults .list-group-item");
       // if (visibleItems.length === 0) return;
+      $("#message").empty();
 
       if (e.key === "ArrowDown") {
         selectedIndex = Math.min(selectedIndex + 1, visibleItems.length - 1);
