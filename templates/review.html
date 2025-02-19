@@ -293,6 +293,10 @@
       width: 100%;
       max-width: 600px;
     }
+
+    #searchResults {
+      min-height: 250px;
+    }
   </style>
 
   <body>
@@ -321,7 +325,6 @@
 
       <ul class="list-group" id="searchResults"></ul>
 
-      <p id="selectedItem" class="mt-3 text-success text-center"></p>
       <div id="reviews-body"></div>
     </div>
   </body>
@@ -424,7 +427,7 @@
 
   function handleSelection(selectedText) {
     const resultsContainer = $("#searchResults");
-    resultsContainer.empty();
+    resultsContainer.empty().css("display", "none");
     selectedIndex = -1;
     building_name = selectedText.split(" ")[0];
     room_no = selectedText.split(" ")[1];
@@ -466,7 +469,7 @@
     // Handle keyboard navigation & Enter key selection
     $("#searchInput").on("keydown", function (e) {
       const visibleItems = $("#searchResults .list-group-item");
-      if (visibleItems.length === 0) return;
+      // if (visibleItems.length === 0) return;
 
       if (e.key === "ArrowDown") {
         selectedIndex = Math.min(selectedIndex + 1, visibleItems.length - 1);
@@ -482,6 +485,9 @@
         } else if (visibleItems.length > 0 && selectedIndex == -1) {
           handleSelection($(visibleItems[0]).text());
         }
+      } else {
+        $("#reviews-body").empty();
+        $("#searchResults").empty().css("display", "");
       }
     });
   });
