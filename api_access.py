@@ -20,21 +20,22 @@ def get_access_token():
 
 
 def check_is_undergrad(username):
-    # get an updated access token
-    get_access_token()
-
-    # query for information
-    kwargs = {"uid": username}
-    req = requests.get(
-        config.DIRECTORY_BASE_URL + config.USERS,
-        params=kwargs if "kwargs" not in kwargs else kwargs["kwargs"],
-        headers={"Authorization": "Bearer " + config.ACCESS_TOKEN},
-    )
-
-    json = req.json()
-    if len(json) == 0:
-        return False
     return True
+    # get an updated access token
+    # get_access_token()
+
+    # # query for information
+    # kwargs = {"uid": username}
+    # req = requests.get(
+    #     config.DIRECTORY_BASE_URL + config.USERS,
+    #     params=kwargs if "kwargs" not in kwargs else kwargs["kwargs"],
+    #     headers={"Authorization": "Bearer " + config.ACCESS_TOKEN},
+    # )
+
+    # json = req.json()
+    # if len(json) == 0:
+    #     return False
+    # return True
 
 
 if __name__ == "__main__":

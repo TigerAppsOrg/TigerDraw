@@ -6,9 +6,10 @@ from flask import (
     url_for,
     jsonify,
 )
+import json
 from flask import render_template, session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 import os
 import pytz
 import datetime
@@ -106,6 +107,30 @@ def index():
 
     return make_response(render_template("index.html"))
 
+@app.route("/review")
+def review():
+    username = CASClient().authenticate()
+    username = username.lower().strip()
+
+    data = allRooms(
+        username,
+        "null",
+        "",
+        "",
+        "",
+        "",
+        "",
+    )
+
+    room_names = []
+    for row in data:
+        room_names.append(f"{row[0].building} {row[0].room_no}")
+
+    html = render_template(
+        "review.html",
+        items=json.dumps(room_names)
+    )
+    return make_response(html)
 
 @app.route("/rooms", methods=["GET", "POST"])
 def getRooms():
@@ -149,6 +174,8 @@ def queryRooms():
         building,
         "",
     )
+    #oom_obj, draw_time_obj, favorite_value, num_reviews, avg_rating = data[0]
+    #print(num_reviews)
     roomids = []
 
     # averaging code
@@ -195,15 +222,29 @@ def queryRooms():
                 # print(room.Room.building)
                 i += 1
                 continue
+        
+        review_count = 0 if not room[3] else room[3]
+        average_rating = None if not room[4] else float(room[4])
+        # review_count = ( # TODO: bro why is this done in a for loop
+        #     db_session.query(Reviews)
+        #     .filter(
+        #         Reviews.room_number == room.Room.room_no,
+        #         Reviews.building_name == room.Room.building,
+        #     )
+        #     .count()
+        # )
 
-        review_count = (
-            db_session.query(Reviews)
-            .filter(
-                Reviews.room_number == room.Room.room_no,
-                Reviews.building_name == room.Room.building,
-            )
-            .count()
-        )
+        # if review_count == 0:
+        #     average_rating = None
+        # else:
+        #     average_rating = (
+        #         db_session.query(func.sum(Reviews.rating))
+        #         .filter(
+        #             Reviews.room_number == room.Room.room_no,
+        #             Reviews.building_name == room.Room.building,
+        #         )
+        #         .scalar()
+        #     ) / review_count
 
         if room.DrawTime is None:
             roomDict = {
@@ -216,6 +257,7 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
+                "average_rating": average_rating
             }
             roomsList.append(roomDict)
         else:
@@ -229,6 +271,7 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
+                "average_rating": average_rating
             }
             roomsList.append(roomDict)
             i += 1
@@ -587,7 +630,7 @@ def getGroupsJSON():
 def submit_review():
     # username = "proxy"
     username = CASClient().authenticate()
-    valid_ratings = ["0", "1", "2", "3", "4", "5"]
+    valid_ratings = ["1", "2", "3", "4", "5"]
     building_name = request.form["building-name"]
     room_no = request.form["room-number"]
     overall_rating = request.form["overall-rating"]

@@ -179,13 +179,27 @@ def allRooms(
 
     rooms = []
 
+    ratings_query = (
+        db_session.query(
+            Reviews.building_name,
+            Reviews.room_number,
+            func.count(Reviews.id).label("num_reviews"),
+            func.avg(Reviews.rating).label("avg_rating")
+        )
+        .group_by(Reviews.building_name, Reviews.room_number)
+    ).subquery()
+
     query = sqlalchemy_session.query(
-        Room, DrawTime, Room.room_id.in_(user_rooms)
-    ).outerjoin(DrawTime, DrawTime.room_id == Room.room_id)
+        Room, DrawTime, Room.room_id.in_(user_rooms), ratings_query.c.num_reviews, ratings_query.c.avg_rating
+    ).outerjoin(DrawTime, DrawTime.room_id == Room.room_id).outerjoin(
+        ratings_query,
+        (ratings_query.c.building_name == Room.building) &
+        (ratings_query.c.room_number == Room.room_no)
+    )
     # filter out any Wilson College entries
     query = query.filter(Room.res_college != "Wilson College")
 
-    if college:
+    if college and college != "null":
         query = query.filter(Room.res_college == college)
     # if occupancy:
     # 	query = query.filter(Room.occupancy == int(occupancy))
@@ -248,9 +262,10 @@ def allRooms(
 
     # # print(rankings)
 
-    rooms.sort(
-        key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
-    )
+    if college and college != "null":
+        rooms.sort(
+            key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
+        )
     for i, room in enumerate(rooms):
         if room.DrawTime is None:
             pass
@@ -267,35 +282,35 @@ def getFavoriteRooms(username):
     user_rooms = getUserRooms(username)
 
     # get favorite rooms, with the relevant ranking
-    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).join(
+    query = sqlalchemy_session.query(Room, DrawTime, Room.room_id.in_(user_rooms)).outerjoin(
         DrawTime, DrawTime.room_id == Room.room_id
     )
     query = query.filter(Room.room_id.in_(user_rooms))
     fav_rooms = query.all()
 
     # averaging the rankings so that one room shows up
-    rankings = collections.defaultdict(list)
-    rankings_list = collections.defaultdict(int)
+    # rankings = collections.defaultdict(list)
+    # rankings_list = collections.defaultdict(int)
     seen = set()
 
     # getting a list of all the rankings with the room id as key
-    for room in fav_rooms:
-        rankings[room.Room.room_id].append(room.DrawTime.draw_time)
-    for room in rankings:
-        curr_sum = 0
-        num_rooms = 0
-        for r in rankings[room]:
-            curr_sum += r
-            num_rooms += 1
-        avg_rank = curr_sum / num_rooms
-        rankings_list[room] = int(avg_rank)
+    # for room in fav_rooms:
+    #     rankings[room.Room.room_id].append(room.DrawTime.draw_time)
+    # for room in rankings:
+    #     curr_sum = 0
+    #     num_rooms = 0
+    #     for r in rankings[room]:
+    #         curr_sum += r
+    #         num_rooms += 1
+    #     avg_rank = curr_sum / num_rooms
+    #     rankings_list[room] = int(avg_rank)
 
     # got the average rankings, now to remove the duplicate roomids
     deduped_list = []
     for room in fav_rooms:
         if room.Room.room_id not in seen:
             seen.add(room.Room.room_id)
-            room.DrawTime.draw_time = rankings_list[room.Room.room_id]
+            # room.DrawTime.draw_time = rankings_list[room.Room.room_id]
             deduped_list.append(room)
 
     return deduped_list

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <!-- Link Notyf CSS Library -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
@@ -82,6 +83,10 @@
         padding: 12px 15px;
     }
 
+    td {
+        vertical-align: middle !important;
+    }
+
     .rooms-table tbody tr {
         border-bottom: thin solid #7884F1;
     }
@@ -93,7 +98,7 @@
     }
 
     .star:before {
-        content: "\2606";
+        content: "\2661";
         display: inline-block;
         visibility: visible;
         height: 20px;
@@ -102,10 +107,10 @@
     }
 
     .star:checked:before {
-        content: "\2605";
+        content: "\2665";
         display: inline-block;
         padding-bottom: 10px;
-        color: #ffe135;
+        color: #F15156;
     }
 
     textarea {
@@ -196,6 +201,30 @@
         left: 0;
     }
 
+
+    .announcement-banner {
+        width: 100%;
+        position: relative; 
+        margin-bottom: 0; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-info {
+        background-color: #e2efff;
+        color: #0c5460;
+        border: none;
+    }
+
+    .alert-info .alert-link {
+        color: #074a5a;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    #rooms-table_filter {
+        display: none;
+    }
+
     /* CSS animation */
 
     @-webkit-keyframes fadeIn {
@@ -277,7 +306,12 @@
     <h2 style="font-weight:700;">Rooms</h2>
     <p class="text-center mx-2">Browse <b>{{ total_reviews }}</b> reviews (and counting!) across <b>{{ total_rooms }}</b> rooms.</p>
     <p class="text-center mx-2">Select a Residential College to get started. Please find your room and <b>leave an honest review</b> for future inhabitants!</p>
-    <p class="text-center mx-2 font-italic">Note: Data comes from the 2017 and 2019 draws. Check the official rooms list for up-to-date information.</p>
+    <!-- <p class="text-center mx-2 font-italic">Note: Data comes from the 2017 and 2019 draws. Check the official rooms list for up-to-date information.</p> -->
+    <div class="announcement-banner alert alert-info text-center mb-0" role="alert">
+        <strong>Do you have a room draw PDF?</strong>
+        <a href="https://rooms.tigerapps.org/" class="alert-link" target="_blank" rel="noopener noreferrer">Upload it here</a>
+        to see what rooms are still available.
+      </div>
 </div>
 <div class="form-inline" style="padding-left: 75px; padding-right: 75px; padding-top:25px">
     <div class="col-auto my-1 pl-0">
@@ -306,6 +340,10 @@
         <label class="college">Occupancy</label>
         <select class="form-control" name="occupancy" id="occupancy"></select>
     </div>
+    <div class="col-auto my-1">
+        <label class="search">Search</label>
+        <input class="form-control" type="text" name="search" id="search" placeholder="e.g. edwards 104"></input>
+    </div>
 </div>
 </div>
 </div>
@@ -324,6 +362,7 @@
                     <th>Room No.</th>
                     <th>Occupancy</th>
                     <th>Sq. Footage</th>
+                    <th style="min-width: 84px;">Rating</th>
                     <th>Reviews</th>
                     <th>Add Room to Group</th>
                 </tr>
@@ -336,6 +375,7 @@
                     <th>Room No.</th>
                     <th>Occupancy</th>
                     <th>Sq. Footage</th>
+                    <th style="min-width: 84px;">Rating</th>
                     <th>Reviews</th>
                     <th>Add Room to Group</th>
                 </tr>
@@ -405,7 +445,7 @@
         // added button
         rt = $('#rooms-table').DataTable({
             destroy: true,
-            searching: false,
+            searching: true,
             columnDefs: [
                 {targets: 1, type: "formatted-num"},
             ],
@@ -419,7 +459,6 @@
                 "dataType": "json",
                 "dataSrc": "data",
             },
-
             "columns": [
                 {
                     targets: 0,
@@ -440,6 +479,30 @@
                 {"data": "room_no"},
                 {"data": "occupancy"},
                 {"data": "sq_footage"},
+                {
+                    data: null, targets: -1, render: function (data, type, row) {
+                        const full_stars = Math.floor(data.average_rating)
+                        const has_half_star = (data.average_rating - full_stars) >= 0.5
+                        let empty_stars = 5 - full_stars
+                        if (has_half_star) {
+                            empty_stars--
+                        }
+                        let html = ""
+                        for (let i = 0; i < full_stars; i++) {
+                            html += '<i class="bi bi-star-fill text-warning"></i>'
+                        }
+                        if (has_half_star) {
+                            html += '<i class="bi bi-star-half text-warning"></i>'
+                        }
+                        if (empty_stars == 5) {
+                            return html
+                        }
+                        for (let i = 0; i < empty_stars; i++) {
+                            html += '<i class="bi bi-star text-warning"></i>'
+                        }
+                        return html
+                    }
+                },
                 {
                     data: null, targets: -1, render: function (data, type, row) {
                         return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
@@ -545,6 +608,11 @@
         $('#year').on('change', {}, getResults)
         $('#building').on('change', {}, getResults)
 
+        $('#search').on('keyup', function () {
+            console.log(this.value, rt)
+            rt.search(this.value).draw();
+        })
+
         // on clicking stars, either favorite or unfavorite
         $('#rooms-table').on('change', '.star', function () {
             var data = rt.row($(this).parents('tr')).data();
@@ -610,7 +678,7 @@
 
     }
 
-    // $('document').ready(getResults)
+    $('document').ready(getResults)
     $('document').ready(setup)
     $("#buildings").val("");
     $("#year").val("");
