@@ -189,7 +189,11 @@ def allRooms(
     ).subquery()
 
     query = sqlalchemy_session.query(
-        Room, DrawTime, Room.room_id.in_(user_rooms), ratings_query.c.num_reviews, ratings_query.c.avg_rating
+        Room,
+        DrawTime,
+        Room.room_id.in_(user_rooms),
+        ratings_query.c.num_reviews,
+        ratings_query.c.avg_rating
     ).outerjoin(DrawTime, DrawTime.room_id == Room.room_id).outerjoin(
         ratings_query,
         (ratings_query.c.building_name == Room.building) &
@@ -201,34 +205,36 @@ def allRooms(
     if college and college != "null":
         query = query.filter(Room.res_college == college)
     # if occupancy:
-    #     query = query.filter(Room.occupancy == int(occupancy))
+    #    query = query.filter(Room.occupancy == int(occupancy))
     # if building:
-    #     query = query.filter(Room.building == building)
+    #    query = query.filter(Room.building == building)
     if year:
         query = query.filter(DrawTime.year == year)
 
     rooms = query.all()
 
-    # Deduplicate rooms by building and room_no.
-    # We assume each result row provides a Room attribute (accessible as room.Room)
+    # Deduplicate rooms by unique (building, room_no)
     unique_rooms = {}
     for room in rooms:
-        # Use (building, room_no) as the unique key
         key = (room.Room.building, room.Room.room_no)
-        # If a duplicate exists, you could also decide on which one to keep (for example, based on DrawTime)
         if key not in unique_rooms:
             unique_rooms[key] = room
     rooms = list(unique_rooms.values())
 
-    if college and college != "null":
-        rooms.sort(
-            key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
-        )
+    # Sort rooms so that those with reviews (i.e. num_reviews > 0) appear first.
+    # For rooms within each group, sort by draw_time if available.
+    rooms.sort(key=lambda x: (
+        0 if (x.num_reviews is not None and x.num_reviews > 0) else 1,
+        x.DrawTime.draw_time if x.DrawTime is not None else float('inf')
+    ))
+
+    # Reassign sequential draw_time ranking based on the new ordering.
     for i, room in enumerate(rooms):
         if room.DrawTime is not None:
             room.DrawTime.draw_time = i + 1
 
     return rooms
+
 
 
 
