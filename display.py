@@ -44,7 +44,7 @@ Base = declarative_base()
 
 
 class Room(Base):
-    __tablename__ = "room_info"
+    __tablename__ = "tigerden_rooms_data"
     room_id = Column(Integer, primary_key=True)
     building = Column(String)
     room_no = Column(String)
@@ -52,6 +52,7 @@ class Room(Base):
     sq_footage = Column(Integer)
     res_college = Column(String)
     taken = Column(Boolean)
+    # add all the new columns
 
 
 # class ReviewCount(Base):
