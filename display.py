@@ -178,8 +178,6 @@ def allRooms(
     # get user's favorite rooms
     user_rooms = getUserRooms(username)
 
-    rooms = []
-
     ratings_query = (
         db_session.query(
             Reviews.building_name,
@@ -203,77 +201,35 @@ def allRooms(
     if college and college != "null":
         query = query.filter(Room.res_college == college)
     # if occupancy:
-    # 	query = query.filter(Room.occupancy == int(occupancy))
+    #     query = query.filter(Room.occupancy == int(occupancy))
     # if building:
-    # 	query = query.filter(Room.buiding == building)
+    #     query = query.filter(Room.building == building)
     if year:
         query = query.filter(DrawTime.year == year)
 
     rooms = query.all()
 
-    # if college:
-    # 	query = query.filter(Room.res_college == college)
-    # if year:
-    # 	query = query.filter(DrawTime.year == year)
-    # query = query.order_by(DrawTime.draw_time)
-    # else:
-    # 	# query = query.group_by(Room.room_id, DrawTime.room_id).order_by(func.avg(DrawTime.draw_time))
-    # 	query = query.order_by(Room.room_id)
-
-    # rooms = query.all()
-
-    # # print(rooms)
-
-    # # give rankings 1-last draw time for chosen year
-    # if year:
-    # 	for i, room in enumerate(rooms):
-    # 		room.DrawTime.draw_time = i+1
-    # 	# if not lastranking:
-    # 	# 	lastranking = len(rooms)
-
-    # # compute average across years
-    # else:
-    # 	seen = set()
-    # 	trimmed_rooms = []
-    # 	for i, room in enumerate(rooms):
-    # 		rankings[room.Room.room_id].append(room.DrawTime.draw_time)
-    # 	for room in rooms:
-    # 		if room.Room.room_id not in seen:
-    # 			mean = np.mean(rankings[room.Room.room_id])
-    # 			room.DrawTime.draw_time = mean
-    # 			trimmed_rooms.append(room)
-    # 			seen.add(room.Room.room_id)
-
-    # 	trimmed_rooms.sort(key = lambda x : x.DrawTime.draw_time)
-
-    # 	rooms = trimmed_rooms.copy()
-    # 	# for i, room in enumerate(rooms):
-    # 	# 	room.DrawTime.draw_time = i + 1
-
-    # 	# 	rooms.append(room)
-    # 		# room.DrawTime.draw_time = i + 1
-    # 	# for i, room in enumerate(rooms):
-    # 	# 	room.DrawTime.draw_time = i+1
-
-    # 	# for i,room in enumerate(rooms):
-    # 	# 	rankings[room.Room.room_id].append(room.DrawTime.draw_time)
-    # 	# 	if i != len(rooms)-1:
-    # 	# 		if (rooms[i+1].Room.room_id != room.Room.room_id):
-    # 	# 			room.DrawTime.draw_time = np.mean(rankings[room.Room.room_id])
-
-    # # print(rankings)
+    # Deduplicate rooms by building and room_no.
+    # We assume each result row provides a Room attribute (accessible as room.Room)
+    unique_rooms = {}
+    for room in rooms:
+        # Use (building, room_no) as the unique key
+        key = (room.Room.building, room.Room.room_no)
+        # If a duplicate exists, you could also decide on which one to keep (for example, based on DrawTime)
+        if key not in unique_rooms:
+            unique_rooms[key] = room
+    rooms = list(unique_rooms.values())
 
     if college and college != "null":
         rooms.sort(
             key=lambda x: float("inf") if x.DrawTime is None else x.DrawTime.draw_time
         )
     for i, room in enumerate(rooms):
-        if room.DrawTime is None:
-            pass
-        else:
+        if room.DrawTime is not None:
             room.DrawTime.draw_time = i + 1
 
     return rooms
+
 
 
 def getFavoriteRooms(username):

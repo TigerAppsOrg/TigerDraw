@@ -126,6 +126,8 @@ def review():
     for row in data:
         room_names.append(f"{row[0].building} {row[0].room_no}")
 
+    print(room_names)
+
     html = render_template(
         "review.html",
         items=json.dumps(room_names)
