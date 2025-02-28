@@ -126,15 +126,28 @@ def review():
         "",
     )
 
+    # Hard-coded list of rooms that belong to Forbes College
+    forbes_buildings = ["Forbes", "Maine", "Annex"]
+
     room_names = []
+    forbes_rooms = []  # Create a special list just for Forbes rooms
+    
     for row in data:
-        room_names.append(f"{row[0].building} {row[0].room_no}")
-
-    print(room_names)
-
+        building_name = row[0].building
+        room_no = row[0].room_no
+        full_name = f"{building_name} {room_no}"
+        
+        # Add all rooms to the main list
+        room_names.append(full_name)
+        
+        # If this is a Forbes-related building, add it to the special Forbes list
+        if building_name in forbes_buildings or row[0].res_college == "Forbes College":
+            forbes_rooms.append(full_name)
+    
     html = render_template(
         "review.html",
-        items=json.dumps(room_names)
+        items=json.dumps(room_names),
+        forbes_rooms=json.dumps(forbes_rooms)  # Pass the Forbes rooms as a separate list
     )
     return make_response(html)
 

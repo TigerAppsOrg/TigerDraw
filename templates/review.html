@@ -531,7 +531,6 @@
 <script>
   const items = JSON.parse(`{{ items | safe }}`);
   const forbesRooms = JSON.parse(`{{ forbes_rooms | safe }}`);
-  console.log("Loaded Forbes rooms:", forbesRooms);
   
   const buildingAliases = {
     'Maine': 'Forbes', // Map Maine to Forbes
@@ -749,7 +748,6 @@
         $("#reviews-body").html('<div class="alert alert-danger">Error loading reviews. Please try again.</div>');
         roomSelected = false;
         $("#message").text(`Error loading room ${selectedText}. Please try again.`).removeClass("success").addClass("error");
-        console.error("Error:", error);
       });
   }
 
@@ -776,14 +774,11 @@
           // Filter Forbes rooms based on the additional search term
           let filteredForbesRooms = forbesRooms;
           if (additionalSearch) {
-            console.log("Additional Forbes search term:", additionalSearch);
             filteredForbesRooms = forbesRooms.filter(room => {
               const roomLower = room.toLowerCase();
               return roomLower.includes(additionalSearch);
             });
           }
-          
-          console.log(`Forbes search: Found ${filteredForbesRooms.length} matching rooms`);
           
           // Limit to first 20 for display
           const displayedForbesRooms = filteredForbesRooms.slice(0, 20);
@@ -845,7 +840,6 @@
           return false;
         });
         
-        console.log(`Search: "${searchQuery}" found ${filteredItems.length} matches`);
         renderList(filteredItems.slice(0, 10)); // Show top 10 results
       }
     });
