@@ -400,12 +400,90 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
+    // Initialize Notyf globally for notifications throughout the page
+    const notyf = new Notyf({
+        duration: 5000,
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        types: [
+            {
+                type: 'success',
+                backgroundColor: '#4e73df',
+                icon: false
+            },
+            {
+                type: 'error',
+                backgroundColor: '#dc3545',
+                icon: false
+            }
+        ]
+    });
+    
+    // Ensure the Notyf instance is available globally
+    window.notyf = notyf;
+    
     let text_max;
-
     var rt;
     var gt;
     let request = null;
     let controller = null;
+
+    // Custom search extension for DataTables to handle Forbes/Maine alias
+    $.fn.dataTable.ext.search.push(
+      function(settings, data, dataIndex) {
+        // Only apply to rooms-table
+        if (settings.nTable.id !== 'rooms-table') {
+          return true;
+        }
+        
+        const searchValue = $('#search').val().toLowerCase();
+        if (!searchValue) {
+          return true; // Show all when no search text
+        }
+        
+        // Building is in the 3rd column (index 2)
+        const building = data[2].toLowerCase();
+        // College is in the 2nd column (index 1)
+        const college = data[1].toLowerCase();
+        // Room number is in the 4th column (index 3)
+        const roomNo = data[3].toLowerCase();
+        
+        // Direct match check
+        if (building.includes(searchValue) || 
+            college.includes(searchValue) || 
+            roomNo.includes(searchValue) ||
+            (building + ' ' + roomNo).includes(searchValue)) {
+          return true;
+        }
+        
+        // Handle Forbes/Maine alias
+        if ((searchValue.includes('forbes') && building === 'maine') ||
+            (searchValue.includes('maine') && college.includes('forbes'))) {
+          return true;
+        }
+        
+        // Handle partial matches for building names (for better UX)
+        if (searchValue.length >= 3) {
+          const buildingWords = building.split(' ');
+          const searchWords = searchValue.split(' ');
+          
+          for (let i = 0; i < searchWords.length; i++) {
+            const searchWord = searchWords[i];
+            if (searchWord.length >= 3) {
+              for (let j = 0; j < buildingWords.length; j++) {
+                if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
+        
+        return false;
+      }
+    );
 
     function getResults(e) {
         $.fn.dataTable.ext.errMode = 'throw';
@@ -602,16 +680,20 @@
     }
 
     function setup() {
-
         $('#college').on('change', {change: true}, getResults)
         $('#occupancy').on('change', {}, getResults)
         $('#year').on('change', {}, getResults)
         $('#building').on('change', {}, getResults)
 
-        $('#search').on('keyup', function () {
-            console.log(this.value, rt)
-            rt.search(this.value).draw();
-        })
+        // Remove the old search handler that was causing conflicts
+        $('#search').off('keyup');
+        
+        // Add the improved search handler
+        $('#search').on('keyup', function() {
+            // This will now be handled by our custom search function
+            rt.draw();
+            console.log("Applying custom search filter:", this.value);
+        });
 
         // on clicking stars, either favorite or unfavorite
         $('#rooms-table').on('change', '.star', function () {
@@ -712,50 +794,191 @@
 
     function getReviews(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        setTimeout(function () {
+        
+        // Make sure body has the rooms-page class for CSS targeting
+        $('body').addClass('rooms-page');
+        
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
+        setTimeout(function() {
+            console.log("Fetching reviews for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Initialize character counter for the review textarea
+                    setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
 
     function getReviewsWithError(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        setTimeout(function () {
+        
+        // Make sure body has the rooms-page class for CSS targeting
+        $('body').addClass('rooms-page');
+        
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
+        setTimeout(function() {
+            console.log("Fetching reviews (with error context) for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-                $("#overall-rating").val(rating);
-                $("#written-review").val(review);
-                $('#count_message').html(review.length + ' / ' + text_max);
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Initialize character counter for the review textarea
+                    setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                        }
+                        
+                        // Display error message if applicable
+                        if (window.errorMessage) {
+                            if (window.notyf) {
+                                window.notyf.error(window.errorMessage);
+                                window.errorMessage = null;
+                            }
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
-
-    const notyf = new Notyf({
-        duration: 10000,
-        dismissible: true,
-        position: {
-            x: 'right',
-            y: 'bottom',
-        },
-    });
-
 
     function submitReviewWithoutRefresh() {
         rating = $("#overall-rating").val()
