@@ -749,9 +749,19 @@
         // Ensure jQuery Confirm is available
         if (typeof $.confirm !== 'function') {
             console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
             $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
                 .done(function() {
                     console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
                 });
         }
         
@@ -760,8 +770,15 @@
             $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
         }
         
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
         setTimeout(function() {
             console.log("Fetching reviews for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
@@ -769,11 +786,33 @@
                 .then(data => {
                     $("#reviews-body").html(data);
                     
-                    // Now that reviews are loaded, initialize any JS functionality
+                    // Initialize character counter for the review textarea
                     setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
                         if (typeof initializeCharCounter === 'function') {
                             initializeCharCounter();
                             console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
                         }
                     }, 300);
                 })
@@ -800,9 +839,19 @@
         // Ensure jQuery Confirm is available
         if (typeof $.confirm !== 'function') {
             console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
             $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
                 .done(function() {
                     console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
                 });
         }
         
@@ -811,8 +860,15 @@
             $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
         }
         
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
         setTimeout(function() {
             console.log("Fetching reviews (with error context) for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
@@ -820,11 +876,33 @@
                 .then(data => {
                     $("#reviews-body").html(data);
                     
-                    // Now that reviews are loaded, initialize any JS functionality
+                    // Initialize character counter for the review textarea
                     setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
                         if (typeof initializeCharCounter === 'function') {
                             initializeCharCounter();
                             console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
                         }
                         
                         // Display error message if applicable

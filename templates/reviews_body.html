@@ -358,37 +358,193 @@
 </div>
 
 <script>
-  const text_max = 5000;
-  
-  function updateCharCount() {
-    let text_length = $("#written-review").val().length;
-    $(".character-counter").text(text_length + " / " + text_max);
-  }
-  
-  // This function ensures character counter is initialized in both standalone and modal contexts
+  // Global function to initialize character counter without redeclaring variables
   function initializeCharCounter() {
-    $("#written-review").off("input").on("input", updateCharCount);
-    updateCharCount();
-    console.log("Character counter initialized");
+    // Use window.text_max if it exists, otherwise initialize it
+    if (typeof window.text_max === 'undefined') {
+      window.text_max = 5000;
+    }
+    
+    const textArea = $("#written-review");
+    const counter = $(".character-counter");
+    
+    if (textArea.length && counter.length) {
+      // Set initial counter value
+      let text_length = textArea.val().length;
+      counter.text(text_length + " / " + window.text_max);
+      
+      // Ensure the input event is properly bound for live updating
+      textArea.off("input").on("input", function() {
+        text_length = $(this).val().length;
+        counter.text(text_length + " / " + window.text_max);
+      });
+    }
   }
 
+  // Function to handle the review submission
+  function submitReviewWithoutRefresh() {
+    // Log values for debugging
+    console.log("Submitting review...");
+    const rating = $('input[name="overall-rating"]:checked').val();
+    const review = $("#written-review").val();
+    const checkbox = $('input[name="submission-check-2"]').is(':checked');
+    
+    console.log("Rating:", rating);
+    console.log("Review length:", review ? review.length : 0);
+    console.log("Checkbox checked:", checkbox);
+    
+    // Context detection
+    const isRoomsPage = $('body').hasClass('rooms-page');
+    
+    // Validation checks
+    if (!rating) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error("Please select a rating.");
+      } else {
+        alert("Please select a rating.");
+      }
+      return;
+    }
+    
+    if (!review || review.trim().length < 100) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error("Please write a review with at least 100 characters.");
+      } else {
+        alert("Please write a review with at least 100 characters.");
+      }
+      return;
+    }
+    
+    if (!checkbox) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error("Please check the box to acknowledge that your netID will be displayed with your review.");
+      } else {
+        alert("Please check the box to acknowledge that your netID will be displayed with your review.");
+      }
+      return;
+    }
+    
+    // Helper function to handle AJAX errors with context awareness
+    function handleAjaxError(jqXHR) {
+      console.error("Error response:", jqXHR.responseJSON);
+      
+      if (jqXHR.responseJSON && jqXHR.responseJSON.message === "override") {
+        // Handle override confirmation with jQuery Confirm
+        $.confirm({
+          title: "You will override your old review with this new review.",
+          buttons: {
+            confirm: {
+              action: function () {
+                $("#override").val("yes");
+                submitFormWithAjax();
+              },
+              btnClass: "btn-blue",
+            },
+            cancel: {
+              action: function () {},
+              btnClass: "btn-red",
+            },
+          },
+        });
+      } else {
+        // Display other error messages
+        const errorMessage = jqXHR.responseJSON ? jqXHR.responseJSON.message : "An error occurred while submitting your review.";
+        
+        if (isRoomsPage && window.notyf) {
+          window.notyf.error(errorMessage);
+        } else {
+          $("#message").text(errorMessage).removeClass("success").addClass("error");
+        }
+      }
+    }
+    
+    // Function to submit the form with AJAX
+    function submitFormWithAjax() {
+      console.log("Submitting form with AJAX...");
+      let reviewForm = $("form#submit-review-form")[0];
+      let formData = new FormData(reviewForm);
+      
+      // Log form data for debugging
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+      
+      $.ajax({
+        type: "POST",
+        url: "/submitReview",
+        contentType: false,
+        dataType: "json",
+        cache: false,
+        processData: false,
+        data: formData,
+        success: function (data) {
+          console.log("Success response:", data);
+          
+          // Reset the form
+          $("#submit-review-form").trigger("reset");
+          
+          // Show success message
+          if (isRoomsPage && window.notyf) {
+            window.notyf.success("Review submitted successfully!");
+            
+            // Close the modal if we're in the rooms page
+            setTimeout(function() {
+              $('#seeReviewsModal').modal('hide');
+              
+              // Reload reviews to show the new one
+              const building = $('input[name="building-name"]').val();
+              const room = $('input[name="room-number"]').val();
+              
+              if (building && room) {
+                setTimeout(function() {
+                  getReviews(building, room);
+                }, 500);
+              }
+            }, 1500);
+          } else {
+            $("#message").text("Review submitted, thank you!").removeClass("error").addClass("success");
+          }
+        },
+        error: function (jqXHR) {
+          handleAjaxError(jqXHR);
+        },
+      });
+    }
+    
+    // Start the submission process
+    submitFormWithAjax();
+  }
+
+  // Initialize when the DOM is ready
   $(document).ready(function() {
-    // Initialize character counter in standalone context
     initializeCharCounter();
     
-    // Make sure we have Bootstrap icons available
+    // Ensure Bootstrap icons are included
     if (!$('link[href*="bootstrap-icons"]').length) {
       $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
     }
     
-    // Detect the context and apply appropriate styling
+    // Attach event handler to form submission
+    $("#submit-review-form").off("submit").on("submit", function(e) {
+      e.preventDefault();
+      submitReviewWithoutRefresh();
+      return false;
+    });
+    
+    // Also attach to submit button click for more reliability
+    $(".submit-button").off("click").on("click", function(e) {
+      e.preventDefault();
+      submitReviewWithoutRefresh();
+      return false;
+    });
+    
+    // Add page context detection 
     const isReviewPage = window.location.pathname === '/review';
     const isRoomsPage = window.location.pathname.includes('rooms');
     
-    if(isRoomsPage) {
+    if (isRoomsPage) {
       // We're in the rooms page context (modal)
       $('body').addClass('rooms-page');
-      $('#submit-review-form').addClass('compact-form');
       $('.write-review-prompt').show();
       $('.review-item').show();
       
@@ -400,10 +556,9 @@
         "background-size": "30px"
       });
       
-    } else if(isReviewPage) {
+    } else if (isReviewPage) {
       // We're on the standalone review page
       $('body').removeClass('rooms-page');
-      $('#submit-review-form').removeClass('compact-form');
       $('.write-review-prompt').hide();
       $('.review-item').hide();
       
@@ -415,230 +570,7 @@
         "background-size": "50px"
       });
     }
-    
-    // Special handling for modal context
-    if (window.parent !== window && $('#seeReviewsModal').length) {
-      console.log("We're in the modal context - ensuring special initializations");
-      // Make sure the character counter updates properly
-      setTimeout(initializeCharCounter, 500);
-    }
   });
-  
-  // Add review submission function
-  function submitReviewWithoutRefresh(e) {
-    e.preventDefault();
-    
-    // Get values
-    const rating = $('input[name="overall-rating"]:checked').val();
-    const review = $('#written-review').val();
-    const reviewLength = review.length;
-    const acknowledge = $('#submission-check-2').is(':checked');
-    const building = $('#building-name').text();
-    const room = $('#room-number').text();
-    
-    console.log("Form data before submission:");
-    console.log("Rating:", rating);
-    console.log("Review length:", reviewLength);
-    console.log("Building:", building);
-    console.log("Room:", room);
-    console.log("Checkbox checked:", acknowledge);
-    
-    // Log form data for debugging
-    const formData = new FormData($('#submit-review-form')[0]);
-    console.log("Form data entries:");
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
-    
-    // Determine if we're in rooms page context or standalone
-    const isRoomsPage = $('body').hasClass('rooms-page');
-    
-    // Validate the form
-    if (!rating) {
-      const errorMsg = isRoomsPage ? 
-        "Please select a star rating before submitting." : 
-        "Please select a rating before submitting your review.";
-      if (window.notyf && isRoomsPage) {
-        window.notyf.error(errorMsg);
-      } else {
-        alert(errorMsg);
-      }
-      return false;
-    }
-    
-    if (reviewLength < 100) {
-      const errorMsg = isRoomsPage ? 
-        "Please write at least 100 characters in your review." :
-        "Your review must be at least 100 characters long. Please provide more details.";
-      if (window.notyf && isRoomsPage) {
-        window.notyf.error(errorMsg);
-      } else {
-        alert(errorMsg);
-      }
-      return false;
-    }
-    
-    if (!acknowledge) {
-      const errorMsg = isRoomsPage ? 
-        "Please acknowledge that your netID will be displayed with your review." :
-        "You must acknowledge that your netID will be displayed alongside your review.";
-      if (window.notyf && isRoomsPage) {
-        window.notyf.error(errorMsg);
-      } else {
-        alert(errorMsg);
-      }
-      return false;
-    }
-    
-    // Show validation passed and submission is in progress
-    if (window.notyf && isRoomsPage) {
-      window.notyf.success("Submitting your review...");
-    }
-    
-    // Submit the form via AJAX
-    $.ajax({
-      url: '/submitReview',
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function(response) {
-        console.log("Submission response:", response);
-        
-        if (response.message === "override") {
-          // Handle review override confirmation
-          if ($.confirm) {
-            // If jQuery confirm is available (should be in most contexts)
-            $.confirm({
-              title: 'Review Already Exists',
-              content: 'You have already submitted a review for this room. Do you want to override it?',
-              buttons: {
-                confirm: function() {
-                  submitOverrideReview(formData);
-                },
-                cancel: function() {
-                  // Do nothing if canceled
-                }
-              }
-            });
-          } else {
-            // Fallback to standard confirm if jQuery confirm is unavailable
-            if (confirm('You have already submitted a review for this room. Do you want to override it?')) {
-              submitOverrideReview(formData);
-            }
-          }
-        } else {
-          // Success - either show notification or alert based on context
-          const successMsg = "Your review has been submitted successfully!";
-          if (window.notyf && isRoomsPage) {
-            window.notyf.success(successMsg);
-          } else {
-            alert(successMsg);
-          }
-          
-          // If we're in the standalone review page, redirect back to the rooms page
-          if (!isRoomsPage) {
-            window.location.href = '/rooms';
-          } else {
-            // In modal context, reset the form and reload reviews
-            $('#submit-review-form')[0].reset();
-            updateCharCount();
-            // Reload the reviews for this room
-            if (typeof getReviews === 'function') {
-              getReviews(building, room);
-            }
-          }
-        }
-      },
-      error: function(xhr, status, error) {
-        console.error("AJAX Error:", status, error);
-        console.log("Response text:", xhr.responseText);
-        
-        try {
-          const errorObj = JSON.parse(xhr.responseText);
-          console.log("Parsed error:", errorObj);
-        } catch (e) {
-          console.log("Could not parse response as JSON");
-        }
-        
-        handleAjaxError(xhr, status, error);
-      }
-    });
-    
-    return false;
-  }
-
-  // Helper function to submit an override review
-  function submitOverrideReview(formData) {
-    // Set the override flag to yes
-    formData.set('override', 'yes');
-    
-    $.ajax({
-      url: '/submitReview',
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function(response) {
-        const successMsg = "Your review has been updated successfully!";
-        if (window.notyf && $('body').hasClass('rooms-page')) {
-          window.notyf.success(successMsg);
-        } else {
-          alert(successMsg);
-        }
-        
-        // Reset form or redirect based on context
-        if (!$('body').hasClass('rooms-page')) {
-          window.location.href = '/rooms';
-        } else {
-          $('#submit-review-form')[0].reset();
-          updateCharCount();
-          // Reload the reviews
-          const building = $('#building-name').text();
-          const room = $('#room-number').text();
-          if (typeof getReviews === 'function') {
-            getReviews(building, room);
-          }
-        }
-      },
-      error: function(xhr, status, error) {
-        handleAjaxError(xhr, status, error);
-      }
-    });
-  }
-
-  // Helper function to handle AJAX errors
-  function handleAjaxError(xhr, status, error) {
-    console.error("AJAX Error:", status, error);
-    console.log("Response text:", xhr.responseText);
-    
-    let errorMessage = "An error occurred while submitting your review.";
-    
-    // Parse the error message from the server if available
-    try {
-      const errorData = JSON.parse(xhr.responseText);
-      if (errorData.message) {
-        errorMessage = errorData.message;
-      }
-    } catch (e) {
-      console.error("Could not parse error response:", e);
-      
-      if (xhr.status === 400) {
-        errorMessage = "There was a problem with your review submission. Please check all fields.";
-      } else if (xhr.status === 500) {
-        errorMessage = "Server error. Please try again later.";
-      }
-    }
-    
-    if (window.notyf && $('body').hasClass('rooms-page')) {
-      window.notyf.error(errorMessage);
-    } else {
-      alert(errorMessage);
-    }
-  }
-
-  // Attach event handler to form submission
-  $("#submit-review-form").submit(submitReviewWithoutRefresh);
 </script>
 
 <form
@@ -646,15 +578,14 @@
   method="post"
   enctype="multipart/form-data"
   id="submit-review-form"
-  class="review-form {% if request.path != '/review' %}compact-form{% endif %}"
-  onsubmit="return false;"
+  class="review-form"
 >
   <div class="room-info">
-    If you were in <strong>{{ building_name }}, room {{ room_number }}</strong>,
+    If you were in <strong><span id="building-name">{{ building_name }}</span>, room <span id="room-number">{{ room_number }}</span></strong>,
     please submit your review below 😊
   </div>
-  <input type="text" name="building-name" value="{{ building_name }}" hidden />
-  <input type="text" name="room-number" value="{{ room_number }}" hidden />
+  <input type="hidden" name="building-name" value="{{ building_name }}" />
+  <input type="hidden" name="room-number" value="{{ room_number }}" />
   
   <div class="section mb-4">
     <h2>What would you rate your room?</h2>
@@ -678,8 +609,8 @@
       <textarea
         class="form-control"
         id="written-review"
-        rows="6"
         name="written-review"
+        rows="6"
         placeholder="Write here about your experience with this room. What did you like? What could be improved?"
         required
       ></textarea>
