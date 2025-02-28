@@ -650,11 +650,17 @@ def submit_review():
     # username = "proxy"
     username = CASClient().authenticate()
     valid_ratings = ["1", "2", "3", "4", "5"]
-    building_name = request.form["building-name"]
-    room_no = request.form["room-number"]
-    overall_rating = request.form["overall-rating"]
-    written_review = request.form["written-review"]
-    override = request.form["override"]
+    
+    # Get form data, with better error handling
+    try:
+        building_name = request.form["building-name"]
+        room_no = request.form["room-number"]
+        overall_rating = request.form["overall-rating"]
+        written_review = request.form["written-review"]
+        override = request.form["override"]
+        
+    except KeyError as e:
+        return jsonify(message=f"Missing required field: {str(e)}"), 400
     
     # Handle Forbes/Maine case
     if building_name == "Maine":

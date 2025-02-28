@@ -383,15 +383,10 @@
 
   // Function to handle the review submission
   function submitReviewWithoutRefresh() {
-    // Log values for debugging
-    console.log("Submitting review...");
+    // Get form values
     const rating = $('input[name="overall-rating"]:checked').val();
     const review = $("#written-review").val();
     const checkbox = $('input[name="submission-check-2"]').is(':checked');
-    
-    console.log("Rating:", rating);
-    console.log("Review length:", review ? review.length : 0);
-    console.log("Checkbox checked:", checkbox);
     
     // Context detection
     const isRoomsPage = $('body').hasClass('rooms-page');
@@ -426,7 +421,6 @@
     
     // Helper function to handle AJAX errors with context awareness
     function handleAjaxError(jqXHR) {
-      console.error("Error response:", jqXHR.responseJSON);
       
       if (jqXHR.responseJSON && jqXHR.responseJSON.message === "override") {
         // Handle override confirmation with jQuery Confirm
