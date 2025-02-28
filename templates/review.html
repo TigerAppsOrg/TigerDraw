@@ -172,8 +172,9 @@
     }
 
     h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
+      font-size: 1.6em;
+      margin-bottom: 15px;
+      color: #474bc9;
     }
 
     .help-tip {
@@ -320,14 +321,14 @@
     }
 
     .search-container {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .divider {
       width: 100%;
       height: 1px;
       background-color: #e9ecef;
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
     .submit-button {
@@ -357,13 +358,17 @@
     }
 
     .form-check {
-      margin: 20px 0;
+      margin: 15px 0;
     }
 
     .room-info {
       text-align: center;
       margin-bottom: 20px;
       font-size: 18px;
+      color: #333;
+      padding: 10px;
+      background-color: #f0f2ff;
+      border-radius: 8px;
     }
 
     .search-input {
@@ -375,6 +380,71 @@
     .search-icon {
       background-color: #f8f9fa;
       border-color: #ced4da;
+    }
+    
+    /* More compact layout with less vertical space */
+    .review-form-section {
+      margin-bottom: 15px;
+    }
+    
+    .compact-form h2 {
+      margin: 10px 0;
+      font-size: 1.4em;
+    }
+    
+    .compact-form .star-rating {
+      margin: 10px 0;
+    }
+    
+    .compact-form .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .compact-form textarea {
+      height: 100px;
+    }
+    
+    .compact-form .form-check {
+      margin: 10px 0;
+    }
+    
+    /* Message styling */
+    #message {
+      text-align: center;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    
+    #message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    #message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .review-item {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    /* Hide reviews on the review page while user is writing a review */
+    body:not(.rooms-page) #reviews-div .review-item {
+      display: none;
+    }
+    
+    body:not(.rooms-page) #reviews-div p:first-child {
+      display: none;
+    }
+    
+    body:not(.rooms-page) #reviews-div hr {
+      display: none;
     }
   </style>
 
@@ -404,8 +474,9 @@
 
       <div id="searchResults"></div>
 
-      <div id="reviews-body"></div>
+      <div id="reviews-body" class="compact-form"></div>
       <div id="message"></div>
+
     </div>
   </body>
 </html>
@@ -424,7 +495,7 @@
     const review = $("#written-review").val();
     
     if (!rating) {
-      $("#message").text("Please select a rating.").css("color", "red");
+      $("#message").text("Please select a rating.").removeClass("success").addClass("error");
       return;
     }
     
@@ -442,7 +513,8 @@
         $("#submit-review-form").trigger("reset");
         $("#message")
           .text("Review submitted, thank you!")
-          .css("color", "green");
+          .removeClass("error")
+          .addClass("success");
       },
       error: function (jqXHR) {
         if (jqXHR.responseJSON.message === "override") {
@@ -466,11 +538,14 @@
                       $("#submit-review-form").trigger("reset");
                       $("#message")
                         .text("Review submitted, thank you!")
-                        .css("color", "green");
+                        .removeClass("error")
+                        .addClass("success");
                     },
                     error: function (jqXHR) {
-                      $("#message").text(jqXHR.responseJSON.message);
-                      $("#message").css("color", "red");
+                      $("#message")
+                        .text(jqXHR.responseJSON.message)
+                        .removeClass("success")
+                        .addClass("error");
                     },
                   });
                 },
@@ -483,8 +558,10 @@
             },
           });
         } else {
-          $("#message").text(jqXHR.responseJSON.message);
-          $("#message").css("color", "red");
+          $("#message")
+            .text(jqXHR.responseJSON.message)
+            .removeClass("success")
+            .addClass("error");
         }
       },
     });

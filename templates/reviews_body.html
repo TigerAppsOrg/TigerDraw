@@ -1,25 +1,67 @@
 <style>
   .review-item {
     background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
   
-  .review-item h5 {
+  .review-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+  }
+  
+  .review-meta {
     color: #6c757d;
     font-size: 14px;
-    margin-bottom: 10px;
   }
   
-  .review-item h6 {
-    font-weight: bold;
-    margin-bottom: 10px;
+  .review-date {
+    color: #adb5bd;
+    font-style: italic;
   }
   
-  .review-item p {
+  .reviewer-id {
+    font-weight: 500;
+    color: #474bc9;
+  }
+  
+  .star-display {
+    display: flex;
+    margin-bottom: 15px;
+  }
+  
+  .star-display i {
+    color: #f5c842;
+    margin-right: 3px;
+  }
+  
+  .review-content {
     font-size: 16px;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: #495057;
+  }
+  
+  .review-rating {
+    display: inline-block;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: white;
+    background-color: #474bc9;
+    font-size: 14px;
+    margin-bottom: 10px;
   }
   
   /* Star Rating System - works in both standalone and modal contexts */
@@ -60,6 +102,10 @@
     margin-bottom: 20px;
     font-size: 16px;
     color: #333;
+    background-color: #f0f2ff;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #474bc9;
   }
   
   .character-counter {
@@ -73,6 +119,48 @@
     margin-bottom: 20px;
   }
   
+  .review-form {
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .review-form h2 {
+    font-size: 1.3em;
+    color: #474bc9;
+    margin: 15px 0 10px;
+    font-weight: 500;
+  }
+  
+  .review-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .review-form .character-counter {
+    color: #adb5bd;
+    font-size: 12px;
+    text-align: right;
+    margin-top: 4px;
+  }
+  
+  .review-form textarea {
+    height: 100px;
+    resize: none;
+    font-size: 14px;
+    border-color: #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .review-form textarea:focus {
+    border-color: #474bc9;
+    box-shadow: 0 0 0 0.2rem rgba(71, 75, 201, 0.25);
+  }
+  
   .submit-button {
     background-color: #4e73df;
     color: white;
@@ -82,22 +170,34 @@
     cursor: pointer;
     transition: all 0.2s;
     font-size: 14px;
+    width: auto;
   }
   
   .submit-button:hover {
     background-color: #3a5fc9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
   
   .coming-soon {
     display: inline-block;
     background-color: #f8f9fa;
     color: #6c757d;
-    padding: 10px 20px;
+    padding: 8px 15px;
     border-radius: 4px;
     border: 1px dashed #adb5bd;
     font-style: italic;
+    margin: 5px 0;
+    font-size: 13px;
+  }
+  
+  /* Make the form more compact */
+  .compact-section {
+    margin-bottom: 10px;
+  }
+  
+  .compact-margin {
     margin: 10px 0;
-    font-size: 14px;
   }
   
   /* Modal specific adjustments */
@@ -121,24 +221,71 @@
   #seeReviewsModal .star {
     display: none !important;
   }
+  
+  /* Empty state styling */
+  .no-reviews {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    font-style: italic;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  /* Review writing prompt */
+  .write-review-prompt {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #e9f2ff;
+    border-radius: 8px;
+    color: #474bc9;
+    font-weight: 500;
+  }
 </style>
 
 <div id="reviews-div" style="display: block !important;">
   {% if not reviews %}
-  <p>There are currently no reviews for this room</p>
-  <hr />
-  {% else %} {% for review in reviews %}
-  <div class="review-item">
-    <h5>
-      Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
-      %} by <em>{{ review.net_id }}</em>
-      {% endif %}
-    </h5>
-    <h6>Rating: {{ review.rating }} out of 5</h6>
-    <p>{{ review.content }}</p>
+  <div class="no-reviews">
+    <i class="bi bi-chat-square-text"></i>
+    <p>There are currently no reviews for this room.</p>
+    <p>Be the first to share your experience!</p>
   </div>
-  {% if not loop.last %}<hr />{% endif %}
-  {% endfor %} {% endif %}
+  {% else %}
+  <div class="write-review-prompt">
+    Read {{ reviews|length }} review{% if reviews|length > 1 %}s{% endif %} for this room below
+  </div>
+  {% for review in reviews %}
+  <div class="review-item">
+    <div class="review-header">
+      <div class="review-meta">
+        <span class="review-date">{{ get_time_string_from_utc_dt(review.date) }}</span>
+        {% if review.net_id %}
+        <span> by </span>
+        <span class="reviewer-id">{{ review.net_id }}</span>
+        {% endif %}
+      </div>
+      <div class="review-rating">
+        {{ review.rating }} / 5 
+      </div>
+    </div>
+    
+    <div class="star-display">
+      {% for i in range(review.rating) %}
+      <i class="bi bi-star-fill"></i>
+      {% endfor %}
+      {% for i in range(5 - review.rating) %}
+      <i class="bi bi-star" style="color: #e5e5e5;"></i>
+      {% endfor %}
+    </div>
+    
+    <div class="review-content">
+      {{ review.content }}
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
 </div>
 
 <script>
@@ -164,7 +311,7 @@
       if (window.location.pathname.includes('rooms')) {
         notyf.error("Please select a rating.");
       } else {
-        $("#message").text("Please select a rating.").css("color", "red");
+        $("#message").text("Please select a rating.").removeClass("success").addClass("error");
       }
       return;
     }
@@ -194,7 +341,7 @@
           }
         } else {
           // For standalone context
-          $("#message").text("Review submitted, thank you!").css("color", "green");
+          $("#message").text("Review submitted, thank you!").removeClass("error").addClass("success");
         }
       },
       error: function (jqXHR) {
@@ -227,7 +374,7 @@
                         }
                       } else {
                         // For standalone context
-                        $("#message").text("Review submitted, thank you!").css("color", "green");
+                        $("#message").text("Review submitted, thank you!").removeClass("error").addClass("success");
                       }
                     },
                     error: function (jqXHR) {
@@ -238,7 +385,7 @@
                           getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
                         }
                       } else {
-                        $("#message").text(jqXHR.responseJSON.message).css("color", "red");
+                        $("#message").text(jqXHR.responseJSON.message).removeClass("success").addClass("error");
                       }
                     },
                   });
@@ -259,7 +406,7 @@
               getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
             }
           } else {
-            $("#message").text(jqXHR.responseJSON.message).css("color", "red");
+            $("#message").text(jqXHR.responseJSON.message).removeClass("success").addClass("error");
           }
         }
       },
@@ -272,6 +419,7 @@
   method="post"
   enctype="multipart/form-data"
   id="submit-review-form"
+  class="review-form"
 >
   <div class="room-info">
     If you were in <strong>{{ building_name }}, room {{ room_number }}</strong>,
@@ -280,41 +428,47 @@
   <input type="text" name="building-name" value="{{ building_name }}" hidden />
   <input type="text" name="room-number" value="{{ room_number }}" hidden />
   
-  <h2>What would you rate your room?</h2>
-  <div class="star-rating">
-    <input type="radio" id="star5" name="overall-rating" value="5" />
-    <label for="star5" title="5 stars"></label>
-    <input type="radio" id="star4" name="overall-rating" value="4" />
-    <label for="star4" title="4 stars"></label>
-    <input type="radio" id="star3" name="overall-rating" value="3" />
-    <label for="star3" title="3 stars"></label>
-    <input type="radio" id="star2" name="overall-rating" value="2" />
-    <label for="star2" title="2 stars"></label>
-    <input type="radio" id="star1" name="overall-rating" value="1" />
-    <label for="star1" title="1 star"></label>
-  </div>
-  
-  <h2>Please leave a written review of your room.</h2>
-  <div class="form-group">
-    <textarea
-      class="form-control"
-      id="written-review"
-      rows="5"
-      name="written-review"
-      placeholder="Write here"
-      required
-    ></textarea>
-    <div class="character-counter">0 / 5000</div>
-  </div>
-  
-  <h2>Feel free to upload any photos of your room!</h2>
-  <div style="text-align: center; margin-bottom: 20px;">
-    <div class="coming-soon">
-      <i class="bi bi-camera"></i> Photo uploads coming soon!
+  <div class="compact-section">
+    <h2>What would you rate your room?</h2>
+    <div class="star-rating compact-margin">
+      <input type="radio" id="star5" name="overall-rating" value="5" />
+      <label for="star5" title="5 stars"></label>
+      <input type="radio" id="star4" name="overall-rating" value="4" />
+      <label for="star4" title="4 stars"></label>
+      <input type="radio" id="star3" name="overall-rating" value="3" />
+      <label for="star3" title="3 stars"></label>
+      <input type="radio" id="star2" name="overall-rating" value="2" />
+      <label for="star2" title="2 stars"></label>
+      <input type="radio" id="star1" name="overall-rating" value="1" />
+      <label for="star1" title="1 star"></label>
     </div>
   </div>
   
-  <div class="form-check">
+  <div class="compact-section">
+    <h2>Please leave a written review of your room.</h2>
+    <div class="form-group">
+      <textarea
+        class="form-control"
+        id="written-review"
+        rows="4"
+        name="written-review"
+        placeholder="Write here about your experience with this room. What did you like? What could be improved?"
+        required
+      ></textarea>
+      <div class="character-counter">0 / 5000</div>
+    </div>
+  </div>
+  
+  <div class="compact-section">
+    <h2>Feel free to upload any photos of your room!</h2>
+    <div style="text-align: center;" class="compact-margin">
+      <div class="coming-soon">
+        <i class="bi bi-camera"></i> Photo uploads coming soon!
+      </div>
+    </div>
+  </div>
+  
+  <div class="form-check compact-margin">
     <input
       type="checkbox"
       class="form-check-input"
@@ -328,7 +482,7 @@
   </div>
   
   <input type="hidden" id="override" name="override" value="no" />
-  <div style="text-align: right; margin-top: 20px;">
+  <div style="text-align: right; margin-top: 15px;">
     <button
       type="button"
       class="submit-button"
@@ -342,6 +496,11 @@
 <script>
   // Fix for the star rating system in modal context
   $(document).ready(function() {
+    // Make sure we have Bootstrap icons available
+    if (!$('link[href*="bootstrap-icons"]').length) {
+      $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+    }
+    
     // Override any conflicting styles and ensure proper display in modal
     if(window.location.pathname.includes('rooms')) {
       $(".star-rating").css({
@@ -354,6 +513,9 @@
       
       // Ensure counter is properly initialized
       updateCharCount();
+      
+      // Add rooms-page class to body for CSS targeting
+      $('body').addClass('rooms-page');
     }
   });
 </script>
