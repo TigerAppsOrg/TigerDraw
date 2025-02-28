@@ -601,11 +601,22 @@
     return response;
   }
 
+  // Add a global variable to track if a room has been selected
+  let roomSelected = false;
+
   function handleSelection(selectedText) {
     const resultsContainer = $("#searchResults");
     resultsContainer.empty();
     $("#message").empty();
     selectedIndex = -1;
+    
+    // If no text was selected, don't proceed
+    if (!selectedText || selectedText.trim() === "") {
+      $("#reviews-body").empty();
+      roomSelected = false;
+      return;
+    }
+    
     let building_name = selectedText.split(" ")[0];
     const room_no = selectedText.split(" ")[1];
     
@@ -613,6 +624,9 @@
     if (building_name === "Maine") {
       building_name = "Forbes";
     }
+    
+    // Add a loading indicator
+    $("#reviews-body").html('<div class="text-center p-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="mt-2">Loading room reviews...</p></div>');
     
     fetchWithTimeout(
       "/get_reviews?" +
@@ -624,6 +638,12 @@
       .then((response) => response.text())
       .then((data) => {
         $("#reviews-body").html(data);
+        roomSelected = true;
+      })
+      .catch((error) => {
+        $("#reviews-body").html('<div class="alert alert-danger">Error loading reviews. Please try again.</div>');
+        roomSelected = false;
+        console.error("Error:", error);
       });
   }
 
@@ -636,22 +656,37 @@
       } else {
         const searchQuery = $(this).val().toLowerCase();
         
-        // Handle Forbes/Maine alias in search
+        // Handle Forbes/Maine alias in search with improved logic
         const filteredItems = items.filter((item) => {
           const itemLower = item.toLowerCase();
           
-          // Check if it's a direct match
+          // Direct match first
           if (itemLower.includes(searchQuery)) {
             return true;
           }
           
-          // Handle Forbes/Maine alias
-          if (searchQuery.includes("forbes") && itemLower.includes("maine")) {
+          // Special handling for Forbes/Maine relationship
+          const itemParts = itemLower.split(" ");
+          const searchParts = searchQuery.split(" ");
+          
+          // Check if searching for Forbes should return Maine rooms
+          if (itemParts[0] === "maine" && 
+              (searchQuery.includes("forbes") || searchParts.some(part => "forbes".includes(part)))) {
             return true;
           }
           
-          if (searchQuery.includes("maine") && itemLower.includes("forbes")) {
+          // Check if searching for Maine should return Forbes rooms (though this is less common)
+          if (itemParts[0] === "forbes" && 
+              (searchQuery.includes("maine") || searchParts.some(part => "maine".includes(part)))) {
             return true;
+          }
+          
+          // Fuzzy matching - if the search term is at least 3 chars and matches part of the building name
+          if (searchQuery.length >= 3) {
+            if ((itemParts[0].includes(searchQuery) || searchQuery.includes(itemParts[0])) && 
+                itemParts[0].length > 2) {
+              return true;
+            }
           }
           
           return false;
@@ -680,11 +715,39 @@
         visibleItems.removeClass("active");
         $(visibleItems[selectedIndex]).addClass("active").focus();
       } else if (e.key === "Enter") {
-        if (selectedIndex >= 0) {
-          handleSelection($(visibleItems[selectedIndex]).text());
-        } else if (visibleItems.length > 0 && selectedIndex == -1) {
-          handleSelection($(visibleItems[0]).text());
+        // Only process Enter if there are results to select
+        if (visibleItems.length > 0) {
+          if (selectedIndex >= 0) {
+            handleSelection($(visibleItems[selectedIndex]).text());
+          } else {
+            handleSelection($(visibleItems[0]).text());
+          }
+        } else {
+          // No results to select, show message
+          $("#message").text("No rooms found. Please refine your search.").removeClass("success").addClass("error");
+          $("#reviews-body").empty();
+          roomSelected = false;
         }
+      }
+    });
+
+    // Modify submit event handler to check if a room is selected
+    $(document).on("submit", "#submit-review-form", function(e) {
+      e.preventDefault();
+      if (!roomSelected) {
+        $("#message").text("Please select a room first.").removeClass("success").addClass("error");
+        return false;
+      }
+      submitReviewWithoutRefresh();
+      return false;
+    });
+
+    // Add click event handler for submit button to enforce room selection
+    $(document).on("click", ".submit-button", function(e) {
+      if (!roomSelected) {
+        e.preventDefault();
+        $("#message").text("Please select a room first.").removeClass("success").addClass("error");
+        return false;
       }
     });
   });

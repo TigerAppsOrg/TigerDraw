@@ -421,7 +421,7 @@
         ]
     });
     
-    // Make notyf available globally
+    // Ensure the Notyf instance is available globally
     window.notyf = notyf;
     
     let text_max;
@@ -429,6 +429,61 @@
     var gt;
     let request = null;
     let controller = null;
+
+    // Custom search extension for DataTables to handle Forbes/Maine alias
+    $.fn.dataTable.ext.search.push(
+      function(settings, data, dataIndex) {
+        // Only apply to rooms-table
+        if (settings.nTable.id !== 'rooms-table') {
+          return true;
+        }
+        
+        const searchValue = $('#search').val().toLowerCase();
+        if (!searchValue) {
+          return true; // Show all when no search text
+        }
+        
+        // Building is in the 3rd column (index 2)
+        const building = data[2].toLowerCase();
+        // College is in the 2nd column (index 1)
+        const college = data[1].toLowerCase();
+        // Room number is in the 4th column (index 3)
+        const roomNo = data[3].toLowerCase();
+        
+        // Direct match check
+        if (building.includes(searchValue) || 
+            college.includes(searchValue) || 
+            roomNo.includes(searchValue) ||
+            (building + ' ' + roomNo).includes(searchValue)) {
+          return true;
+        }
+        
+        // Handle Forbes/Maine alias
+        if ((searchValue.includes('forbes') && building === 'maine') ||
+            (searchValue.includes('maine') && college.includes('forbes'))) {
+          return true;
+        }
+        
+        // Handle partial matches for building names (for better UX)
+        if (searchValue.length >= 3) {
+          const buildingWords = building.split(' ');
+          const searchWords = searchValue.split(' ');
+          
+          for (let i = 0; i < searchWords.length; i++) {
+            const searchWord = searchWords[i];
+            if (searchWord.length >= 3) {
+              for (let j = 0; j < buildingWords.length; j++) {
+                if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
+        
+        return false;
+      }
+    );
 
     function getResults(e) {
         $.fn.dataTable.ext.errMode = 'throw';
@@ -625,16 +680,20 @@
     }
 
     function setup() {
-
         $('#college').on('change', {change: true}, getResults)
         $('#occupancy').on('change', {}, getResults)
         $('#year').on('change', {}, getResults)
         $('#building').on('change', {}, getResults)
 
-        $('#search').on('keyup', function () {
-            console.log(this.value, rt)
-            rt.search(this.value).draw();
-        })
+        // Remove the old search handler that was causing conflicts
+        $('#search').off('keyup');
+        
+        // Add the improved search handler
+        $('#search').on('keyup', function() {
+            // This will now be handled by our custom search function
+            rt.draw();
+            console.log("Applying custom search filter:", this.value);
+        });
 
         // on clicking stars, either favorite or unfavorite
         $('#rooms-table').on('change', '.star', function () {
