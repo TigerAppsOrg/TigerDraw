@@ -426,6 +426,53 @@
       background-color: #f8d7da;
       color: #721c24;
     }
+    
+    /* Highlight invalid search */
+    .search-input.is-invalid {
+      border-color: #dc3545;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      animation: shake 0.5s linear;
+    }
+    
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-10px); }
+      80% { transform: translateX(10px); }
+      100% { transform: translateX(0); }
+    }
+    
+    /* Style for active selection */
+    .list-group-item.active {
+      background-color: #474bc9 !important;
+      color: white;
+      border-color: #474bc9;
+    }
+    
+    /* Style for no results */
+    .list-group-item.text-muted {
+      background-color: #f8f9fa;
+      font-style: italic;
+    }
+    
+    /* Show loading spinner during room search */
+    .search-loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 5px;
+      vertical-align: middle;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #474bc9;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
     .review-item {
       background-color: #f8f9fa;
@@ -574,18 +621,48 @@
 
     if (filteredItems.length === 0) {
       resultsContainer.append(
-        '<li class="list-group-item text-muted">No results found</li>'
+        '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i> No results found. Try adjusting your search.</div>'
       );
+      roomSelected = false; // Ensure room is not selected when no results
     } else {
-      resultsContainer.append('<ul class="list-group"></ul>');
+      resultsContainer.append('<ul class="list-group shadow-sm"></ul>');
       const listGroup = resultsContainer.find('.list-group');
       
+      // Add a header with result count
+      if (filteredItems.length === 1) {
+        listGroup.append(`<li class="list-group-item bg-light text-primary"><i class="bi bi-info-circle"></i> Found 1 room</li>`);
+      } else {
+        listGroup.append(`<li class="list-group-item bg-light text-primary"><i class="bi bi-info-circle"></i> Found ${filteredItems.length} rooms</li>`);
+      }
+      
+      // Add each result item
       filteredItems.forEach((item, index) => {
+        const itemParts = item.split(' ');
+        const buildingName = itemParts[0];
+        const roomNumber = itemParts.length > 1 ? itemParts[1] : '';
+        
+        // Special styling for Maine/Forbes
+        let specialClass = '';
+        let specialIcon = '';
+        
+        if (buildingName.toLowerCase() === 'maine') {
+          specialClass = 'text-info';
+          specialIcon = '<i class="bi bi-info-circle-fill text-info me-2" title="Maine is part of Forbes College"></i>';
+        }
+        
         listGroup.append(
-          `<li class="list-group-item" data-index="${index}" tabindex="0">${item}</li>`
+          `<li class="list-group-item ${specialClass}" data-index="${index}" tabindex="0">
+             ${specialIcon}${item}
+           </li>`
         );
       });
     }
+    
+    // Add click handlers to the newly rendered list items
+    $("#searchResults .list-group-item").not('.bg-light').on('click', function() {
+      const selectedText = $(this).text().trim();
+      handleSelection(selectedText);
+    });
   }
 
   async function fetchWithTimeout(resource, options = {}) {
@@ -611,9 +688,10 @@
     selectedIndex = -1;
     
     // If no text was selected, don't proceed
-    if (!selectedText || selectedText.trim() === "") {
+    if (!selectedText || selectedText.trim() === "" || selectedText.toLowerCase().includes("no results found")) {
       $("#reviews-body").empty();
       roomSelected = false;
+      $("#message").text("Please select a valid room.").removeClass("success").addClass("error");
       return;
     }
     
@@ -627,22 +705,47 @@
     
     // Add a loading indicator
     $("#reviews-body").html('<div class="text-center p-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="mt-2">Loading room reviews...</p></div>');
+    $("#message").text(`Loading reviews for ${selectedText}...`).removeClass("error").addClass("success");
+    
+    // Add the selected room information to the top of the results
+    $("#searchInput").val(selectedText);
+    resultsContainer.html(`
+      <div class="room-info p-2 mb-3">
+        <i class="bi bi-building"></i> Selected: <strong>${selectedText}</strong>
+      </div>
+    `);
     
     fetchWithTimeout(
       "/get_reviews?" +
         "&building_name=" +
         building_name +
         "&room_no=" +
-        room_no
+        room_no,
+      { timeout: 15000 } // Extend timeout to 15 seconds
     )
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.text();
+      })
       .then((data) => {
         $("#reviews-body").html(data);
         roomSelected = true;
+        $("#message").text(`Room ${selectedText} selected. You can now leave a review.`).removeClass("error").addClass("success");
+        
+        // Focus on the first star rating after loading
+        setTimeout(() => {
+          const firstStar = $('input[name="overall-rating"]').last();
+          if (firstStar.length) {
+            firstStar.focus();
+          }
+        }, 300);
       })
       .catch((error) => {
         $("#reviews-body").html('<div class="alert alert-danger">Error loading reviews. Please try again.</div>');
         roomSelected = false;
+        $("#message").text(`Error loading room ${selectedText}. Please try again.`).removeClass("success").addClass("error");
         console.error("Error:", error);
       });
   }
@@ -654,37 +757,55 @@
         resultsContainer.empty();
         selectedIndex = -1;
       } else {
-        const searchQuery = $(this).val().toLowerCase();
+        const searchQuery = $(this).val().toLowerCase().trim();
         
-        // Handle Forbes/Maine alias in search with improved logic
+        // Improved search logic with better building name handling
         const filteredItems = items.filter((item) => {
           const itemLower = item.toLowerCase();
           
-          // Direct match first
+          // Split the item into building and room number
+          const itemParts = itemLower.split(" ");
+          const buildingName = itemParts[0]; // First part is the building name
+          
+          // Direct match first (most specific)
           if (itemLower.includes(searchQuery)) {
             return true;
           }
           
-          // Special handling for Forbes/Maine relationship
-          const itemParts = itemLower.split(" ");
-          const searchParts = searchQuery.split(" ");
-          
-          // Check if searching for Forbes should return Maine rooms
-          if (itemParts[0] === "maine" && 
-              (searchQuery.includes("forbes") || searchParts.some(part => "forbes".includes(part)))) {
+          // Handle the Forbes/Maine relationship specifically
+          if (buildingName === "maine" && searchQuery.includes("forbes")) {
             return true;
           }
           
-          // Check if searching for Maine should return Forbes rooms (though this is less common)
-          if (itemParts[0] === "forbes" && 
-              (searchQuery.includes("maine") || searchParts.some(part => "maine".includes(part)))) {
+          if (buildingName === "forbes" && searchQuery.includes("maine")) {
             return true;
           }
           
-          // Fuzzy matching - if the search term is at least 3 chars and matches part of the building name
-          if (searchQuery.length >= 3) {
-            if ((itemParts[0].includes(searchQuery) || searchQuery.includes(itemParts[0])) && 
-                itemParts[0].length > 2) {
+          // Check if the search query is contained within the building name
+          if (buildingName.includes(searchQuery)) {
+            return true;
+          }
+          
+          // Check if the building name is contained within the search query
+          if (searchQuery.includes(buildingName) && buildingName.length >= 3) {
+            return true;
+          }
+          
+          // Special case for Forbes College buildings
+          if ((buildingName === "forbes" || buildingName === "maine") && 
+              searchQuery.includes("forbes")) {
+            return true;
+          }
+          
+          // Handle room number searches
+          if (itemParts.length > 1 && itemParts[1].startsWith(searchQuery)) {
+            return true;
+          }
+          
+          // More flexible matching for building names
+          const searchTerms = searchQuery.split(/\s+/);
+          for (const term of searchTerms) {
+            if (term.length >= 3 && buildingName.includes(term)) {
               return true;
             }
           }
@@ -692,7 +813,8 @@
           return false;
         });
         
-        renderList(filteredItems.slice(0, 5));
+        console.log(`Search: "${searchQuery}" found ${filteredItems.length} matches`);
+        renderList(filteredItems.slice(0, 10)); // Show top 10 results
       }
     });
 
@@ -704,7 +826,11 @@
     // Handle keyboard navigation & Enter key selection
     $("#searchInput").on("keydown", function (e) {
       const visibleItems = $("#searchResults .list-group-item");
-      $("#message").empty();
+      
+      // Don't clear message on every keypress, only on actions that would change the selection
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter") {
+        $("#message").empty();
+      }
 
       if (e.key === "ArrowDown") {
         selectedIndex = Math.min(selectedIndex + 1, visibleItems.length - 1);
@@ -715,18 +841,26 @@
         visibleItems.removeClass("active");
         $(visibleItems[selectedIndex]).addClass("active").focus();
       } else if (e.key === "Enter") {
-        // Only process Enter if there are results to select
-        if (visibleItems.length > 0) {
+        e.preventDefault(); // Prevent form submission on Enter
+        
+        // Only process Enter if there are results to select and they're not "No results found"
+        if (visibleItems.length > 0 && !$(visibleItems[0]).hasClass('text-muted')) {
           if (selectedIndex >= 0) {
             handleSelection($(visibleItems[selectedIndex]).text());
           } else {
             handleSelection($(visibleItems[0]).text());
           }
         } else {
-          // No results to select, show message
+          // No valid results to select, show error message
           $("#message").text("No rooms found. Please refine your search.").removeClass("success").addClass("error");
           $("#reviews-body").empty();
           roomSelected = false;
+          
+          // Highlight the search box to indicate error
+          $("#searchInput").addClass("is-invalid");
+          setTimeout(() => {
+            $("#searchInput").removeClass("is-invalid");
+          }, 1500);
         }
       }
     });
@@ -735,7 +869,11 @@
     $(document).on("submit", "#submit-review-form", function(e) {
       e.preventDefault();
       if (!roomSelected) {
-        $("#message").text("Please select a room first.").removeClass("success").addClass("error");
+        $("#message").text("Please select a room first before submitting a review.").removeClass("success").addClass("error");
+        // Scroll back to the top where the search box is
+        $('html, body').animate({
+          scrollTop: $("#searchInput").offset().top - 50
+        }, 500);
         return false;
       }
       submitReviewWithoutRefresh();
@@ -746,8 +884,20 @@
     $(document).on("click", ".submit-button", function(e) {
       if (!roomSelected) {
         e.preventDefault();
-        $("#message").text("Please select a room first.").removeClass("success").addClass("error");
+        $("#message").text("Please select a room first before submitting a review.").removeClass("success").addClass("error");
+        // Scroll back to the top where the search box is
+        $('html, body').animate({
+          scrollTop: $("#searchInput").offset().top - 50
+        }, 500);
         return false;
+      }
+    });
+    
+    // Reset roomSelected when search input changes
+    $("#searchInput").on("input", function() {
+      if ($(this).val().trim() === "") {
+        roomSelected = false;
+        $("#reviews-body").empty();
       }
     });
   });
