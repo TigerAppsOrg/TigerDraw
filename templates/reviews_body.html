@@ -460,14 +460,30 @@
     
     // Function to submit the form with AJAX
     function submitFormWithAjax() {
-      console.log("Submitting form with AJAX...");
+      
+      // CRITICAL FIX: Make sure we have building and room values before submission
+      const buildingValue = $("#building-name").val();
+      const roomValue = $("#room-number").val();
+      
+      if (!buildingValue || !roomValue) {
+        // Try to get values from display elements
+        const buildingDisplay = $("#building-name-display").text().trim();
+        const roomDisplay = $("#room-number-display").text().trim();
+        
+        if (buildingDisplay && roomDisplay) {
+          // Update the form fields with display values
+          $("#building-name").val(buildingDisplay);
+          $("#room-number").val(roomDisplay);
+        } else {
+          // Still missing values, show error
+          alert("Error: Missing building or room information. Please select a room first.");
+          return;
+        }
+      }
+      
       let reviewForm = $("form#submit-review-form")[0];
       let formData = new FormData(reviewForm);
       
-      // Log form data for debugging
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
       
       $.ajax({
         type: "POST",
@@ -478,7 +494,6 @@
         processData: false,
         data: formData,
         success: function (data) {
-          console.log("Success response:", data);
           
           // Reset the form
           $("#submit-review-form").trigger("reset");
@@ -534,6 +549,17 @@
     // Also attach to submit button click for more reliability
     $(".submit-button").off("click").on("click", function(e) {
       e.preventDefault();
+      
+      // CRITICAL FIX: Make absolutely sure building and room are set correctly before submitting
+      // Force update from the displayed values if they exist
+      const buildingDisplay = $("#building-name-display").text().trim();
+      const roomDisplay = $("#room-number-display").text().trim();
+      
+      if (buildingDisplay && roomDisplay) {
+        $("#building-name").val(buildingDisplay);
+        $("#room-number").val(roomDisplay);
+      }
+      
       submitReviewWithoutRefresh();
       return false;
     });
@@ -581,11 +607,11 @@
   class="review-form"
 >
   <div class="room-info">
-    If you were in <strong><span id="building-name">{{ building_name }}</span>, room <span id="room-number">{{ room_number }}</span></strong>,
+    If you were in <strong><span id="building-name-display">{{ building_name }}</span>, room <span id="room-number-display">{{ room_number }}</span></strong>,
     please submit your review below 😊
   </div>
-  <input type="hidden" name="building-name" value="{{ building_name }}" />
-  <input type="hidden" name="room-number" value="{{ room_number }}" />
+  <input type="hidden" name="building-name" value="{{ building_name }}" id="building-name" />
+  <input type="hidden" name="room-number" value="{{ room_number }}" id="room-number" />
   
   <div class="section mb-4">
     <h2>What would you rate your room?</h2>

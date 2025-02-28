@@ -540,24 +540,55 @@
   let selectedIndex = -1;
 
   function submitReviewWithoutRefresh() {
+    // Get values directly from the form
     const rating = $('input[name="overall-rating"]:checked').val() || "";
     const review = $("#written-review").val();
     
+    // Get the building and room values from the global variables set during selection
+    // This is a key fix - we're using the stored values instead of trying to parse the form
+    const building = window.selectedBuilding || "";
+    const room = window.selectedRoom || "";
+    
+    // Validate all required fields
     if (!rating) {
       $("#message").text("Please select a rating.").removeClass("success").addClass("error");
       return;
     }
     
-    let reviewForm = $("form#submit-review-form")[0];
-    let formData = new FormData(reviewForm);
+    if (!review || review.trim().length < 100) {
+      $("#message").text("Please write a review with at least 100 characters.").removeClass("success").addClass("error");
+      return;
+    }
+    
+    if (!building || !room) {
+      $("#message").text("Please select a room first.").removeClass("success").addClass("error");
+      return;
+    }
+    
+    // Check if checkbox is checked
+    const checkbox = $('input[name="submission-check-2"]').is(':checked');
+    if (!checkbox) {
+      $("#message").text("Please check the box to acknowledge that your netID will be shown with your review.").removeClass("success").addClass("error");
+      return;
+    }
+    
+    // Create request data manually instead of using FormData
+    const requestData = {
+      'building-name': building,
+      'room-number': room,
+      'overall-rating': rating,
+      'written-review': review,
+      'submission-check-2': 'on',
+      'override': 'no'
+    };
+    
+    // Submit the review
+    
+    // Send the AJAX request
     $.ajax({
       type: "POST",
       url: "/submitReview",
-      contentType: false,
-      dataType: "json",
-      cache: false,
-      processData: false,
-      data: formData,
+      data: requestData,
       success: function (data, textStatus, jqXHR) {
         $("#submit-review-form").trigger("reset");
         $("#message")
@@ -566,23 +597,17 @@
           .addClass("success");
       },
       error: function (jqXHR) {
-        if (jqXHR.responseJSON.message === "override") {
+        if (jqXHR.responseJSON && jqXHR.responseJSON.message === "override") {
           $.confirm({
             title: "You will override your old review with this new review.",
             buttons: {
               confirm: {
                 action: function () {
-                  $("#override").val("yes");
-                  reviewForm = $("form#submit-review-form")[0];
-                  formData = new FormData(reviewForm);
+                  requestData.override = 'yes';
                   $.ajax({
                     type: "POST",
                     url: "/submitReview",
-                    contentType: false,
-                    dataType: "json",
-                    cache: false,
-                    processData: false,
-                    data: formData,
+                    data: requestData,
                     success: function (data, textStatus, jqXHR) {
                       $("#submit-review-form").trigger("reset");
                       $("#message")
@@ -591,10 +616,17 @@
                         .addClass("success");
                     },
                     error: function (jqXHR) {
-                      $("#message")
-                        .text(jqXHR.responseJSON.message)
-                        .removeClass("success")
-                        .addClass("error");
+                      if (jqXHR.responseJSON) {
+                        $("#message")
+                          .text(jqXHR.responseJSON.message)
+                          .removeClass("success")
+                          .addClass("error");
+                      } else {
+                        $("#message")
+                          .text("An error occurred while submitting your review.")
+                          .removeClass("success")
+                          .addClass("error");
+                      }
                     },
                   });
                 },
@@ -606,9 +638,14 @@
               },
             },
           });
-        } else {
+        } else if (jqXHR.responseJSON) {
           $("#message")
             .text(jqXHR.responseJSON.message)
+            .removeClass("success")
+            .addClass("error");
+        } else {
+          $("#message")
+            .text("An error occurred while submitting your review.")
             .removeClass("success")
             .addClass("error");
         }
@@ -697,8 +734,19 @@
       return;
     }
     
-    let building_name = selectedText.split(" ")[0];
-    const room_no = selectedText.split(" ")[1];
+    // Parse the room information from the selected text
+    // Format should be "BuildingName RoomNumber"
+    const parts = selectedText.trim().split(" ");
+    let building_name = parts[0];
+    const room_no = parts.length > 1 ? parts[1] : "";
+    
+    // Validation check - must have both building name and room number
+    if (!building_name || !room_no) {
+      $("#reviews-body").empty();
+      roomSelected = false;
+      $("#message").text("Invalid room format. Please select a valid room.").removeClass("success").addClass("error");
+      return;
+    }
     
     // Handle Forbes/Maine alias
     if (building_name === "Maine") {
@@ -708,6 +756,11 @@
     // Add a loading indicator
     $("#reviews-body").html('<div class="text-center p-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="mt-2">Loading room reviews...</p></div>');
     $("#message").text(`Loading reviews for ${selectedText}...`).removeClass("error").addClass("success");
+    
+    // Store the selected room information for the form submission
+    // This is crucial for the review submission to work correctly
+    window.selectedBuilding = building_name;
+    window.selectedRoom = room_no;
     
     // Add the selected room information to the top of the results
     $("#searchInput").val(selectedText);
@@ -735,6 +788,19 @@
         $("#reviews-body").html(data);
         roomSelected = true;
         $("#message").text(`Room ${selectedText} selected. You can now leave a review.`).removeClass("error").addClass("success");
+        
+        // Fix: Set hidden form values for the building and room
+        setTimeout(() => {
+          // Make sure the form fields are populated correctly
+          $("#building-name").val(building_name);
+          $("#room-number").val(room_no);
+          
+          // Also update the display text (belt and suspenders approach)
+          $("#building-name-display").text(building_name);
+          $("#room-number-display").text(room_no);
+          
+          console.log("Set building-name to: " + building_name + " and room-number to: " + room_no);
+        }, 300);
         
         // Focus on the first star rating after loading
         setTimeout(() => {
