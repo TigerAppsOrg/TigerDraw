@@ -115,45 +115,65 @@
       border-bottom: thin solid #7884f1;
     }
 
-    .star {
-      visibility: hidden;
-      display: inline-block;
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      margin: 20px 0;
     }
 
-    .star:before {
-      content: "\2661";
-      display: inline-block;
-      visibility: visible;
-      height: 20px;
-      width: 20px;
-      padding-bottom: 10px;
+    .star-rating input {
+      display: none;
     }
 
-    .star:checked:before {
-      content: "\2665";
-      display: inline-block;
-      padding-bottom: 10px;
-      color: #f15156;
+    .star-rating label {
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      margin: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5e5e5'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 50px;
+    }
+
+    .star-rating input:checked ~ label {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
     }
 
     textarea {
       resize: none;
     }
 
-    #count_message {
-      background-color: #474bc9 !important;
-      color: white !important;
-      margin-top: -20px;
-      margin-right: 5px;
+    .character-counter {
+      text-align: right;
+      margin-top: 5px;
+      color: #6c757d;
+      font-size: 14px;
     }
 
-    h2 {
+    h1, h2 {
       font-family: helveticaneue-light, helvetica neue light, helvetica neue,
         Helvetica, Arial, lucida grande, sans-serif;
       text-align: center;
       font-weight: normal;
-      font-size: 2em;
       margin-top: 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
     }
 
     .help-tip {
@@ -181,13 +201,11 @@
     .help-tip:hover p {
       display: block;
       transform-origin: 100% 0%;
-
       -webkit-animation: fadeIn 0.3s ease-in-out;
       animation: fadeIn 0.3s ease-in-out;
     }
 
     .help-tip p {
-      /* The tooltip */
       display: none;
       text-align: left;
       background-color: #7884f1;
@@ -203,7 +221,6 @@
     }
 
     .help-tip p:before {
-      /* The pointer of the tooltip */
       position: absolute;
       content: "";
       width: 0;
@@ -215,7 +232,6 @@
     }
 
     .help-tip p:after {
-      /* Prevents the tooltip from being hidden */
       width: 100%;
       height: 40px;
       content: "";
@@ -246,8 +262,6 @@
     #rooms-table_filter {
       display: none;
     }
-
-    /* CSS animation */
 
     @-webkit-keyframes fadeIn {
       0% {
@@ -287,58 +301,133 @@
       justify-content: center;
       margin: 0;
       padding: 20px;
+      background-color: #f8f9fa;
     }
 
     .main-container {
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
     }
 
     #searchResults {
-      min-height: 250px;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      margin-bottom: 30px;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background-color: #e9ecef;
+      margin: 30px 0;
+    }
+
+    .submit-button {
+      background-color: #4e73df;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 30px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+
+    .submit-button:hover {
+      background-color: #3a5fc9;
+    }
+
+    .coming-soon {
+      display: inline-block;
+      background-color: #f8f9fa;
+      color: #6c757d;
+      padding: 10px 20px;
+      border-radius: 4px;
+      border: 1px dashed #adb5bd;
+      font-style: italic;
+      margin: 10px 0;
+    }
+
+    .form-check {
+      margin: 20px 0;
+    }
+
+    .room-info {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .search-input {
+      padding-right: 50px;
+      font-size: 16px;
+      height: 45px;
+    }
+
+    .search-icon {
+      background-color: #f8f9fa;
+      border-color: #ced4da;
     }
   </style>
 
   <body>
-    <div
-      class="main-container"
-      style="max-width: 600px; margin-left: auto; margin-right: auto"
-    >
-      <h2 class="text-center" style="padding-bottom: 8px">
-        Search for your room
-      </h2>
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          id="searchInput"
-          class="form-control"
-          placeholder="Search..."
-          aria-label="Search"
-          aria-describedby="search-icon"
-        />
-        <div class="input-group-append">
-          <span class="input-group-text" id="search-icon">
-            <i class="bi bi-search"></i>
-          </span>
+    <div class="main-container">
+      <h1>Please help us by leaving a review on your room!</h1>
+      <div class="divider"></div>
+      
+      <h2>What room did you live in?</h2>
+      <div class="search-container">
+        <div class="input-group">
+          <input
+            type="text"
+            id="searchInput"
+            class="form-control search-input"
+            placeholder="Search for a room"
+            aria-label="Search"
+            aria-describedby="search-icon"
+          />
+          <div class="input-group-append">
+            <span class="input-group-text search-icon" id="search-icon">
+              <i class="bi bi-search"></i>
+            </span>
+          </div>
         </div>
       </div>
 
-      <ul class="list-group" id="searchResults"></ul>
+      <div id="searchResults"></div>
 
       <div id="reviews-body"></div>
-      <div style="text-align: left; max-width: 75%" id="message"></div>
+      <div id="message"></div>
     </div>
   </body>
 </html>
 
 <script>
   const items = JSON.parse(`{{ items | safe }}`);
+  const buildingAliases = {
+    'Maine': 'Forbes', // Map Maine to Forbes
+    'Forbes': 'Forbes'
+  };
 
   let selectedIndex = -1;
 
   function submitReviewWithoutRefresh() {
-    rating = $("#overall-rating").val();
-    review = $("#written-review").val();
+    const rating = $('input[name="overall-rating"]:checked').val() || "";
+    const review = $("#written-review").val();
+    
+    if (!rating) {
+      $("#message").text("Please select a rating.").css("color", "red");
+      return;
+    }
+    
     let reviewForm = $("form#submit-review-form")[0];
     let formData = new FormData(reviewForm);
     $.ajax({
@@ -411,8 +500,11 @@
         '<li class="list-group-item text-muted">No results found</li>'
       );
     } else {
+      resultsContainer.append('<ul class="list-group"></ul>');
+      const listGroup = resultsContainer.find('.list-group');
+      
       filteredItems.forEach((item, index) => {
-        resultsContainer.append(
+        listGroup.append(
           `<li class="list-group-item" data-index="${index}" tabindex="0">${item}</li>`
         );
       });
@@ -434,24 +526,28 @@
 
   function handleSelection(selectedText) {
     const resultsContainer = $("#searchResults");
-    resultsContainer.empty().css("display", "none");
+    resultsContainer.empty();
     $("#message").empty();
     selectedIndex = -1;
-    building_name = selectedText.split(" ")[0];
-    room_no = selectedText.split(" ")[1];
-    setTimeout(function () {
-      fetchWithTimeout(
-        "/get_reviews?" +
-          "&building_name=" +
-          building_name +
-          "&room_no=" +
-          room_no
-      )
-        .then((response) => response.text())
-        .then((data) => {
-          $("#reviews-body").html(data);
-        });
-    });
+    let building_name = selectedText.split(" ")[0];
+    const room_no = selectedText.split(" ")[1];
+    
+    // Handle Forbes/Maine alias
+    if (building_name === "Maine") {
+      building_name = "Forbes";
+    }
+    
+    fetchWithTimeout(
+      "/get_reviews?" +
+        "&building_name=" +
+        building_name +
+        "&room_no=" +
+        room_no
+    )
+      .then((response) => response.text())
+      .then((data) => {
+        $("#reviews-body").html(data);
+      });
   }
 
   $(document).ready(function () {
@@ -462,9 +558,28 @@
         selectedIndex = -1;
       } else {
         const searchQuery = $(this).val().toLowerCase();
-        const filteredItems = items.filter((item) =>
-          item.toLowerCase().includes(searchQuery)
-        );
+        
+        // Handle Forbes/Maine alias in search
+        const filteredItems = items.filter((item) => {
+          const itemLower = item.toLowerCase();
+          
+          // Check if it's a direct match
+          if (itemLower.includes(searchQuery)) {
+            return true;
+          }
+          
+          // Handle Forbes/Maine alias
+          if (searchQuery.includes("forbes") && itemLower.includes("maine")) {
+            return true;
+          }
+          
+          if (searchQuery.includes("maine") && itemLower.includes("forbes")) {
+            return true;
+          }
+          
+          return false;
+        });
+        
         renderList(filteredItems.slice(0, 5));
       }
     });
@@ -477,7 +592,6 @@
     // Handle keyboard navigation & Enter key selection
     $("#searchInput").on("keydown", function (e) {
       const visibleItems = $("#searchResults .list-group-item");
-      // if (visibleItems.length === 0) return;
       $("#message").empty();
 
       if (e.key === "ArrowDown") {
@@ -494,9 +608,6 @@
         } else if (visibleItems.length > 0 && selectedIndex == -1) {
           handleSelection($(visibleItems[0]).text());
         }
-      } else {
-        $("#reviews-body").empty();
-        $("#searchResults").empty().css("display", "");
       }
     });
   });

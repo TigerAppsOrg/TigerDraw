@@ -1,37 +1,270 @@
-<div id="reviews-div">
+<style>
+  .review-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .review-item h5 {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .review-item h6 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .review-item p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  /* Star Rating System - works in both standalone and modal contexts */
+  .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .star-rating input {
+    display: none;
+  }
+  
+  .star-rating label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5e5e5'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px;
+  }
+  
+  .star-rating input:checked ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+  }
+  
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+  }
+  
+  /* Consistent form styling */
+  .room-info {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .character-counter {
+    text-align: right;
+    margin-top: 5px;
+    color: #6c757d;
+    font-size: 14px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .submit-button {
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+  
+  .submit-button:hover {
+    background-color: #3a5fc9;
+  }
+  
+  .coming-soon {
+    display: inline-block;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 1px dashed #adb5bd;
+    font-style: italic;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  
+  /* Modal specific adjustments */
+  .modal-body h2 {
+    font-size: 18px;
+    margin: 15px 0;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .modal-body textarea {
+    resize: none;
+    height: 120px;
+  }
+  
+  .modal-body .form-check {
+    margin: 15px 0;
+  }
+  
+  /* Override any conflicting styles in modal context */
+  #seeReviewsModal .star {
+    display: none !important;
+  }
+</style>
+
+<div id="reviews-div" style="display: block !important;">
   {% if not reviews %}
   <p>There are currently no reviews for this room</p>
   <hr />
   {% else %} {% for review in reviews %}
-  <!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
-  <h5>
-    Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
-    %} by <em>{{ review.net_id }}</em>
-    {% endif %}
-  </h5>
-  <h6>Rating: {{ review.rating }} out of 5</h6>
-  <p>{{ review.content }}</p>
-
-  <hr />
+  <div class="review-item">
+    <h5>
+      Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
+      %} by <em>{{ review.net_id }}</em>
+      {% endif %}
+    </h5>
+    <h6>Rating: {{ review.rating }} out of 5</h6>
+    <p>{{ review.content }}</p>
+  </div>
+  {% if not loop.last %}<hr />{% endif %}
   {% endfor %} {% endif %}
 </div>
 
 <script>
-  text_max = 5000;
-  $("#count_message").html("0 / " + text_max);
-
-  $("#written-review").change(function () {
+  const text_max = 5000;
+  
+  function updateCharCount() {
     let text_length = $("#written-review").val().length;
-    let text_remaining = text_max - text_length;
+    $(".character-counter").text(text_length + " / " + text_max);
+  }
 
-    $("#count_message").html(text_length + " / " + text_max);
+  $(document).ready(function() {
+    $("#written-review").on("input", updateCharCount);
+    updateCharCount();
   });
-  $("#written-review").keyup(function () {
-    let text_length = $("#written-review").val().length;
-    let text_remaining = text_max - text_length;
-
-    $("#count_message").html(text_length + " / " + text_max);
-  });
+  
+  // Unified submitReviewWithoutRefresh function that works in both standalone and modal contexts
+  function submitReviewWithoutRefresh() {
+    const rating = $('input[name="overall-rating"]:checked').val() || "";
+    const review = $("#written-review").val();
+    
+    if (!rating) {
+      // Show error message depending on context
+      if (window.location.pathname.includes('rooms')) {
+        notyf.error("Please select a rating.");
+      } else {
+        $("#message").text("Please select a rating.").css("color", "red");
+      }
+      return;
+    }
+    
+    let reviewForm = $("form#submit-review-form")[0];
+    let formData = new FormData(reviewForm);
+    $.ajax({
+      type: "POST",
+      url: "/submitReview",
+      contentType: false,
+      dataType: "json",
+      cache: false,
+      processData: false,
+      data: formData,
+      success: function (data, textStatus, jqXHR) {
+        $("#submit-review-form").trigger("reset");
+        
+        // Handle success depending on context
+        if (window.location.pathname.includes('rooms')) {
+          notyf.success(jqXHR.responseJSON.message);
+          // For modal context, refresh the reviews list and increment review count
+          if (typeof incrementReviewButton === 'function') {
+            incrementReviewButton();
+          }
+          if (typeof getReviews === 'function' && window.curr_building_name && window.curr_room_no) {
+            getReviews(window.curr_building_name, window.curr_room_no, null);
+          }
+        } else {
+          // For standalone context
+          $("#message").text("Review submitted, thank you!").css("color", "green");
+        }
+      },
+      error: function (jqXHR) {
+        if (jqXHR.responseJSON.message === "override") {
+          $.confirm({
+            title: "You will override your old review with this new review.",
+            buttons: {
+              confirm: {
+                action: function () {
+                  $("#override").val("yes");
+                  reviewForm = $("form#submit-review-form")[0];
+                  formData = new FormData(reviewForm);
+                  $.ajax({
+                    type: "POST",
+                    url: "/submitReview",
+                    contentType: false,
+                    dataType: "json",
+                    cache: false,
+                    processData: false,
+                    data: formData,
+                    success: function (data, textStatus, jqXHR) {
+                      $("#submit-review-form").trigger("reset");
+                      
+                      // Handle success depending on context
+                      if (window.location.pathname.includes('rooms')) {
+                        notyf.success(jqXHR.responseJSON.message);
+                        // For modal context
+                        if (typeof getReviews === 'function' && window.curr_building_name && window.curr_room_no) {
+                          getReviews(window.curr_building_name, window.curr_room_no, null);
+                        }
+                      } else {
+                        // For standalone context
+                        $("#message").text("Review submitted, thank you!").css("color", "green");
+                      }
+                    },
+                    error: function (jqXHR) {
+                      // Handle error depending on context
+                      if (window.location.pathname.includes('rooms')) {
+                        notyf.error(jqXHR.responseJSON.message);
+                        if (typeof getReviewsWithError === 'function' && window.curr_building_name && window.curr_room_no) {
+                          getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
+                        }
+                      } else {
+                        $("#message").text(jqXHR.responseJSON.message).css("color", "red");
+                      }
+                    },
+                  });
+                },
+                btnClass: "btn-blue",
+              },
+              cancel: {
+                action: function () {},
+                btnClass: "btn-red",
+              },
+            },
+          });
+        } else {
+          // Handle error depending on context
+          if (window.location.pathname.includes('rooms')) {
+            notyf.error(jqXHR.responseJSON.message);
+            if (typeof getReviewsWithError === 'function' && window.curr_building_name && window.curr_room_no) {
+              getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
+            }
+          } else {
+            $("#message").text(jqXHR.responseJSON.message).css("color", "red");
+          }
+        }
+      },
+    });
+  }
 </script>
 
 <form
@@ -40,68 +273,87 @@
   enctype="multipart/form-data"
   id="submit-review-form"
 >
-  <div style="font-size: 18px; margin-bottom: 0.5rem">
+  <div class="room-info">
     If you were in <strong>{{ building_name }}, room {{ room_number }}</strong>,
     please submit your review below 😊
   </div>
   <input type="text" name="building-name" value="{{ building_name }}" hidden />
   <input type="text" name="room-number" value="{{ room_number }}" hidden />
-  <div class="form-group">
-    <label for="overall-rating">Overall rating</label>
-    <select
-      class="form-control"
-      id="overall-rating"
-      name="overall-rating"
-      required
-    >
-      <option value="None" selected="selected"></option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
+  
+  <h2>What would you rate your room?</h2>
+  <div class="star-rating">
+    <input type="radio" id="star5" name="overall-rating" value="5" />
+    <label for="star5" title="5 stars"></label>
+    <input type="radio" id="star4" name="overall-rating" value="4" />
+    <label for="star4" title="4 stars"></label>
+    <input type="radio" id="star3" name="overall-rating" value="3" />
+    <label for="star3" title="3 stars"></label>
+    <input type="radio" id="star2" name="overall-rating" value="2" />
+    <label for="star2" title="2 stars"></label>
+    <input type="radio" id="star1" name="overall-rating" value="1" />
+    <label for="star1" title="1 star"></label>
   </div>
+  
+  <h2>Please leave a written review of your room.</h2>
   <div class="form-group">
-    <label for="written-review">Add your written review</label>
     <textarea
       class="form-control"
       id="written-review"
-      rows="3"
+      rows="5"
       name="written-review"
+      placeholder="Write here"
       required
     ></textarea>
-    <span class="float-right badge badge-light" id="count_message"></span>
+    <div class="character-counter">0 / 5000</div>
   </div>
-  <!--    <div class="form-check" style="margin-bottom: 0.5rem">-->
-  <!--        <input type="checkbox" class="form-check-input" id="submission-check-1" name="submission-check-1">-->
-  <!--        <label class="form-check-label" for="submission-check-1"> <small>I understand that my review, once submitted,-->
-  <!--            cannot be edited. If I wish to delete it, I should contact it.admin@tigerapps.org.</small></label>-->
-  <!--    </div>-->
+  
+  <h2>Feel free to upload any photos of your room!</h2>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <div class="coming-soon">
+      <i class="bi bi-camera"></i> Photo uploads coming soon!
+    </div>
+  </div>
+  
   <div class="form-check">
     <input
       type="checkbox"
       class="form-check-input"
       id="submission-check-2"
       name="submission-check-2"
+      required
     />
     <label class="form-check-label" for="submission-check-2">
-      <small
-        >I understand that my Princeton netID will be shown alongside my
-        review.</small
-      ></label
-    >
+      I understand that my netID will be shown alongside my review.
+    </label>
   </div>
-  <hr />
+  
   <input type="hidden" id="override" name="override" value="no" />
-  <button
-    type="button"
-    class="btn btn-primary float-right"
-    onclick="submitReviewWithoutRefresh();"
-    style="background-color: #474bc9"
-  >
-    Submit
-  </button>
-  <!-- Link jQuery Confirm -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  <div style="text-align: right; margin-top: 20px;">
+    <button
+      type="button"
+      class="submit-button"
+      onclick="submitReviewWithoutRefresh();"
+    >
+      Submit
+    </button>
+  </div>
 </form>
+
+<script>
+  // Fix for the star rating system in modal context
+  $(document).ready(function() {
+    // Override any conflicting styles and ensure proper display in modal
+    if(window.location.pathname.includes('rooms')) {
+      $(".star-rating").css({
+        "display": "flex",
+        "flex-direction": "row-reverse",
+        "justify-content": "center"
+      });
+      
+      $(".star-rating input").css("display", "none");
+      
+      // Ensure counter is properly initialized
+      updateCharCount();
+    }
+  });
+</script>

@@ -80,6 +80,10 @@ def get_reviews():
     # CASClient().authenticate()
     building_name = request.args.get("building_name")
     room_number = request.args.get("room_no")
+    
+    # Handle the Forbes/Maine case
+    if building_name == "Maine":
+        building_name = "Forbes"
 
     reviews = (
         db_session.query(Reviews)
@@ -638,6 +642,11 @@ def submit_review():
     overall_rating = request.form["overall-rating"]
     written_review = request.form["written-review"]
     override = request.form["override"]
+    
+    # Handle Forbes/Maine case
+    if building_name == "Maine":
+        building_name = "Forbes"
+    
     # first_checkbox = request.form.getlist('submission-check-1')
     second_checkbox = request.form.getlist("submission-check-2")
     if overall_rating not in valid_ratings:
