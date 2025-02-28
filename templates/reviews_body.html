@@ -364,10 +364,17 @@
     let text_length = $("#written-review").val().length;
     $(".character-counter").text(text_length + " / " + text_max);
   }
+  
+  // This function ensures character counter is initialized in both standalone and modal contexts
+  function initializeCharCounter() {
+    $("#written-review").off("input").on("input", updateCharCount);
+    updateCharCount();
+    console.log("Character counter initialized");
+  }
 
   $(document).ready(function() {
-    $("#written-review").on("input", updateCharCount);
-    updateCharCount();
+    // Initialize character counter in standalone context
+    initializeCharCounter();
     
     // Make sure we have Bootstrap icons available
     if (!$('link[href*="bootstrap-icons"]').length) {
@@ -408,127 +415,239 @@
         "background-size": "50px"
       });
     }
+    
+    // Special handling for modal context
+    if (window.parent !== window && $('#seeReviewsModal').length) {
+      console.log("We're in the modal context - ensuring special initializations");
+      // Make sure the character counter updates properly
+      setTimeout(initializeCharCounter, 500);
+    }
   });
   
-  // Unified submitReviewWithoutRefresh function that works in both standalone and modal contexts
-  function submitReviewWithoutRefresh() {
-    const rating = $('input[name="overall-rating"]:checked').val() || "";
-    const review = $("#written-review").val();
+  // Add review submission function
+  function submitReviewWithoutRefresh(e) {
+    e.preventDefault();
     
-    if (!rating) {
-      // Show error message depending on context
-      if (window.location.pathname.includes('rooms')) {
-        notyf.error("Please select a rating.");
-      } else {
-        $("#message").text("Please select a rating.").removeClass("success").addClass("error");
-      }
-      return;
+    // Get values
+    const rating = $('input[name="overall-rating"]:checked').val();
+    const review = $('#written-review').val();
+    const reviewLength = review.length;
+    const acknowledge = $('#submission-check-2').is(':checked');
+    const building = $('#building-name').text();
+    const room = $('#room-number').text();
+    
+    console.log("Form data before submission:");
+    console.log("Rating:", rating);
+    console.log("Review length:", reviewLength);
+    console.log("Building:", building);
+    console.log("Room:", room);
+    console.log("Checkbox checked:", acknowledge);
+    
+    // Log form data for debugging
+    const formData = new FormData($('#submit-review-form')[0]);
+    console.log("Form data entries:");
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
     }
     
-    let reviewForm = $("form#submit-review-form")[0];
-    let formData = new FormData(reviewForm);
+    // Determine if we're in rooms page context or standalone
+    const isRoomsPage = $('body').hasClass('rooms-page');
+    
+    // Validate the form
+    if (!rating) {
+      const errorMsg = isRoomsPage ? 
+        "Please select a star rating before submitting." : 
+        "Please select a rating before submitting your review.";
+      if (window.notyf && isRoomsPage) {
+        window.notyf.error(errorMsg);
+      } else {
+        alert(errorMsg);
+      }
+      return false;
+    }
+    
+    if (reviewLength < 100) {
+      const errorMsg = isRoomsPage ? 
+        "Please write at least 100 characters in your review." :
+        "Your review must be at least 100 characters long. Please provide more details.";
+      if (window.notyf && isRoomsPage) {
+        window.notyf.error(errorMsg);
+      } else {
+        alert(errorMsg);
+      }
+      return false;
+    }
+    
+    if (!acknowledge) {
+      const errorMsg = isRoomsPage ? 
+        "Please acknowledge that your netID will be displayed with your review." :
+        "You must acknowledge that your netID will be displayed alongside your review.";
+      if (window.notyf && isRoomsPage) {
+        window.notyf.error(errorMsg);
+      } else {
+        alert(errorMsg);
+      }
+      return false;
+    }
+    
+    // Show validation passed and submission is in progress
+    if (window.notyf && isRoomsPage) {
+      window.notyf.success("Submitting your review...");
+    }
+    
+    // Submit the form via AJAX
     $.ajax({
-      type: "POST",
-      url: "/submitReview",
-      contentType: false,
-      dataType: "json",
-      cache: false,
-      processData: false,
+      url: '/submitReview',
+      type: 'POST',
       data: formData,
-      success: function (data, textStatus, jqXHR) {
-        $("#submit-review-form").trigger("reset");
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        console.log("Submission response:", response);
         
-        // Handle success depending on context
-        if (window.location.pathname.includes('rooms')) {
-          notyf.success(jqXHR.responseJSON.message);
-          // For modal context, refresh the reviews list and increment review count
-          if (typeof incrementReviewButton === 'function') {
-            incrementReviewButton();
-          }
-          if (typeof getReviews === 'function' && window.curr_building_name && window.curr_room_no) {
-            getReviews(window.curr_building_name, window.curr_room_no, null);
-          }
-        } else {
-          // For standalone context
-          $("#message").text("Review submitted, thank you!").removeClass("error").addClass("success");
-        }
-      },
-      error: function (jqXHR) {
-        if (jqXHR.responseJSON.message === "override") {
-          $.confirm({
-            title: "You will override your old review with this new review.",
-            buttons: {
-              confirm: {
-                action: function () {
-                  $("#override").val("yes");
-                  reviewForm = $("form#submit-review-form")[0];
-                  formData = new FormData(reviewForm);
-                  $.ajax({
-                    type: "POST",
-                    url: "/submitReview",
-                    contentType: false,
-                    dataType: "json",
-                    cache: false,
-                    processData: false,
-                    data: formData,
-                    success: function (data, textStatus, jqXHR) {
-                      $("#submit-review-form").trigger("reset");
-                      
-                      // Handle success depending on context
-                      if (window.location.pathname.includes('rooms')) {
-                        notyf.success(jqXHR.responseJSON.message);
-                        // For modal context
-                        if (typeof getReviews === 'function' && window.curr_building_name && window.curr_room_no) {
-                          getReviews(window.curr_building_name, window.curr_room_no, null);
-                        }
-                      } else {
-                        // For standalone context
-                        $("#message").text("Review submitted, thank you!").removeClass("error").addClass("success");
-                      }
-                    },
-                    error: function (jqXHR) {
-                      // Handle error depending on context
-                      if (window.location.pathname.includes('rooms')) {
-                        notyf.error(jqXHR.responseJSON.message);
-                        if (typeof getReviewsWithError === 'function' && window.curr_building_name && window.curr_room_no) {
-                          getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
-                        }
-                      } else {
-                        $("#message").text(jqXHR.responseJSON.message).removeClass("success").addClass("error");
-                      }
-                    },
-                  });
+        if (response.message === "override") {
+          // Handle review override confirmation
+          if ($.confirm) {
+            // If jQuery confirm is available (should be in most contexts)
+            $.confirm({
+              title: 'Review Already Exists',
+              content: 'You have already submitted a review for this room. Do you want to override it?',
+              buttons: {
+                confirm: function() {
+                  submitOverrideReview(formData);
                 },
-                btnClass: "btn-blue",
-              },
-              cancel: {
-                action: function () {},
-                btnClass: "btn-red",
-              },
-            },
-          });
-        } else {
-          // Handle error depending on context
-          if (window.location.pathname.includes('rooms')) {
-            notyf.error(jqXHR.responseJSON.message);
-            if (typeof getReviewsWithError === 'function' && window.curr_building_name && window.curr_room_no) {
-              getReviewsWithError(window.curr_building_name, window.curr_room_no, null);
-            }
+                cancel: function() {
+                  // Do nothing if canceled
+                }
+              }
+            });
           } else {
-            $("#message").text(jqXHR.responseJSON.message).removeClass("success").addClass("error");
+            // Fallback to standard confirm if jQuery confirm is unavailable
+            if (confirm('You have already submitted a review for this room. Do you want to override it?')) {
+              submitOverrideReview(formData);
+            }
+          }
+        } else {
+          // Success - either show notification or alert based on context
+          const successMsg = "Your review has been submitted successfully!";
+          if (window.notyf && isRoomsPage) {
+            window.notyf.success(successMsg);
+          } else {
+            alert(successMsg);
+          }
+          
+          // If we're in the standalone review page, redirect back to the rooms page
+          if (!isRoomsPage) {
+            window.location.href = '/rooms';
+          } else {
+            // In modal context, reset the form and reload reviews
+            $('#submit-review-form')[0].reset();
+            updateCharCount();
+            // Reload the reviews for this room
+            if (typeof getReviews === 'function') {
+              getReviews(building, room);
+            }
           }
         }
       },
+      error: function(xhr, status, error) {
+        console.error("AJAX Error:", status, error);
+        console.log("Response text:", xhr.responseText);
+        
+        try {
+          const errorObj = JSON.parse(xhr.responseText);
+          console.log("Parsed error:", errorObj);
+        } catch (e) {
+          console.log("Could not parse response as JSON");
+        }
+        
+        handleAjaxError(xhr, status, error);
+      }
+    });
+    
+    return false;
+  }
+
+  // Helper function to submit an override review
+  function submitOverrideReview(formData) {
+    // Set the override flag to yes
+    formData.set('override', 'yes');
+    
+    $.ajax({
+      url: '/submitReview',
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        const successMsg = "Your review has been updated successfully!";
+        if (window.notyf && $('body').hasClass('rooms-page')) {
+          window.notyf.success(successMsg);
+        } else {
+          alert(successMsg);
+        }
+        
+        // Reset form or redirect based on context
+        if (!$('body').hasClass('rooms-page')) {
+          window.location.href = '/rooms';
+        } else {
+          $('#submit-review-form')[0].reset();
+          updateCharCount();
+          // Reload the reviews
+          const building = $('#building-name').text();
+          const room = $('#room-number').text();
+          if (typeof getReviews === 'function') {
+            getReviews(building, room);
+          }
+        }
+      },
+      error: function(xhr, status, error) {
+        handleAjaxError(xhr, status, error);
+      }
     });
   }
+
+  // Helper function to handle AJAX errors
+  function handleAjaxError(xhr, status, error) {
+    console.error("AJAX Error:", status, error);
+    console.log("Response text:", xhr.responseText);
+    
+    let errorMessage = "An error occurred while submitting your review.";
+    
+    // Parse the error message from the server if available
+    try {
+      const errorData = JSON.parse(xhr.responseText);
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch (e) {
+      console.error("Could not parse error response:", e);
+      
+      if (xhr.status === 400) {
+        errorMessage = "There was a problem with your review submission. Please check all fields.";
+      } else if (xhr.status === 500) {
+        errorMessage = "Server error. Please try again later.";
+      }
+    }
+    
+    if (window.notyf && $('body').hasClass('rooms-page')) {
+      window.notyf.error(errorMessage);
+    } else {
+      alert(errorMessage);
+    }
+  }
+
+  // Attach event handler to form submission
+  $("#submit-review-form").submit(submitReviewWithoutRefresh);
 </script>
 
 <form
-  action="{{ url_for('submit_review') }}"
+  action="/submitReview"
   method="post"
   enctype="multipart/form-data"
   id="submit-review-form"
   class="review-form {% if request.path != '/review' %}compact-form{% endif %}"
+  onsubmit="return false;"
 >
   <div class="room-info">
     If you were in <strong>{{ building_name }}, room {{ room_number }}</strong>,
@@ -590,16 +709,17 @@
     </label>
   </div>
   
-  <input type="hidden" id="override" name="override" value="no" />
   <div style="text-align: right; margin-top: 25px;">
     <button
-      type="button"
+      type="submit"
       class="submit-button px-4 py-2"
-      onclick="submitReviewWithoutRefresh();"
     >
       Submit
     </button>
   </div>
+  
+  <!-- Hidden fields for form submission -->
+  <input type="hidden" id="override" name="override" value="no" />
 </form>
 
 <script>

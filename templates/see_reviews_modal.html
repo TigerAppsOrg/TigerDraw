@@ -181,6 +181,9 @@
       <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
       <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+      <!-- Add Notyf for notifications -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
       <div class="modal-body" id="reviews-body">
         <!-- The review content will be loaded here dynamically -->
       </div>
@@ -189,6 +192,29 @@
 </div>
 
 <script>
+  // Initialize Notyf for notifications without redeclaring
+  if (typeof window.notyf === 'undefined') {
+    window.notyf = new Notyf({
+      duration: 5000,
+      position: {
+        x: 'right',
+        y: 'top',
+      },
+      types: [
+        {
+          type: 'success',
+          backgroundColor: '#4e73df',
+          icon: false
+        },
+        {
+          type: 'error',
+          backgroundColor: '#dc3545',
+          icon: false
+        }
+      ]
+    });
+  }
+
   // Ensure the modal properly initializes the star rating and character count
   $('#seeReviewsModal').on('shown.bs.modal', function () {
     // Initialize the star rating
@@ -205,13 +231,76 @@
     // Initialize character counter if it exists
     if ($("#written-review").length && $(".character-counter").length) {
       const text_max = 5000;
+      
+      // Set initial counter value
       let text_length = $("#written-review").val().length;
       $(".character-counter").text(text_length + " / " + text_max);
       
-      $("#written-review").on("input", function() {
+      // Ensure the input event is properly bound for live updating
+      $("#written-review").off("input").on("input", function() {
         text_length = $(this).val().length;
         $(".character-counter").text(text_length + " / " + text_max);
       });
     }
+    
+    // Set rooms-page class for consistent styling
+    $('body').addClass('rooms-page');
+  });
+
+  // Ensure jQuery Confirm is loaded for review submission
+  $(document).ready(function() {
+    // Check if jQuery Confirm is already loaded
+    if (typeof $.confirm !== 'function') {
+      console.log("Loading jQuery Confirm for the modal context");
+      
+      // Load required CSS
+      if (!$('link[href*="jquery-confirm"]').length) {
+        $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+      }
+      
+      // Load required JS
+      $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+        .done(function() {
+          console.log("jQuery Confirm loaded successfully");
+        })
+        .fail(function() {
+          console.error("Failed to load jQuery Confirm");
+        });
+    }
+    
+    // Also ensure Notyf is available for notifications
+    if (typeof Notyf === 'undefined') {
+      console.log("Loading Notyf for the modal context");
+      
+      // Load Notyf CSS
+      if (!$('link[href*="notyf"]').length) {
+        $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">');
+      }
+      
+      // Load Notyf JS
+      $.getScript("https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js")
+        .done(function() {
+          console.log("Notyf loaded successfully");
+          window.Notyf = Notyf; // Ensure global availability
+        })
+        .fail(function() {
+          console.error("Failed to load Notyf");
+        });
+    }
+    
+    // Initialize modal handlers
+    $('#seeReviewsModal').on('shown.bs.modal', function() {
+      console.log("Modal shown - ensuring character counter is initialized");
+      
+      // Make sure the character counter is initialized when the modal contents are loaded
+      if (typeof initializeCharCounter === 'function') {
+        setTimeout(initializeCharCounter, 300);
+      }
+      
+      // Make sure the star ratings are clickable
+      setTimeout(function() {
+        $(".star-rating label").css("cursor", "pointer");
+      }, 300);
+    });
   });
 </script>

@@ -400,8 +400,31 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
+    // Initialize Notyf globally for notifications throughout the page
+    const notyf = new Notyf({
+        duration: 5000,
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        types: [
+            {
+                type: 'success',
+                backgroundColor: '#4e73df',
+                icon: false
+            },
+            {
+                type: 'error',
+                backgroundColor: '#dc3545',
+                icon: false
+            }
+        ]
+    });
+    
+    // Make notyf available globally
+    window.notyf = notyf;
+    
     let text_max;
-
     var rt;
     var gt;
     let request = null;
@@ -712,68 +735,113 @@
 
     function getReviews(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
         
         // Make sure body has the rooms-page class for CSS targeting
         $('body').addClass('rooms-page');
         
-        setTimeout(function () {
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        setTimeout(function() {
+            console.log("Fetching reviews for", building_name, room_no);
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-                
-                // Initialize Bootstrap icons if needed
-                if (!$('link[href*="bootstrap-icons"]').length) {
-                    $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
-                }
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Now that reviews are loaded, initialize any JS functionality
+                    setTimeout(function() {
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            console.log("Character counter initialized after loading reviews");
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
 
     function getReviewsWithError(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
         
         // Make sure body has the rooms-page class for CSS targeting
         $('body').addClass('rooms-page');
         
-        setTimeout(function () {
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        setTimeout(function() {
+            console.log("Fetching reviews (with error context) for", building_name, room_no);
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-                $("#overall-rating").val(rating);
-                $("#written-review").val(review);
-                $('#count_message').html(review.length + ' / ' + text_max);
-                
-                // Initialize Bootstrap icons if needed
-                if (!$('link[href*="bootstrap-icons"]').length) {
-                    $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
-                }
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Now that reviews are loaded, initialize any JS functionality
+                    setTimeout(function() {
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Display error message if applicable
+                        if (window.errorMessage) {
+                            if (window.notyf) {
+                                window.notyf.error(window.errorMessage);
+                                window.errorMessage = null;
+                            }
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
-
-    const notyf = new Notyf({
-        duration: 10000,
-        dismissible: true,
-        position: {
-            x: 'right',
-            y: 'bottom',
-        },
-    });
-
 
     function submitReviewWithoutRefresh() {
         rating = $("#overall-rating").val()
