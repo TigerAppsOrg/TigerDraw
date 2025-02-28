@@ -530,6 +530,9 @@
 
 <script>
   const items = JSON.parse(`{{ items | safe }}`);
+  const forbesRooms = JSON.parse(`{{ forbes_rooms | safe }}`);
+  console.log("Loaded Forbes rooms:", forbesRooms);
+  
   const buildingAliases = {
     'Maine': 'Forbes', // Map Maine to Forbes
     'Forbes': 'Forbes'
@@ -759,7 +762,36 @@
       } else {
         const searchQuery = $(this).val().toLowerCase().trim();
         
-        // Improved search logic with better building name handling
+        // FORBES SEARCH WITH PROPER FILTERING
+        if (searchQuery === "forbes" || 
+            searchQuery === "for" || 
+            searchQuery.startsWith("for")) {
+          
+          // Get the part after "forbes" if it exists
+          let additionalSearch = "";
+          if (searchQuery.startsWith("forbes") && searchQuery.length > 6) {
+            additionalSearch = searchQuery.substring(6).trim().toLowerCase();
+          }
+          
+          // Filter Forbes rooms based on the additional search term
+          let filteredForbesRooms = forbesRooms;
+          if (additionalSearch) {
+            console.log("Additional Forbes search term:", additionalSearch);
+            filteredForbesRooms = forbesRooms.filter(room => {
+              const roomLower = room.toLowerCase();
+              return roomLower.includes(additionalSearch);
+            });
+          }
+          
+          console.log(`Forbes search: Found ${filteredForbesRooms.length} matching rooms`);
+          
+          // Limit to first 20 for display
+          const displayedForbesRooms = filteredForbesRooms.slice(0, 20);
+          renderList(displayedForbesRooms);
+          return [];  // Return empty since we've already rendered the list
+        }
+      
+        // Standard search logic for non-Forbes searches
         const filteredItems = items.filter((item) => {
           const itemLower = item.toLowerCase();
           
