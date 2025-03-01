@@ -1,3 +1,148 @@
+<!-- Add this HTML right after the opening <body> tag or before the closing </body> tag -->
+<div id="notification-container" class="notification-container"></div>
+
+<style>
+  /* Notification styling */
+  .notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    z-index: 9999;
+  }
+
+  .notification {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slide-in 0.4s ease-out;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .notification.success {
+    background-color: #4caf50;
+    border-left: 5px solid #388e3c;
+  }
+
+  .notification.error {
+    background-color: #f44336;
+    border-left: 5px solid #d32f2f;
+  }
+
+  .notification.info {
+    background-color: #2196f3;
+    border-left: 5px solid #1976d2;
+  }
+
+  .notification i {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+
+  .notification-content {
+    flex-grow: 1;
+  }
+
+  .notification-close {
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+    opacity: 0.7;
+  }
+
+  .notification-close:hover {
+    opacity: 1;
+  }
+
+  @keyframes slide-in {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  .notification.fade-out {
+    animation: fade-out 0.3s forwards;
+  }
+</style>
+
+<script>
+  // Notification System - add this before other scripts or inline in the page
+  function showNotification(message, type = "info", duration = 4000) {
+    const container = document.getElementById("notification-container");
+    if (!container) return;
+
+    // Create notification element
+    const notification = document.createElement("div");
+    notification.className = `notification ${type}`;
+
+    // Icon based on notification type
+    let icon = "info-circle";
+    if (type === "success") icon = "check-circle";
+    if (type === "error") icon = "exclamation-circle";
+
+    // Set content
+    notification.innerHTML = `
+      <i class="bi bi-${icon}"></i>
+      <div class="notification-content">${message}</div>
+      <div class="notification-close"><i class="bi bi-x"></i></div>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Set up close button
+    const closeBtn = notification.querySelector(".notification-close");
+    closeBtn.addEventListener("click", () => {
+      notification.classList.add("fade-out");
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    });
+
+    // Auto close after duration
+    if (duration) {
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.classList.add("fade-out");
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }
+      }, duration);
+    }
+
+    return notification;
+  }
+
+  // Use globally
+  window.showNotification = showNotification;
+</script>
+
 <style>
   .review-item {
     background-color: #f8f9fa;
@@ -395,7 +540,7 @@
       if (isRoomsPage && window.notyf) {
         window.notyf.error("Please select a rating.");
       } else {
-        alert("Please select a rating.");
+        showNotification("Please select a rating.");
       }
       return;
     }
@@ -406,7 +551,7 @@
           "Please write a review with at least 100 characters."
         );
       } else {
-        alert("Please write a review with at least 100 characters.");
+        showNotification("Please write a review with at least 100 characters.");
       }
       return;
     }
@@ -417,7 +562,7 @@
           "Please check the box to acknowledge that your netID will be displayed with your review."
         );
       } else {
-        alert(
+        showNotification(
           "Please check the box to acknowledge that your netID will be displayed with your review."
         );
       }
@@ -453,10 +598,7 @@
         if (isRoomsPage && window.notyf) {
           window.notyf.error(errorMessage);
         } else {
-          $("#message")
-            .text(errorMessage)
-            .removeClass("success")
-            .addClass("error");
+          showNotification(errorMessage);
         }
       }
     }
@@ -478,7 +620,7 @@
           $("#room-number").val(roomDisplay);
         } else {
           // Still missing values, show error
-          alert(
+          showNotification(
             "Error: Missing building or room information. Please select a room first."
           );
           return;
@@ -519,10 +661,7 @@
               }
             }, 1500);
           } else {
-            $("#message")
-              .text("Review submitted, thank you!")
-              .removeClass("error")
-              .addClass("success");
+            showNotification("Review submitted, thank you!");
           }
         },
         error: function (jqXHR) {
