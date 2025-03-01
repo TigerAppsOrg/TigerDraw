@@ -437,8 +437,12 @@
     resultsContainer.empty().css("display", "none");
     $("#message").empty();
     selectedIndex = -1;
-    building_name = selectedText.split(" ")[0];
-    room_no = selectedText.split(" ")[1];
+    spaceIndex = selectedText.lastIndexOf(" ");
+    building_name = selectedText.slice(0, spaceIndex);
+    if (building_name.includes("FORBES")) {
+      building_name = building_name.slice(building_name.indexOf(" ") + 1);
+    }
+    room_no = selectedText.slice(spaceIndex + 1);
     setTimeout(function () {
       fetchWithTimeout(
         "/get_reviews?" +
@@ -490,9 +494,16 @@
         $(visibleItems[selectedIndex]).addClass("active").focus();
       } else if (e.key === "Enter") {
         if (selectedIndex >= 0) {
-          handleSelection($(visibleItems[selectedIndex]).text());
+          if (
+            visibleItems[selectedIndex] &&
+            visibleItems[selectedIndex].innerText !== "No results found"
+          ) {
+            handleSelection($(visibleItems[selectedIndex]).text());
+          }
         } else if (visibleItems.length > 0 && selectedIndex == -1) {
-          handleSelection($(visibleItems[0]).text());
+          if (visibleItems[0].innerText !== "No results found") {
+            handleSelection($(visibleItems[0]).text());
+          }
         }
       } else {
         $("#reviews-body").empty();

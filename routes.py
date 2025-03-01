@@ -124,9 +124,10 @@ def review():
 
     room_names = []
     for row in data:
-        room_names.append(f"{row[0].building} {row[0].room_no}")
-
-    print(room_names)
+        if row[0].building in ["MAIN", "ANNEX"]:
+            room_names.append(f"FORBES {row[0].building} {row[0].room_no}")
+        else:
+            room_names.append(f"{row[0].building} {row[0].room_no}")
 
     html = render_template(
         "review.html",
