@@ -1,107 +1,722 @@
-<div id="reviews-div">
-  {% if not reviews %}
-  <p>There are currently no reviews for this room</p>
-  <hr />
-  {% else %} {% for review in reviews %}
-  <!--<h3><strong>Review #{{ loop.index }}</strong></h3>-->
-  <h5>
-    Posted on {{ get_time_string_from_utc_dt(review.date) }} {% if review.net_id
-    %} by <em>{{ review.net_id }}</em>
-    {% endif %}
-  </h5>
-  <h6>Rating: {{ review.rating }} out of 5</h6>
-  <p>{{ review.content }}</p>
+<style>
+  .review-item {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-  <hr />
+  .review-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+  }
+
+  .review-meta {
+    color: #6c757d;
+    font-size: 14px;
+  }
+
+  .review-date {
+    color: #adb5bd;
+    font-style: italic;
+  }
+
+  .reviewer-id {
+    font-weight: 500;
+    color: #474bc9;
+  }
+
+  .star-display {
+    display: flex;
+    margin-bottom: 15px;
+  }
+
+  .star-display i {
+    color: #f5c842;
+    margin-right: 3px;
+  }
+
+  .review-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #495057;
+  }
+
+  .review-rating {
+    display: inline-block;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: white;
+    background-color: #474bc9;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  /* Star Rating System - works in both standalone and modal contexts */
+  .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  .star-rating input {
+    display: none;
+  }
+
+  .star-rating label {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5e5e5'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 30px;
+  }
+
+  .star-rating input:checked ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+  }
+
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+  }
+
+  /* Consistent form styling */
+  .room-info {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f0f2ff;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #474bc9;
+  }
+
+  .character-counter {
+    text-align: right;
+    margin-top: 5px;
+    color: #6c757d;
+    font-size: 14px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .review-form {
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .review-form h2 {
+    font-size: 1.3em;
+    color: #474bc9;
+    margin: 15px 0 10px;
+    font-weight: 500;
+  }
+
+  .review-form .form-group {
+    margin-bottom: 15px;
+  }
+
+  .review-form .character-counter {
+    color: #adb5bd;
+    font-size: 12px;
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  .review-form textarea {
+    height: 100px;
+    resize: none;
+    font-size: 14px;
+    border-color: #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .review-form textarea:focus {
+    border-color: #474bc9;
+    box-shadow: 0 0 0 0.2rem rgba(71, 75, 201, 0.25);
+  }
+
+  .submit-button {
+    background-color: #4e73df;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    width: auto;
+  }
+
+  .submit-button:hover {
+    background-color: #3a5fc9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .coming-soon {
+    display: inline-block;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    padding: 8px 15px;
+    border-radius: 4px;
+    border: 1px dashed #adb5bd;
+    font-style: italic;
+    margin: 5px 0;
+    font-size: 13px;
+  }
+
+  /* Make the form more compact */
+  .compact-section {
+    margin-bottom: 10px;
+  }
+
+  .compact-margin {
+    margin: 10px 0;
+  }
+
+  /* Full review page specific styling */
+  .section {
+    margin-bottom: 30px;
+  }
+
+  body:not(.rooms-page) .review-form {
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  body:not(.rooms-page) .star-rating {
+    margin: 25px 0;
+  }
+
+  body:not(.rooms-page) .star-rating label {
+    width: 50px;
+    height: 50px;
+    margin: 0 10px;
+    background-size: 50px;
+  }
+
+  body:not(.rooms-page) .review-form h2 {
+    font-size: 1.5em;
+    margin: 25px 0 15px;
+    text-align: center;
+    color: #474bc9;
+    font-weight: 500;
+  }
+
+  body:not(.rooms-page) .room-info {
+    font-size: 18px;
+    padding: 20px;
+    margin-bottom: 30px;
+    background-color: #f0f2ff;
+    border-left: 5px solid #474bc9;
+  }
+
+  body:not(.rooms-page) .form-group {
+    margin-bottom: 25px;
+  }
+
+  body:not(.rooms-page) textarea.form-control {
+    height: 150px;
+    font-size: 16px;
+    padding: 15px;
+  }
+
+  body:not(.rooms-page) .character-counter {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  body:not(.rooms-page) .coming-soon {
+    padding: 12px 20px;
+    font-size: 15px;
+    margin: 15px 0;
+  }
+
+  body:not(.rooms-page) .form-check-label {
+    font-size: 16px;
+  }
+
+  body:not(.rooms-page) .submit-button {
+    font-size: 16px;
+    padding: 10px 30px;
+    margin-top: 20px;
+  }
+
+  /* Modal specific adjustments */
+  .modal-body h2 {
+    font-size: 18px;
+    margin: 15px 0;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .modal-body textarea {
+    resize: none;
+    height: 120px;
+  }
+
+  .modal-body .form-check {
+    margin: 15px 0;
+  }
+
+  /* Override any conflicting styles in modal context */
+  #seeReviewsModal .star {
+    display: none !important;
+  }
+
+  /* Empty state styling */
+  .no-reviews {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    font-style: italic;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  /* Review writing prompt */
+  .write-review-prompt {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #e9f2ff;
+    border-radius: 8px;
+    color: #474bc9;
+    font-weight: 500;
+  }
+</style>
+
+<div id="reviews-div" style="display: block !important">
+  {% if not reviews %}
+  <div class="no-reviews">
+    <i class="bi bi-chat-square-text"></i>
+    <p>There are currently no reviews for this room.</p>
+    <p>Be the first to share your experience!</p>
+  </div>
+  {% else %}
+  <div
+    class="write-review-prompt {% if request.path == '/review' %}d-none{% endif %}"
+  >
+    Read {{ reviews|length }} review{% if reviews|length > 1 %}s{% endif %} for
+    this room below
+  </div>
+  {% for review in reviews %}
+  <div class="review-item">
+    <div class="review-header">
+      <div class="review-meta">
+        <span class="review-date"
+          >{{ get_time_string_from_utc_dt(review.date) }}</span
+        >
+        {% if review.net_id %}
+        <span> by </span>
+        <span class="reviewer-id">{{ review.net_id }}</span>
+        {% endif %}
+      </div>
+      <div class="review-rating">{{ review.rating }} / 5</div>
+    </div>
+
+    <div class="star-display">
+      {% for i in range(review.rating) %}
+      <i class="bi bi-star-fill"></i>
+      {% endfor %} {% for i in range(5 - review.rating) %}
+      <i class="bi bi-star" style="color: #e5e5e5"></i>
+      {% endfor %}
+    </div>
+
+    <div class="review-content">{{ review.content }}</div>
+  </div>
   {% endfor %} {% endif %}
 </div>
 
 <script>
-  text_max = 5000;
-  $("#count_message").html("0 / " + text_max);
+  // Global function to initialize character counter without redeclaring variables
+  function initializeCharCounter() {
+    // Use window.text_max if it exists, otherwise initialize it
+    if (typeof window.text_max === "undefined") {
+      window.text_max = 5000;
+    }
 
-  $("#written-review").change(function () {
-    let text_length = $("#written-review").val().length;
-    let text_remaining = text_max - text_length;
+    const textArea = $("#written-review");
+    const counter = $(".character-counter");
 
-    $("#count_message").html(text_length + " / " + text_max);
-  });
-  $("#written-review").keyup(function () {
-    let text_length = $("#written-review").val().length;
-    let text_remaining = text_max - text_length;
+    if (textArea.length && counter.length) {
+      // Set initial counter value
+      let text_length = textArea.val().length;
+      counter.text(text_length + " / " + window.text_max);
 
-    $("#count_message").html(text_length + " / " + text_max);
+      // Ensure the input event is properly bound for live updating
+      textArea.off("input").on("input", function () {
+        text_length = $(this).val().length;
+        counter.text(text_length + " / " + window.text_max);
+      });
+    }
+  }
+
+  // Function to handle the review submission
+  function submitReviewWithoutRefresh() {
+    // Get form values
+    const rating = $('input[name="overall-rating"]:checked').val();
+    const review = $("#written-review").val();
+    const checkbox = $('input[name="submission-check-2"]').is(":checked");
+
+    // Context detection
+    const isRoomsPage = $("body").hasClass("rooms-page");
+
+    // Validation checks
+    if (!rating) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error("Please select a rating.");
+      } else {
+        alert("Please select a rating.");
+      }
+      return;
+    }
+
+    if (!review || review.trim().length < 100) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error(
+          "Please write a review with at least 100 characters."
+        );
+      } else {
+        alert("Please write a review with at least 100 characters.");
+      }
+      return;
+    }
+
+    if (!checkbox) {
+      if (isRoomsPage && window.notyf) {
+        window.notyf.error(
+          "Please check the box to acknowledge that your netID will be displayed with your review."
+        );
+      } else {
+        alert(
+          "Please check the box to acknowledge that your netID will be displayed with your review."
+        );
+      }
+      return;
+    }
+
+    // Helper function to handle AJAX errors with context awareness
+    function handleAjaxError(jqXHR) {
+      if (jqXHR.responseJSON && jqXHR.responseJSON.message === "override") {
+        // Handle override confirmation with jQuery Confirm
+        $.confirm({
+          title: "You will override your old review with this new review.",
+          buttons: {
+            confirm: {
+              action: function () {
+                $("#override").val("yes");
+                submitFormWithAjax();
+              },
+              btnClass: "btn-blue",
+            },
+            cancel: {
+              action: function () {},
+              btnClass: "btn-red",
+            },
+          },
+        });
+      } else {
+        // Display other error messages
+        const errorMessage = jqXHR.responseJSON
+          ? jqXHR.responseJSON.message
+          : "An error occurred while submitting your review.";
+
+        if (isRoomsPage && window.notyf) {
+          window.notyf.error(errorMessage);
+        } else {
+          $("#message")
+            .text(errorMessage)
+            .removeClass("success")
+            .addClass("error");
+        }
+      }
+    }
+
+    // Function to submit the form with AJAX
+    function submitFormWithAjax() {
+      // CRITICAL FIX: Make sure we have building and room values before submission
+      const buildingValue = $("#building-name").val();
+      const roomValue = $("#room-number").val();
+
+      if (!buildingValue || !roomValue) {
+        // Try to get values from display elements
+        const buildingDisplay = $("#building-name-display").text().trim();
+        const roomDisplay = $("#room-number-display").text().trim();
+
+        if (buildingDisplay && roomDisplay) {
+          // Update the form fields with display values
+          $("#building-name").val(buildingDisplay);
+          $("#room-number").val(roomDisplay);
+        } else {
+          // Still missing values, show error
+          alert(
+            "Error: Missing building or room information. Please select a room first."
+          );
+          return;
+        }
+      }
+
+      let reviewForm = $("form#submit-review-form")[0];
+      let formData = new FormData(reviewForm);
+
+      $.ajax({
+        type: "POST",
+        url: "/submitReview",
+        contentType: false,
+        dataType: "json",
+        cache: false,
+        processData: false,
+        data: formData,
+        success: function (data) {
+          // Reset the form
+          $("#submit-review-form").trigger("reset");
+
+          // Show success message
+          if (isRoomsPage && window.notyf) {
+            window.notyf.success("Review submitted successfully!");
+
+            // Close the modal if we're in the rooms page
+            setTimeout(function () {
+              $("#seeReviewsModal").modal("hide");
+
+              // Reload reviews to show the new one
+              const building = $('input[name="building-name"]').val();
+              const room = $('input[name="room-number"]').val();
+
+              if (building && room) {
+                setTimeout(function () {
+                  getReviews(building, room);
+                }, 500);
+              }
+            }, 1500);
+          } else {
+            $("#message")
+              .text("Review submitted, thank you!")
+              .removeClass("error")
+              .addClass("success");
+          }
+        },
+        error: function (jqXHR) {
+          handleAjaxError(jqXHR);
+        },
+      });
+    }
+
+    // Start the submission process
+    submitFormWithAjax();
+  }
+
+  // Initialize when the DOM is ready
+  $(document).ready(function () {
+    initializeCharCounter();
+
+    // Ensure Bootstrap icons are included
+    if (!$('link[href*="bootstrap-icons"]').length) {
+      $("head").append(
+        '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">'
+      );
+    }
+
+    // Attach event handler to form submission
+    $("#submit-review-form")
+      .off("submit")
+      .on("submit", function (e) {
+        e.preventDefault();
+        submitReviewWithoutRefresh();
+        return false;
+      });
+
+    // Also attach to submit button click for more reliability
+    $(".submit-button")
+      .off("click")
+      .on("click", function (e) {
+        e.preventDefault();
+
+        // CRITICAL FIX: Make absolutely sure building and room are set correctly before submitting
+        // Force update from the displayed values if they exist
+        const buildingDisplay = $("#building-name-display").text().trim();
+        const roomDisplay = $("#room-number-display").text().trim();
+
+        if (buildingDisplay && roomDisplay) {
+          $("#building-name").val(buildingDisplay);
+          $("#room-number").val(roomDisplay);
+        }
+
+        submitReviewWithoutRefresh();
+        return false;
+      });
+
+    // Add page context detection
+    const isReviewPage = window.location.pathname === "/review";
+    const isRoomsPage = window.location.pathname.includes("rooms");
+
+    if (isRoomsPage) {
+      // We're in the rooms page context (modal)
+      $("body").addClass("rooms-page");
+      $(".write-review-prompt").show();
+      $(".review-item").show();
+
+      // Star rating sizing for compact view
+      $(".star-rating label").css({
+        width: "30px",
+        height: "30px",
+        margin: "0 5px",
+        "background-size": "30px",
+      });
+    } else if (isReviewPage) {
+      // We're on the standalone review page
+      $("body").removeClass("rooms-page");
+      $(".write-review-prompt").hide();
+      $(".review-item").hide();
+
+      // Star rating sizing for full review page
+      $(".star-rating label").css({
+        width: "50px",
+        height: "50px",
+        margin: "0 10px",
+        "background-size": "50px",
+      });
+    }
   });
 </script>
 
 <form
-  action="{{ url_for('submit_review') }}"
+  action="/submitReview"
   method="post"
   enctype="multipart/form-data"
   id="submit-review-form"
+  class="review-form"
 >
-  <div style="font-size: 18px; margin-bottom: 0.5rem">
-    If you were in <strong>{{ building_name }}, room {{ room_number }}</strong>,
-    please submit your review below 😊
+  <div class="room-info">
+    If you were in
+    <strong
+      ><span id="building-name-display">{{ building_name }}</span>, room
+      <span id="room-number-display">{{ room_number }}</span></strong
+    >, please submit your review below 😊
   </div>
-  <input type="text" name="building-name" value="{{ building_name }}" hidden />
-  <input type="text" name="room-number" value="{{ room_number }}" hidden />
-  <div class="form-group">
-    <label for="overall-rating">Overall rating</label>
-    <select
-      class="form-control"
-      id="overall-rating"
-      name="overall-rating"
-      required
-    >
-      <option value="None" selected="selected"></option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-    </select>
+  <input
+    type="hidden"
+    name="building-name"
+    value="{{ building_name }}"
+    id="building-name"
+  />
+  <input
+    type="hidden"
+    name="room-number"
+    value="{{ room_number }}"
+    id="room-number"
+  />
+
+  <div class="section mb-4">
+    <h2>What would you rate your room?</h2>
+    <div class="star-rating my-4">
+      <input type="radio" id="star5" name="overall-rating" value="5" />
+      <label for="star5" title="5 stars"></label>
+      <input type="radio" id="star4" name="overall-rating" value="4" />
+      <label for="star4" title="4 stars"></label>
+      <input type="radio" id="star3" name="overall-rating" value="3" />
+      <label for="star3" title="3 stars"></label>
+      <input type="radio" id="star2" name="overall-rating" value="2" />
+      <label for="star2" title="2 stars"></label>
+      <input type="radio" id="star1" name="overall-rating" value="1" />
+      <label for="star1" title="1 star"></label>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="written-review">Add your written review</label>
-    <textarea
-      class="form-control"
-      id="written-review"
-      rows="3"
-      name="written-review"
-      required
-    ></textarea>
-    <span class="float-right badge badge-light" id="count_message"></span>
+
+  <div class="section mb-4">
+    <h2>Please leave a written review of your room.</h2>
+    <div class="form-group">
+      <textarea
+        class="form-control"
+        id="written-review"
+        name="written-review"
+        rows="6"
+        placeholder="Write here about your experience with this room. What did you like? What could be improved?"
+        required
+      ></textarea>
+      <div class="character-counter">0 / 5000</div>
+    </div>
   </div>
-  <!--    <div class="form-check" style="margin-bottom: 0.5rem">-->
-  <!--        <input type="checkbox" class="form-check-input" id="submission-check-1" name="submission-check-1">-->
-  <!--        <label class="form-check-label" for="submission-check-1"> <small>I understand that my review, once submitted,-->
-  <!--            cannot be edited. If I wish to delete it, I should contact it.admin@tigerapps.org.</small></label>-->
-  <!--    </div>-->
-  <div class="form-check">
+
+  <div class="section mb-4">
+    <h2>Feel free to upload any photos of your room!</h2>
+    <div style="text-align: center" class="my-4">
+      <div class="coming-soon">
+        <i class="bi bi-camera"></i> Photo uploads coming soon!
+      </div>
+    </div>
+  </div>
+
+  <div class="form-check my-4">
     <input
       type="checkbox"
       class="form-check-input"
       id="submission-check-2"
       name="submission-check-2"
+      required
     />
     <label class="form-check-label" for="submission-check-2">
-      <small
-        >I understand that my Princeton netID will be shown alongside my
-        review.</small
-      ></label
-    >
+      I understand that my netID will be shown alongside my review.
+    </label>
   </div>
-  <hr />
+
+  <div style="text-align: right; margin-top: 25px">
+    <button type="submit" class="submit-button px-4 py-2">Submit</button>
+  </div>
+
+  <!-- Hidden fields for form submission -->
   <input type="hidden" id="override" name="override" value="no" />
-  <button
-    type="button"
-    class="btn btn-primary float-right"
-    onclick="submitReviewWithoutRefresh();"
-    style="background-color: #474bc9"
-  >
-    Submit
-  </button>
-  <!-- Link jQuery Confirm -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 </form>
+
+<script>
+  // Custom handler for conditional classes
+  function applyConditionalClasses() {
+    // Applied via JavaScript instead of template conditions to resolve linting issues
+    if (window.location.pathname !== "/review") {
+      document.querySelectorAll(".section").forEach((el) => {
+        el.classList.add("compact-section");
+        el.classList.remove("section");
+      });
+      document.querySelectorAll(".mb-4").forEach((el) => {
+        el.classList.add("compact-margin");
+        el.classList.remove("mb-4");
+      });
+    }
+  }
+
+  // Call when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyConditionalClasses);
+  } else {
+    applyConditionalClasses();
+  }
+</script>
