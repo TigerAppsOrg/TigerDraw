@@ -662,6 +662,7 @@
             }, 1500);
           } else {
             showNotification("Review submitted, thank you!");
+            $("#submit-review-form").css("display", "none");
           }
         },
         error: function (jqXHR) {
