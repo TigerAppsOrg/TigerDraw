@@ -276,7 +276,19 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
-                "average_rating": average_rating
+                "average_rating": average_rating,
+                "elevator": room.Room.elevator,
+                "bathroom": room.Room.bathroom,
+                "ac": room.Room.ac,
+                "floor": room.Room.floor,
+                "wawa": room.Room.wawa,
+                "ustore": room.Room.ustore,
+                "Nassau Street": room.Room.nassau_street,
+                "Jadwin Gym": room.Room.jadwin_gym,
+                "frist": room.Room.frist,
+                "street": room.Room.street,
+                "equad": room.Room.equad,
+                "dillon": room.Room.dillon
             }
             roomsList.append(roomDict)
         else:
@@ -290,7 +302,19 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
-                "average_rating": average_rating
+                "average_rating": average_rating,
+                "elevator": room.Room.elevator,
+                "bathroom": room.Room.bathroom,
+                "ac": room.Room.ac,
+                "floor": room.Room.floor,
+                "wawa": room.Room.wawa,
+                "ustore": room.Room.ustore,
+                "Nassau Street": room.Room.nassau_street,
+                "Jadwin Gym": room.Room.jadwin_gym,
+                "frist": room.Room.frist,
+                "street": room.Room.street,
+                "equad": room.Room.equad,
+                "dillon": room.Room.dillon
             }
             roomsList.append(roomDict)
             i += 1
@@ -321,6 +345,18 @@ def queryFavorites():
             "favorite": room[2],
             "room_id": room.Room.room_id,
             "taken": room.Room.taken,
+            "elevator": room.Room.elevator,
+            "bathroom": room.Room.bathroom,
+            "ac": room.Room.ac,
+            "floor": room.Room.floor,
+            "wawa": room.Room.wawa,
+            "ustore": room.Room.ustore,
+            "Nassau Street": room.Room.nassau_street,
+            "Jadwin Gym": room.Room.jadwin_gym,
+            "frist": room.Room.frist,
+            "street": room.Room.street,
+            "equad": room.Room.equad,
+            "dillon": room.Room.dillon
         }
         roomsList.append(roomDict)
     response = {

@@ -363,6 +363,18 @@
                     <th>Occupancy</th>
                     <th>Sq. Footage</th>
                     <th style="min-width: 84px;">Rating</th>
+                    <th>Elevator</th>
+                    <th>Bathroom</th>
+                    <th>AC</th>
+                    <th>Floor</th>
+                    <th>Wawa</th>
+                    <th>UStore</th>
+                    <th>Nassau St</th>
+                    <th>Jadwin Gym</th>
+                    <th>Frist</th>
+                    <th>Street</th>
+                    <th>Eng Quad</th>
+                    <th>Dillon</th>
                     <th>Reviews</th>
                     <th>Add Room to Group</th>
                 </tr>
@@ -376,6 +388,18 @@
                     <th>Occupancy</th>
                     <th>Sq. Footage</th>
                     <th style="min-width: 84px;">Rating</th>
+                    <th>Elevator</th>
+                    <th>Bathroom</th>
+                    <th>AC</th>
+                    <th>Floor</th>
+                    <th>Wawa</th>
+                    <th>UStore</th>
+                    <th>Nassau St</th>
+                    <th>Jadwin Gym</th>
+                    <th>Frist</th>
+                    <th>Street</th>
+                    <th>Eng Quad</th>
+                    <th>Dillon</th>
                     <th>Reviews</th>
                     <th>Add Room to Group</th>
                 </tr>
@@ -581,6 +605,18 @@
                         return html
                     }
                 },
+                {"data": "elevator"},
+                {"data": "bathroom"},
+                {"data": "ac"},
+                {"data": "floor"},
+                {"data": "wawa"},
+                {"data": "ustore"},
+                {"data": "Nassau Street"},
+                {"data": "Jadwin Gym"},
+                {"data": "frist"},
+                {"data": "street"},
+                {"data": "equad"},
+                {"data": "dillon"},
                 {
                     data: null, targets: -1, render: function (data, type, row) {
                         return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
