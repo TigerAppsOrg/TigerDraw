@@ -60,6 +60,72 @@
         border: 1px solid #dee2e6;
     }
 
+    /* Custom styles for the search bar */
+    .search-bar-wrapper {
+        transition: all 0.3s ease;
+    }
+
+    .search-bar-wrapper:focus-within {
+        box-shadow: 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
+    }
+
+    #search-specifics-btn {
+        transition: all 0.3s ease;
+    }
+
+    #search-specifics-btn:hover {
+        background-color: #e9ecef !important;
+    }
+
+    .search-filters {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Custom toggle switch styling */
+    .custom-switch .custom-control-label::before {
+        width: 36px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #ccc;
+        border: none;
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #7884F1;
+        border-color: #7884F1;
+    }
+
+    .custom-switch .custom-control-label::after {
+        top: calc(0.25rem + 1px);
+        left: calc(-2.25rem + 2px);
+        width: 18px;
+        height: 18px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    }
+
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(1rem);
+    }
+
+    .amenity-icon svg {
+        fill: #7884F1;
+    }
+
+    /* Fan icon for AC */
+    .fan-icon {
+        color: #7884F1;
+        font-size: 1.2rem;
+    }
+
+    /* Bathroom icon */
+    .bathroom-icon {
+        color: #7884F1;
+        font-size: 1.2rem;
+    }
+
     .rooms-table {
         font-size: 0.9em;
         min-width: 800px;
@@ -313,99 +379,152 @@
         to see what rooms are still available.
       </div>
 </div>
-<div class="form-inline" style="padding-left: 75px; padding-right: 75px; padding-top:25px">
-    <div class="col-auto my-1 pl-0">
-        <label class="college">College</label>
-        <select class="form-control" name="college" id="college">
-            <option disabled selected value></option>
-            <option value="Butler College">Butler</option>
-            <option value="Forbes College">Forbes</option>
-            <option value="Mathey College">Mathey</option>
-            <option value="New College West">New College West</option>
-            <option value="No Res College Associated">No Res College Associated</option>
-            <option value="Rockefeller College">Rocky</option>
-            <option value="Whitman College">Whitman</option>
-            <option value="Upperclass">Upperclassman</option>
-            <option value="Yeh College">Yeh</option>
-        </select>
 
-    </div>
-    <div class="col-auto my-1">
-        <label class="building">Building</label>
-        <select class="form-control" name="building" id="building">
-            <option value="">All</option>
-        </select>
-    </div>
-    <div class="col-auto my-1">
-        <label class="college">Occupancy</label>
-        <select class="form-control" name="occupancy" id="occupancy"></select>
-    </div>
-    <div class="col-auto my-1">
-        <label class="search">Search</label>
-        <input class="form-control" type="text" name="search" id="search" placeholder="e.g. edwards 104"></input>
-    </div>
-</div>
-</div>
-</div>
-</div>
-<div>
-    <div style="margin-top:20px; padding-left: 75px; padding-right: 75px; padding-bottom: 100px;">
-        <div class="table-responsive">
-            <table id="rooms-table" class="table table-striped table-bordered">
-                <!--       <table id="rooms-table" class="display">
-         -->
-                <thead>
-                <tr>
-                    <th>Favorite</th>
-                    <th>College</th>
-                    <th>Building</th>
-                    <th>Room No.</th>
-                    <th>Occupancy</th>
-                    <th>Sq. Footage</th>
-                    <th style="min-width: 84px;">Rating</th>
-                    <th>Elevator</th>
-                    <th>Bathroom</th>
-                    <th>AC</th>
-                    <th>Floor</th>
-                    <th>Wawa</th>
-                    <th>UStore</th>
-                    <th>Nassau St</th>
-                    <th>Jadwin Gym</th>
-                    <th>Frist</th>
-                    <th>Street</th>
-                    <th>Eng Quad</th>
-                    <th>Dillon</th>
-                    <th>Reviews</th>
-                    <th>Add Room to Group</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr>
-                    <th>Favorite</th>
-                    <th>College</th>
-                    <th>Building</th>
-                    <th>Room No.</th>
-                    <th>Occupancy</th>
-                    <th>Sq. Footage</th>
-                    <th style="min-width: 84px;">Rating</th>
-                    <th>Elevator</th>
-                    <th>Bathroom</th>
-                    <th>AC</th>
-                    <th>Floor</th>
-                    <th>Wawa</th>
-                    <th>UStore</th>
-                    <th>Nassau St</th>
-                    <th>Jadwin Gym</th>
-                    <th>Frist</th>
-                    <th>Street</th>
-                    <th>Eng Quad</th>
-                    <th>Dillon</th>
-                    <th>Reviews</th>
-                    <th>Add Room to Group</th>
-                </tr>
-                </tfoot>
-            </table>
+<!-- New Search Bar Implementation -->
+<div class="container mt-4">
+    <div class="search-container" style="max-width: 800px; margin: 0 auto;">
+        <div class="search-bar-wrapper d-flex" style="border: 1px solid #ccc; border-radius: 5px; overflow: hidden;">
+            <input type="text" id="search" class="form-control border-0" placeholder="Search for a room!" style="flex-grow: 1; box-shadow: none;">
+            <button id="search-specifics-btn" class="btn text-secondary" style="background: #f8f9fa; border-left: 1px solid #ccc; padding: 0.5rem 1rem; white-space: nowrap;">
+                Search by specifics
+            </button>
         </div>
+        
+        <!-- Expandable filters section -->
+        <div id="search-filters" class="search-filters mt-3 px-3 py-3" style="display: none; border: 1px solid #ccc; border-radius: 5px; background: #f8f9fa;">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label class="d-block">College</label>
+                    <select class="form-control" name="college" id="college">
+                        <option disabled selected value></option>
+                        <option value="Butler College">Butler</option>
+                        <option value="Forbes College">Forbes</option>
+                        <option value="Mathey College">Mathey</option>
+                        <option value="New College West">New College West</option>
+                        <option value="No Res College Associated">No Res College Associated</option>
+                        <option value="Rockefeller College">Rocky</option>
+                        <option value="Whitman College">Whitman</option>
+                        <option value="Upperclass">Upperclassman</option>
+                        <option value="Yeh College">Yeh</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="d-block">Building</label>
+                    <select class="form-control" name="building" id="building">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="d-block">Occupancy</label>
+                    <select class="form-control" name="occupancy" id="occupancy"></select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="d-block">Size</label>
+                    <select class="form-control" name="size" id="size">
+                        <option value="">All</option>
+                        <option value="small">Small (&lt;300 sq ft)</option>
+                        <option value="medium">Medium (300-450 sq ft)</option>
+                        <option value="large">Large (&gt;450 sq ft)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6 mb-2">
+                    <label class="d-block">Amenities</label>
+                    <div class="d-flex align-items-center">
+                        <div class="toggle-wrapper mr-4">
+                            <div class="d-flex align-items-center">
+                                <div class="amenity-icon mr-2">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C13.8565 2 15.637 2.7375 16.9497 4.05025C18.2625 5.36301 19 7.14348 19 9C19 11.6727 13.8636 13.9091 13.8636 17.1818H10.1364C10.1364 13.9091 5 11.6727 5 9C5 7.14348 5.7375 5.36301 7.05025 4.05025C8.36301 2.7375 10.1435 2 12 2ZM7.36364 9C7.36364 9.86195 8.10455 10.7299 9.20564 11.472C9.81965 11.8779 10.4881 12.2273 11.1932 12.5136C11.1159 12.01 11.0455 11.5205 11.0455 11C11.0455 9.29162 11.7316 7.65302 12.9548 6.42982C14.178 5.20661 15.8166 4.52045 17.525 4.52045L17.6727 4.52045C16.8816 3.7875 15.8926 3.33355 14.8416 3.22284C13.7906 3.11212 12.7336 3.35073 11.8273 3.90144C10.921 4.45215 10.2162 5.28772 9.81323 6.2883C9.41029 7.28888 9.33206 8.39856 9.59091 9.45455C9.33355 9.37009 9.07842 9.27682 8.82727 9.17636C8.14364 8.86818 7.5 8.45 7.36364 9ZM11.0455 19.5455H12.9545V22H11.0455V19.5455Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <span class="mr-2">A/C</span>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="ac-toggle">
+                                    <label class="custom-control-label" for="ac-toggle"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-wrapper">
+                            <div class="d-flex align-items-center">
+                                <div class="amenity-icon mr-2">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.5,21H6.5C5.84,21 5.28,20.64 5.03,20.12L3.84,17.16C3.66,16.75 3.8,16.28 4.16,16.04C4.32,15.94 4.5,15.89 4.68,15.89C4.95,15.89 5.2,16 5.34,16.23L5.57,16.57C5.79,16.91 6.16,17.11 6.54,17.11H17.45C17.84,17.11 18.2,16.91 18.42,16.57L18.65,16.23C18.79,16 19.05,15.89 19.31,15.89C19.5,15.89 19.67,15.94 19.83,16.04C20.2,16.28 20.33,16.75 20.15,17.16L18.96,20.12C18.72,20.64 18.16,21 17.5,21Z" fill="currentColor"/>
+                                        <path d="M16,11H15V10H13V11H11V10H9V11H8C7.45,11 7,10.55 7,10V5C7,4.45 7.45,4 8,4H16C16.55,4 17,4.45 17,5V10C17,10.55 16.55,11 16,11Z" fill="currentColor"/>
+                                        <path d="M12,16C10.9,16 10,15.1 10,14H14C14,15.1 13.1,16 12,16Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <span class="mr-2">Private Bathroom</span>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="bathroom-toggle">
+                                    <label class="custom-control-label" for="bathroom-toggle"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:20px; padding-left: 75px; padding-right: 75px; padding-bottom: 100px;">
+    <div class="table-responsive">
+        <table id="rooms-table" class="table table-striped table-bordered">
+            <!--       <table id="rooms-table" class="display">
+         -->
+            <thead>
+            <tr>
+                <th>Favorite</th>
+                <th>College</th>
+                <th>Building</th>
+                <th>Room No.</th>
+                <th>Occupancy</th>
+                <th>Sq. Footage</th>
+                <th style="min-width: 84px;">Rating</th>
+                <th>Elevator</th>
+                <th>Bathroom</th>
+                <th>AC</th>
+                <th>Floor</th>
+                <th>Wawa</th>
+                <th>UStore</th>
+                <th>Nassau St</th>
+                <th>Jadwin Gym</th>
+                <th>Frist</th>
+                <th>Street</th>
+                <th>Eng Quad</th>
+                <th>Dillon</th>
+                <th>Reviews</th>
+                <th>Add Room to Group</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>Favorite</th>
+                <th>College</th>
+                <th>Building</th>
+                <th>Room No.</th>
+                <th>Occupancy</th>
+                <th>Sq. Footage</th>
+                <th style="min-width: 84px;">Rating</th>
+                <th>Elevator</th>
+                <th>Bathroom</th>
+                <th>AC</th>
+                <th>Floor</th>
+                <th>Wawa</th>
+                <th>UStore</th>
+                <th>Nassau St</th>
+                <th>Jadwin Gym</th>
+                <th>Frist</th>
+                <th>Street</th>
+                <th>Eng Quad</th>
+                <th>Dillon</th>
+                <th>Reviews</th>
+                <th>Add Room to Group</th>
+            </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 </body>
@@ -721,6 +840,34 @@
         $('#year').on('change', {}, getResults)
         $('#building').on('change', {}, getResults)
 
+        // Add change handlers for new filters
+        $('#size').on('change', function() {
+            // Apply size filter when changed
+            applyFilters();
+        });
+
+        $('#ac-toggle').on('change', function() {
+            // Apply AC filter when toggled
+            applyFilters();
+        });
+
+        $('#bathroom-toggle').on('change', function() {
+            // Apply bathroom filter when toggled
+            applyFilters();
+        });
+
+        // Search specifics button toggle functionality
+        $('#search-specifics-btn').on('click', function() {
+            $('#search-filters').slideToggle(300);
+            
+            // Change button text based on current state
+            if ($('#search-filters').is(':visible')) {
+                $(this).text('Hide filters');
+            } else {
+                $(this).text('Search by specifics');
+            }
+        });
+
         // Remove the old search handler that was causing conflicts
         $('#search').off('keyup');
         
@@ -794,6 +941,85 @@
 
         });
 
+    }
+
+    function applyFilters() {
+        // Create size filter
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Only apply to rooms-table
+                if (settings.nTable.id !== 'rooms-table') {
+                    return true;
+                }
+                
+                const sizeValue = $('#size').val();
+                if (!sizeValue) {
+                    return true; // Show all when no size filter
+                }
+                
+                // Sq Footage is in the 6th column (index 5)
+                const footage = parseInt(data[5]);
+                
+                if (isNaN(footage)) {
+                    return true; // If we can't parse the footage, just show it
+                }
+                
+                if (sizeValue === 'small' && footage < 300) {
+                    return true;
+                } else if (sizeValue === 'medium' && footage >= 300 && footage <= 450) {
+                    return true;
+                } else if (sizeValue === 'large' && footage > 450) {
+                    return true;
+                }
+                
+                return false;
+            }
+        );
+        
+        // Create AC filter
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Only apply to rooms-table
+                if (settings.nTable.id !== 'rooms-table') {
+                    return true;
+                }
+                
+                const acToggled = $('#ac-toggle').is(':checked');
+                if (!acToggled) {
+                    return true; // Show all when toggle is off
+                }
+                
+                // AC is in the 10th column (index 9)
+                const hasAC = data[9].trim().toLowerCase() === 'yes';
+                
+                return hasAC;
+            }
+        );
+        
+        // Create bathroom filter
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Only apply to rooms-table
+                if (settings.nTable.id !== 'rooms-table') {
+                    return true;
+                }
+                
+                const bathroomToggled = $('#bathroom-toggle').is(':checked');
+                if (!bathroomToggled) {
+                    return true; // Show all when toggle is off
+                }
+                
+                // Bathroom is in the 9th column (index 8)
+                const hasBathroom = data[8].trim().toLowerCase() === 'private';
+                
+                return hasBathroom;
+            }
+        );
+        
+        // Redraw table with filters applied
+        if (rt) {
+            rt.draw();
+        }
     }
 
     $('document').ready(getResults)
