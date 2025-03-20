@@ -467,18 +467,38 @@
 
     /* New styles for the redesigned table layout */
     .room-location, .room-occupancy, .room-amenities {
-        padding: 12px 0;
+        padding: 8px 0;
     }
     
     .room-building-number {
         font-size: 1.4em;
         font-weight: 700;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
+        display: block;
     }
     
     .room-college {
         font-size: 0.95em;
         color: #666;
+        margin-bottom: 6px;
+        display: block;
+    }
+    
+    .room-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 6px;
+    }
+    
+    .room-rating {
+        margin-bottom: 0;
+        color: #f0ad4e;
+    }
+    
+    .star-icon {
+        color: #f0ad4e;
+        font-size: 1.1em;
+        margin-right: 1px;
     }
     
     .occupancy-icons {
@@ -488,8 +508,8 @@
     }
     
     .person-icon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         margin-right: 4px;
         display: inline-block;
         vertical-align: middle;
@@ -505,13 +525,13 @@
         display: flex;
         margin-bottom: 12px;
         align-content: center;
-        justify-content: center;
         flex-wrap: wrap;
         flex-direction: column;
     }
     
     .amenity-icon {
         margin-right: 12px;
+        margin-bottom: 6px;
     }
     
     .table-amenity-icon {
@@ -535,6 +555,7 @@
     
     .rooms-table td {
         vertical-align: middle !important;
+        padding: 12px 15px;
     }
     
     .review-btn, .add-room-btn {
@@ -560,16 +581,84 @@
     
     /* Make the row taller to accommodate vertical layout */
     #rooms-table tr {
-        min-height: 90px;
+        min-height: 80px;
     }
     
-    /* Fix table cell widths */
-    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 8%; }  /* Favorite */
-    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Location */
-    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 20%; } /* Occupancy */
-    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 25%; } /* Amenities */
-    #rooms-table th:nth-child(5), #rooms-table td:nth-child(5) { width: 15%; } /* Reviews */
-    #rooms-table th:nth-child(6), #rooms-table td:nth-child(6) { width: 12%; } /* Add Room */
+    /* Star styling for favorites */
+    .favorite-heart {
+        position: relative;
+        font-size: 1.5em;
+        color: #F15156;
+        margin-right: 12px;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .heart-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+    
+    /* Add room checkmark button */
+    .add-room-checkbox {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        background-color: #eeeeff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 0;
+        margin-left: 6px;
+    }
+    
+    .add-room-checkbox svg {
+        width: 20px;
+        height: 20px;
+        fill: #474bc9;
+    }
+    
+    .add-room-checkbox:hover {
+        background-color: #e0e0ff;
+    }
+    
+    /* Fix table cell widths for new layout */
+    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; } /* Location */
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Occupancy */
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; } /* Amenities */
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; } /* Reviews */
+    
+    /* Better table design */
+    #rooms-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    #rooms-table th {
+        background-color: #474bc9;
+        color: white;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 0.5px;
+        padding: 12px 16px;
+    }
+    
+    #rooms-table tr:nth-child(even) {
+        background-color: rgba(236, 237, 255, 0.4);
+    }
+    
+    #rooms-table tr:hover {
+        background-color: rgba(236, 237, 255, 0.7);
+    }
 </style>
 
 <body data-username={{ username }}>
@@ -732,22 +821,18 @@
          -->
             <thead>
             <tr>
-                <th>Favorite</th>
                 <th>Location</th>
                 <th>Occupancy</th>
                 <th>Amenities</th>
                 <th>Reviews</th>
-                <th>Add Room to Group</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <th>Favorite</th>
                 <th>Location</th>
                 <th>Occupancy</th>
                 <th>Amenities</th>
                 <th>Reviews</th>
-                <th>Add Room to Group</th>
             </tr>
             </tfoot>
         </table>
@@ -894,11 +979,11 @@
             destroy: true,
             searching: true,
             columnDefs: [
-                {targets: 1, type: "formatted-num"},
+                {targets: 0, type: "formatted-num"},
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
-            "order": [[1, "asc"]],
+            "order": [[0, "asc"]],
             "pageLength": 20,
             "processing": true,
             "ajax": {
@@ -908,25 +993,44 @@
             },
             "columns": [
                 {
-                    targets: 0,
-                    className: 'text-center',
-                    searchable: false,
-                    orderable: false,
-                    "data": "favorites",
-                    render: function (data, type, full, meta) {
-                        if (full.favorite === true) {
-                            return '<input type="checkbox" class="star" name="star" checked="true">';
-                        } else {
-                            return '<input type="checkbox" class="star" name="star">';
-                        }
-                    },
-                },
-                {
                     data: null, 
                     render: function(data, type, row) {
+                        // Generate the star rating HTML
+                        const full_stars = Math.floor(data.average_rating) || 0;
+                        const has_half_star = (data.average_rating - full_stars) >= 0.5;
+                        let empty_stars = 5 - full_stars;
+                        if (has_half_star) {
+                            empty_stars--;
+                        }
+                        
+                        let ratingHtml = '<div class="room-rating">';
+                        for (let i = 0; i < full_stars; i++) {
+                            ratingHtml += '<i class="bi bi-star-fill star-icon"></i>';
+                        }
+                        if (has_half_star) {
+                            ratingHtml += '<i class="bi bi-star-half star-icon"></i>';
+                        }
+                        for (let i = 0; i < empty_stars; i++) {
+                            ratingHtml += '<i class="bi bi-star star-icon"></i>';
+                        }
+                        ratingHtml += '</div>';
+                        
+                        // Create the favorite heart
+                        let heartIcon = data.favorite ? '♥' : '♡';
+                        let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
+                                          '<input type="checkbox" class="heart-checkbox star" name="star"' + 
+                                          (data.favorite ? ' checked="true"' : '') + '></label>';
+                        
+                        // Add room checkmark button
+                        const addRoomHtml = '<button type="button" class="add-room-checkbox" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap" title="Add to group">' +
+                                           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
+                                           '</button>';
+                        
                         return '<div class="room-location">' +
                                '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
+                               ratingHtml +
+                               '<div class="room-actions">' + favoriteHtml + addRoomHtml + '</div>' +
                                '</div>';
                     }
                 },
@@ -936,7 +1040,7 @@
                         // Create occupancy icons based on the number
                         let occupancyIcons = '';
                         for (let i = 0; i < data.occupancy; i++) {
-                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 20px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
+                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 18px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
                         }
                         
                         return '<div class="room-occupancy d-flex align-items-center">' +
@@ -989,9 +1093,11 @@
                         });
                         distanceHtml += '</div>';
                         
-                        return '<div class="room-amenities d-flex">' +
-                               '<div class="amenity-icons mr-3">' + acIcon + bathroomIcon + '</div>' +
+                        return '<div class="room-amenities">' +
+                               '<div class="d-flex">' +
+                               '<div class="amenity-icons mr-4">' + acIcon + bathroomIcon + '</div>' +
                                distanceHtml +
+                               '</div>' +
                                '</div>';
                     }
                 },
@@ -1002,13 +1108,7 @@
                     render: function (data, type, row) {
                         return '<button type="button" class="btn review-btn" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>';
                     }
-                },
-                {
-                    "targets": -1,
-                    "data": null,
-                    className: 'text-center',
-                    "defaultContent": '<button type="button" class="btn add-room-btn" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add Room</button>'
-                },
+                }
             ],
         })
 
@@ -1138,11 +1238,20 @@
         });
 
         // on clicking stars, either favorite or unfavorite
-        $('#rooms-table').on('change', '.star', function () {
-            var data = rt.row($(this).parents('tr')).data();
-            changing_row = rt.row(this.closest('tr')).data()
+        $('#rooms-table').on('change', '.heart-checkbox', function () {
+            var data = rt.row($(this).closest('tr')).data();
+            var changing_row = data;
+            
+            // Update the heart icon appearance
+            if (this.checked) {
+                $(this).parent().text('♥');
+                $(this).appendTo($(this).parent());
+            } else {
+                $(this).parent().text('♡');
+                $(this).appendTo($(this).parent());
+            }
 
-            if (this.checked !== true) {
+            if (!this.checked) {
                 // send message to db to remove from favorites
                 $.ajax({
                     type: 'POST',
