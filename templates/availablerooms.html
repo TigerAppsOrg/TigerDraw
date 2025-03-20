@@ -615,6 +615,7 @@
         height: 40px;
     }
     
+    /* Fixed grid layout that doesn't change with screen size */
     .distances-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -622,20 +623,124 @@
         grid-gap: 2px 6px;
     }
     
+    /* Responsive classes for hiding elements at different screen widths */
+    @media (max-width: 1500px) {
+        .hide-xl {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 1300px) {
+        .hide-lg {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 1100px) {
+        .hide-md {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 900px) {
+        .hide-sm {
+            display: none !important;
+        }
+    }
+    
+    /* Mobile-specific adjustments */
+    @media (max-width: 767px) {
+        .amenities-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .amenities-section {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .amenity-icons {
+            justify-content: center;
+        }
+        
+        .amenity-icon {
+            margin: 0 10px;
+        }
+        
+        .table-amenity-icon, .table-icon-img {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .amenities-divider {
+            display: none;
+        }
+        
+        .distances-section {
+            width: 100%;
+        }
+        
+        .distances-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        /* Only show 4 most important distances on mobile */
+        .distance-item:nth-child(n+5) {
+            display: none !important;
+        }
+        
+        /* Make distance items more compact */
+        .distance-item {
+            margin-bottom: 1px;
+        }
+        
+        .distance-label {
+            font-size: 0.75em;
+        }
+        
+        .distance-value {
+            font-size: 0.75em;
+        }
+    }
+    
+    /* Very small screen adjustments */
+    @media (max-width: 480px) {
+        .distances-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+        
+        /* Only show 2 most important distances on very small screens */
+        .distance-item:nth-child(n+3) {
+            display: none !important;
+        }
+        
+        /* Even smaller amenity icons */
+        .table-amenity-icon, .table-icon-img {
+            width: 32px;
+            height: 32px;
+        }
+    }
+    
     .amenities-container {
         display: flex;
         align-items: center;
         width: 100%;
+        flex-wrap: nowrap; /* Prevent wrapping to keep horizontal layout */
     }
     
     .amenities-section {
         display: flex;
         flex-direction: column;
         min-width: 110px;
+        flex-shrink: 0; /* Prevent this section from shrinking */
     }
     
     .distances-section {
         flex: 1;
+        overflow: hidden; /* Ensure content doesn't overflow */
     }
     
     .section-heading {
@@ -723,11 +828,36 @@
         background-color: #e0e0ff;
     }
     
-    /* Fix table cell widths for new layout */
+    /* Fix table cell widths for new layout with responsive breakpoints */
     #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; } /* Location */
     #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; } /* Occupancy */
     #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; } /* Amenities & Distances */
     #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; } /* Reviews */
+    
+    /* Responsive adjustments for column widths */
+    @media (max-width: 1200px) {
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; } /* Reduce amenities width */
+    }
+    
+    @media (max-width: 992px) {
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; } /* Increase location */
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Increase occupancy */
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; } /* Further reduce amenities */
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; } /* Increase reviews */
+    }
+    
+    /* Mobile table adjustments */
+    @media (max-width: 767px) {
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 30%; } /* Location takes more space */
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; } /* Reduce occupancy slightly */
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; } /* Keep amenities prominent */
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; } /* Reviews */
+        
+        /* Increase the row height on mobile to fit stacked content */
+        #rooms-table td {
+            padding: 15px 8px;
+        }
+    }
     
     /* Better table design */
     #rooms-table {
@@ -1217,10 +1347,24 @@
                         // Sort by distance (closest first)
                         distances.sort((a, b) => a.value - b.value);
                         
-                        // Create the distance items HTML in a more compact format
+                        // Create the distance items HTML with responsive class markers
                         let distanceHtml = '<div class="distances-grid">';
-                        distances.forEach(dist => {
-                            distanceHtml += '<div class="distance-item">' + 
+                        
+                        // Add more granular responsive classes to hide items on smaller screens
+                        distances.forEach((dist, index) => {
+                            // Determine which responsive class to use based on priority
+                            let responsiveClass = '';
+                            if (index >= 7) {
+                                responsiveClass = 'hide-sm'; // Hide on smallest screens (<900px)
+                            } else if (index >= 6) {
+                                responsiveClass = 'hide-md'; // Hide on medium-small screens (<1100px)
+                            } else if (index >= 5) {
+                                responsiveClass = 'hide-lg'; // Hide on medium-large screens (<1300px)
+                            } else if (index >= 4) {
+                                responsiveClass = 'hide-xl'; // Hide on largest screens (<1500px)
+                            }
+                            
+                            distanceHtml += '<div class="distance-item ' + responsiveClass + '">' + 
                                           dist.icon + ' <span class="distance-label">' + dist.name + '</span>' + 
                                           '<span class="distance-value">' + dist.value + 'm</span>' + 
                                           '</div>';
