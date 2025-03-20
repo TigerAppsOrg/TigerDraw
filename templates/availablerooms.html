@@ -312,22 +312,20 @@
 
     .star {
         visibility: hidden;
+        font-size: 1.5em;
+        cursor: pointer;
         display: inline-block;
     }
 
     .star:before {
         content: "\2661";
-        display: inline-block;
         visibility: visible;
-        height: 20px;
-        width: 20px;
-        padding-bottom: 10px;
+        position: absolute;
+        color: #F15156;
     }
 
     .star:checked:before {
         content: "\2665";
-        display: inline-block;
-        padding-bottom: 10px;
         color: #F15156;
     }
 
@@ -1135,7 +1133,7 @@
         // Add the improved search handler
         $('#search').on('keyup', function() {
             // This will now be handled by our custom search function
-            rt.draw();
+            applyFilters();
             console.log("Applying custom search filter:", this.value);
         });
 
@@ -1205,10 +1203,65 @@
     }
 
     function applyFilters() {
-        // Clear existing custom filters first before adding new ones
+        // Clear existing search filters
         $.fn.dataTable.ext.search.pop();
         $.fn.dataTable.ext.search.pop();
         $.fn.dataTable.ext.search.pop();
+        
+        // Re-add our original search function
+        $.fn.dataTable.ext.search.push(
+          function(settings, data, dataIndex) {
+            // Only apply to rooms-table
+            if (settings.nTable.id !== 'rooms-table') {
+              return true;
+            }
+            
+            const searchValue = $('#search').val().toLowerCase();
+            if (!searchValue) {
+              return true; // Show all when no search text
+            }
+            
+            // Building is in the 3rd column (index 2)
+            const building = data[2].toLowerCase();
+            // College is in the 2nd column (index 1)
+            const college = data[1].toLowerCase();
+            // Room number is in the 4th column (index 3)
+            const roomNo = data[3].toLowerCase();
+            
+            // Direct match check
+            if (building.includes(searchValue) || 
+                college.includes(searchValue) || 
+                roomNo.includes(searchValue) ||
+                (building + ' ' + roomNo).includes(searchValue)) {
+              return true;
+            }
+            
+            // Handle Forbes/Maine alias
+            if ((searchValue.includes('forbes') && building === 'maine') ||
+                (searchValue.includes('maine') && college.includes('forbes'))) {
+              return true;
+            }
+            
+            // Handle partial matches for building names (for better UX)
+            if (searchValue.length >= 3) {
+              const buildingWords = building.split(' ');
+              const searchWords = searchValue.split(' ');
+              
+              for (let i = 0; i < searchWords.length; i++) {
+                const searchWord = searchWords[i];
+                if (searchWord.length >= 3) {
+                  for (let j = 0; j < buildingWords.length; j++) {
+                    if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+            
+            return false;
+          }
+        );
         
         // Create size filter
         $.fn.dataTable.ext.search.push(
@@ -1223,8 +1276,9 @@
                     return true; // Show all when no size filter
                 }
                 
-                // Sq Footage is in the 6th column (index 5)
-                const footage = parseInt(data[5]);
+                // Get room data from the DataTable's data
+                const rowData = rt.row(dataIndex).data();
+                const footage = parseInt(rowData.sq_footage);
                 
                 if (isNaN(footage)) {
                     return true; // If we can't parse the footage, just show it
@@ -1255,8 +1309,9 @@
                     return true; // Show all when toggle is off
                 }
                 
-                // AC is in the 10th column (index 9)
-                const hasAC = data[9].trim().toLowerCase() === 'yes';
+                // Get room data from the DataTable's data
+                const rowData = rt.row(dataIndex).data();
+                const hasAC = rowData.ac && rowData.ac.trim().toLowerCase() === 'yes';
                 
                 return hasAC;
             }
@@ -1275,8 +1330,9 @@
                     return true; // Show all when toggle is off
                 }
                 
-                // Bathroom is in the 9th column (index 8)
-                const hasBathroom = data[8].trim().toLowerCase() === 'private';
+                // Get room data from the DataTable's data
+                const rowData = rt.row(dataIndex).data();
+                const hasBathroom = rowData.bathroom && rowData.bathroom.trim().toLowerCase() === 'private';
                 
                 return hasBathroom;
             }
