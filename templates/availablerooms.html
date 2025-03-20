@@ -1793,13 +1793,26 @@
     
     // Setup pill filter interactions
     function setupPillFilters() {
+        // Initialize the hidden form elements with default values to show all rooms
+        $('#college').val('');
+        $('#building').val('');
+        $('#occupancy').val('');
+        $('#size').val('');
+        $('#ac-toggle').prop('checked', false);
+        $('#bathroom-toggle').prop('checked', false);
+        
+        // Set "All" as selected in all dropdowns
+        $('.pill-dropdown').each(function() {
+            $(this).find('.dropdown-item[data-value=""]').addClass('selected');
+        });
+        
         // Favorites pill
         $('#favorites-pill').on('click', function() {
             $(this).toggleClass('active');
             // Filter logic for favorites would go here
         });
         
-        // Toggle state pills (AC and Bathroom)
+        // Toggle state pills (AC and Bathroom) with debounced filter application
         $('.toggle-pill').on('click', function() {
             const pillElement = $(this);
             const currentState = parseInt(pillElement.attr('data-state'));
@@ -1813,33 +1826,36 @@
                 // Positive state (green)
                 pillElement.addClass('positive');
                 if (pillElement.attr('id') === 'ac-pill') {
-                    $('#ac-toggle').prop('checked', true).trigger('change');
+                    $('#ac-toggle').prop('checked', true);
                 } else if (pillElement.attr('id') === 'bathroom-pill') {
-                    $('#bathroom-toggle').prop('checked', true).trigger('change');
+                    $('#bathroom-toggle').prop('checked', true);
                 }
             } else if (nextState === 2) {
                 // Negative state (red)
                 pillElement.addClass('negative');
                 if (pillElement.attr('id') === 'ac-pill') {
                     // TODO: Add negative AC filter logic 
-                    $('#ac-toggle').prop('checked', false).trigger('change');
+                    $('#ac-toggle').prop('checked', false);
                 } else if (pillElement.attr('id') === 'bathroom-pill') {
                     // TODO: Add negative bathroom filter logic
-                    $('#bathroom-toggle').prop('checked', false).trigger('change');
+                    $('#bathroom-toggle').prop('checked', false);
                 }
             } else {
                 // Reset state
                 if (pillElement.attr('id') === 'ac-pill') {
-                    $('#ac-toggle').prop('checked', false).trigger('change');
+                    $('#ac-toggle').prop('checked', false);
                 } else if (pillElement.attr('id') === 'bathroom-pill') {
-                    $('#bathroom-toggle').prop('checked', false).trigger('change');
+                    $('#bathroom-toggle').prop('checked', false);
                 }
             }
             
             pillElement.attr('data-state', nextState);
+            
+            // Apply filters with debounce
+            debouncedApplyFilters();
         });
         
-        // Dropdown pills
+        // Dropdown pills with improved handling
         $('.dropdown-pill').on('click', function(e) {
             e.stopPropagation();
             const pillElement = $(this);
@@ -1848,11 +1864,11 @@
             // Close other dropdowns
             $('.pill-dropdown').not(dropdownElement).hide();
             
-            // Toggle this dropdown
-            dropdownElement.toggle();
+            // Toggle this dropdown with animation
+            dropdownElement.slideToggle(150);
         });
         
-        // Handle dropdown item selection
+        // Handle dropdown item selection with improved performance
         $('.dropdown-item').on('click', function(e) {
             e.stopPropagation();
             const itemElement = $(this);
