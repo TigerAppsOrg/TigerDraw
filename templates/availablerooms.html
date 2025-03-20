@@ -469,51 +469,109 @@
 
     /* New styles for the redesigned table layout */
     .room-location, .room-occupancy, .room-amenities {
-        padding: 8px 0;
+        padding: 12px 0;
     }
     
     .room-building-number {
-        font-size: 1.2em;
-        font-weight: 600;
+        font-size: 1.4em;
+        font-weight: 700;
+        margin-bottom: 5px;
     }
     
     .room-college {
-        font-size: 0.9em;
+        font-size: 0.95em;
         color: #666;
     }
     
     .occupancy-icons {
-        display: inline-block;
+        display: flex;
+        align-items: center;
         margin-right: 10px;
     }
     
     .person-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 4px;
         display: inline-block;
-        margin-right: 2px;
+        vertical-align: middle;
     }
     
     .room-size {
         display: inline-block;
-        font-size: 0.9em;
+        font-size: 0.95em;
+        margin-left: 8px;
     }
     
     .amenity-icons {
         display: flex;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        align-content: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        flex-direction: column;
     }
     
     .amenity-icon {
-        margin-right: 10px;
+        margin-right: 12px;
+    }
+    
+    .table-amenity-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .table-icon-img {
+        width: 32px;
+        height: 32px;
     }
     
     .distances {
-        font-size: 0.8em;
-        color: #666;
+        font-size: 0.9em;
+        color: #555;
     }
     
     .distance-item {
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }
+    
+    .rooms-table td {
+        vertical-align: middle !important;
+    }
+    
+    .review-btn, .add-room-btn {
+        background-color: #474bc9 !important;
+        color: white !important;
+        border: none !important;
+        padding: 8px 16px !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+    }
+    
+    .review-badge {
+        background-color: white !important;
+        color: #474bc9 !important;
+        font-weight: 700 !important;
+        margin-left: 6px !important;
+    }
+    
+    /* Ensure proper vertical alignment */
+    #rooms-table td {
+        vertical-align: middle !important;
+    }
+    
+    /* Make the row taller to accommodate vertical layout */
+    #rooms-table tr {
+        min-height: 90px;
+    }
+    
+    /* Fix table cell widths */
+    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 8%; }  /* Favorite */
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Location */
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 20%; } /* Occupancy */
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 25%; } /* Amenities */
+    #rooms-table th:nth-child(5), #rooms-table td:nth-child(5) { width: 15%; } /* Reviews */
+    #rooms-table th:nth-child(6), #rooms-table td:nth-child(6) { width: 12%; } /* Add Room */
 </style>
 
 <body data-username={{ username }}>
@@ -869,7 +927,7 @@
                     data: null, 
                     render: function(data, type, row) {
                         return '<div class="room-location">' +
-                               '<div class="room-building-number"><strong>' + data.building + ' ' + data.room_no + '</strong></div>' +
+                               '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
                                '</div>';
                     }
@@ -880,10 +938,10 @@
                         // Create occupancy icons based on the number
                         let occupancyIcons = '';
                         for (let i = 0; i < data.occupancy; i++) {
-                            occupancyIcons += '<span class="person-icon">&#128100;</span>'; // Using person emoji as placeholder
+                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 20px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
                         }
                         
-                        return '<div class="room-occupancy">' +
+                        return '<div class="room-occupancy d-flex align-items-center">' +
                                '<div class="occupancy-icons">' + occupancyIcons + '</div>' +
                                '<div class="room-size">' + data.sq_footage + ' sq.ft.</div>' +
                                '</div>';
@@ -895,29 +953,29 @@
                         // AC icon
                         let acIcon = '';
                         if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
-                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 32px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         } else {
-                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
                         
                         // Bathroom icon
                         let bathroomIcon = '';
                         if (data.bathroom) {
                             if (data.bathroom.trim().toLowerCase() === 'private') {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             } else if (data.bathroom.trim().toLowerCase() === 'suite') {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             } else {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             }
                         } else {
-                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
                         
                         // Distances
                         const distances = [
-                            {name: 'Wawa', value: data.wawa},
                             {name: 'UStore', value: data.ustore},
+                            {name: 'Wawa', value: data.wawa},
                             {name: 'Nassau St', value: data['Nassau Street']},
                             {name: 'Jadwin Gym', value: data['Jadwin Gym']},
                             {name: 'Frist', value: data.frist}
@@ -933,24 +991,25 @@
                         });
                         distanceHtml += '</div>';
                         
-                        return '<div class="room-amenities">' +
-                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
+                        return '<div class="room-amenities d-flex">' +
+                               '<div class="amenity-icons mr-3">' + acIcon + bathroomIcon + '</div>' +
                                distanceHtml +
                                '</div>';
                     }
                 },
                 {
                     data: null, 
-                    targets: -1, 
+                    targets: -1,
+                    className: 'text-center', 
                     render: function (data, type, row) {
-                        return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
+                        return '<button type="button" class="btn review-btn" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>';
                     }
                 },
                 {
                     "targets": -1,
                     "data": null,
                     className: 'text-center',
-                    "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add Room</button>'
+                    "defaultContent": '<button type="button" class="btn add-room-btn" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add Room</button>'
                 },
             ],
         })
