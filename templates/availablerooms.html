@@ -466,8 +466,16 @@
     }
 
     /* New styles for the redesigned table layout */
-    .room-location, .room-occupancy {
+    .room-location {
         padding: 8px 0;
+    }
+    
+    .room-occupancy {
+        padding: 8px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     
     .room-amenities {
@@ -536,21 +544,26 @@
     .occupancy-icons {
         display: flex;
         align-items: center;
-        margin-right: 10px;
+        justify-content: center;
+        margin-bottom: 5px;
+        min-height: 32px;
     }
     
     .person-icon {
-        width: 18px;
-        height: 18px;
-        margin-right: 4px;
+        width: 28px;
+        height: 28px;
+        margin-right: 6px;
         display: inline-block;
         vertical-align: middle;
     }
     
     .room-size {
-        display: inline-block;
+        display: block;
         font-size: 0.95em;
-        margin-left: 8px;
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 500;
+        color: #474bc9;
     }
     
     .amenity-icons {
@@ -1295,15 +1308,15 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        // Create occupancy icons based on the number
+                        // Create occupancy icons based on the number with larger size
                         let occupancyIcons = '';
                         for (let i = 0; i < data.occupancy; i++) {
-                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 18px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
+                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 28px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
                         }
                         
-                        return '<div class="room-occupancy d-flex align-items-center">' +
-                               '<div class="occupancy-icons">' + occupancyIcons + '</div>' +
-                               '<div class="room-size">' + data.sq_footage + ' sq.ft.</div>' +
+                        return '<div class="room-occupancy d-flex flex-column align-items-center">' +
+                               '<div class="occupancy-icons d-flex justify-content-center">' + occupancyIcons + '</div>' +
+                               '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</div>' +
                                '</div>';
                     }
                 },
