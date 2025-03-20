@@ -1390,12 +1390,13 @@
               return true; // Show all when no search text
             }
             
-            // Building is in the 3rd column (index 2)
-            const building = data[2].toLowerCase();
-            // College is in the 2nd column (index 1)
-            const college = data[1].toLowerCase();
-            // Room number is in the 4th column (index 3)
-            const roomNo = data[3].toLowerCase();
+            // Get the row data directly from DataTables API
+            const rowData = rt.row(dataIndex).data();
+            
+            // Access the data from the row object
+            const building = rowData.building ? rowData.building.toLowerCase() : '';
+            const college = rowData.res_college ? rowData.res_college.toLowerCase() : '';
+            const roomNo = rowData.room_no ? rowData.room_no.toLowerCase() : '';
             
             // Direct match check
             if (building.includes(searchValue) || 
