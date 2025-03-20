@@ -470,6 +470,10 @@
         padding: 8px 0;
     }
     
+    .room-location {
+        min-height: 90px;
+    }
+    
     .room-building-number {
         font-size: 1.4em;
         font-weight: 700;
@@ -493,12 +497,22 @@
     .room-rating {
         margin-bottom: 0;
         color: #f0ad4e;
+        display: flex;
+        justify-content: center;
     }
     
     .star-icon {
         color: #f0ad4e;
-        font-size: 1.1em;
-        margin-right: 1px;
+        font-size: 1.5em;
+        margin-right: 2px;
+    }
+    
+    .room-stars {
+        padding-left: 15px;
+    }
+    
+    .room-info {
+        flex: 1;
     }
     
     .occupancy-icons {
@@ -995,6 +1009,17 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
+                        // Create the favorite heart
+                        let heartIcon = data.favorite ? '♥' : '♡';
+                        let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
+                                          '<input type="checkbox" class="heart-checkbox star" name="star"' + 
+                                          (data.favorite ? ' checked="true"' : '') + '></label>';
+                        
+                        // Add room checkmark button
+                        const addRoomHtml = '<button type="button" class="add-room-checkbox" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap" title="Add to group">' +
+                                           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
+                                           '</button>';
+                        
                         // Generate the star rating HTML
                         const full_stars = Math.floor(data.average_rating) || 0;
                         const has_half_star = (data.average_rating - full_stars) >= 0.5;
@@ -1015,22 +1040,13 @@
                         }
                         ratingHtml += '</div>';
                         
-                        // Create the favorite heart
-                        let heartIcon = data.favorite ? '♥' : '♡';
-                        let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
-                                          '<input type="checkbox" class="heart-checkbox star" name="star"' + 
-                                          (data.favorite ? ' checked="true"' : '') + '></label>';
-                        
-                        // Add room checkmark button
-                        const addRoomHtml = '<button type="button" class="add-room-checkbox" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap" title="Add to group">' +
-                                           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
-                                           '</button>';
-                        
-                        return '<div class="room-location">' +
+                        return '<div class="room-location d-flex justify-content-between align-items-center">' +
+                               '<div class="room-info">' +
                                '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
-                               ratingHtml +
                                '<div class="room-actions">' + favoriteHtml + addRoomHtml + '</div>' +
+                               '</div>' +
+                               '<div class="room-stars">' + ratingHtml + '</div>' +
                                '</div>';
                     }
                 },
