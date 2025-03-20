@@ -1347,25 +1347,26 @@
     let request = null;
     let controller = null;
 
-    // Custom search extension for DataTables to handle Forbes/Maine alias
+    // Keep the original custom search extension for DataTables that was working
     $.fn.dataTable.ext.search.push(
-      function(settings, data, dataIndex) {
+      function(settings, searchData, index, rowData, counter) {
         // Only apply to rooms-table
         if (settings.nTable.id !== 'rooms-table') {
           return true;
         }
         
-        const searchValue = $('#search').val().toLowerCase();
+        const searchValue = $('#search').val().toLowerCase().trim();
         if (!searchValue) {
           return true; // Show all when no search text
         }
         
-        // Building is in the 3rd column (index 2)
-        const building = data[2].toLowerCase();
-        // College is in the 2nd column (index 1)
-        const college = data[1].toLowerCase();
-        // Room number is in the 4th column (index 3)
-        const roomNo = data[3].toLowerCase();
+        // Safety check
+        if (!rowData) return true;
+        
+        // Check building, college, and room number for matches
+        const building = (rowData.building || '').toLowerCase();
+        const college = (rowData.res_college || '').toLowerCase();
+        const roomNo = (rowData.room_no || '').toLowerCase();
         
         // Direct match check
         if (building.includes(searchValue) || 
@@ -1427,6 +1428,11 @@
 
         if (request != null)
             request.abort();
+            
+        // Remove any previous search extensions to avoid duplication
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
 
         jQuery.extend(jQuery.fn.dataTableExt.oSort, {
             "formatted-num-pre": function (a) {
@@ -1646,19 +1652,62 @@
 
     }
 
-    // dynamic dropdown
-    function populateDropdowns(json) {
-        const buildings = []
-        // update building dropdown
-        $('#building').empty()
-        $("#building").append($("<option>").val("").html("All"));
+    // New function to populate ALL buildings regardless of college
+    function populateAllBuildings(json) {
+        const buildings = [];
+        // Don't empty the dropdown here, we'll do it inside updateBuildingDropdownItems
+        
+        // Make sure we have data to work with
+        if (json && json.data && Array.isArray(json.data)) {
+            json.data.forEach(function (obj) {
+                if (buildings.indexOf(obj.building) == -1 && obj.building) {
+                    buildings.push(obj.building);
+                }
+            });
+            
+            // Sort buildings alphabetically
+            buildings.sort();
+            
+            // Update building dropdown (the select element)
+            $('#building').empty();
+            $("#building").append($("<option>").val("").html("All"));
+            
+            buildings.forEach(function(building) {
+                $("#building").append($("<option>").val(building).html(building));
+            });
+            
+            console.log("Populated ALL buildings dropdown with:", buildings);
+            
+            // Update the UI dropdown as well
+            updateBuildingDropdownItems();
+        } else {
+            console.warn("Unable to populate ALL buildings dropdown - no data available");
+        }
+    }
 
-        json.data.forEach(function (obj) {
-            if (buildings.indexOf(obj.building) == -1) {
-                $("#building").append($("<option>").val(obj.building).html(obj.building));
-                buildings.push(obj.building)
+    // dynamic dropdown for college-specific buildings
+    function populateDropdowns(json) {
+        const buildings = [];
+        // Make sure we have data to work with
+        if (json && json.data && Array.isArray(json.data)) {
+            json.data.forEach(function (obj) {
+                if (buildings.indexOf(obj.building) == -1 && obj.building) {
+                    buildings.push(obj.building);
+                }
+            });
+            
+            // Don't repopulate if specific college filter is applied
+            const collegeFilter = $('#college').val();
+            if (collegeFilter) {
+                console.log("College filter active:", collegeFilter, "- not modifying buildings dropdown");
+                return;
             }
-        });
+            
+            // Update the UI dropdown
+            updateBuildingDropdownItems();
+        } else {
+            console.warn("Unable to populate college buildings dropdown - no data available");
+        }
     }
 
     function getGroups(room_id) {
@@ -1710,10 +1759,31 @@
     }
 
     function setup() {
-        $('#college').on('change', {change: true}, getResults)
-        $('#occupancy').on('change', {}, getResults)
-        $('#year').on('change', {}, getResults)
-        $('#building').on('change', {}, getResults)
+        // First make sure we have our search function
+        addCustomSearchFunction();
+        
+        // Load all buildings for the initial display
+        $.ajax({
+            url: '/queryrooms?college=&occupancy=&year=&building=',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                // Populate buildings dropdown with ALL buildings
+                populateAllBuildings(json);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading initial buildings:", error);
+            }
+        });
+        
+        // Preload all rooms on initial load
+        getResults({data: {change: false}});
+        
+        // Setup filter change handlers
+        $('#college').on('change', {change: true}, getResults);
+        $('#occupancy').on('change', {}, getResults);
+        $('#year').on('change', {}, getResults);
+        $('#building').on('change', {}, getResults);
 
         // Add change handlers for new filters
         $('#size').on('change', function() {
@@ -1753,14 +1823,14 @@
             });
         });
 
-        // Remove the old search handler that was causing conflicts
+        // Set up search handler to directly redraw the table
         $('#search').off('keyup');
         
-        // Add the improved search handler
+        // Add search handler that uses our custom search function with debouncing
         $('#search').on('keyup', function() {
-            // This will now be handled by our custom search function
-            applyFilters();
-            console.log("Applying custom search filter:", this.value);
+            console.log("Searching for:", this.value);
+            // Use debounced version to avoid too many redraws
+            debouncedSearch();
         });
         
         // Handle pill filter interactions
@@ -1851,9 +1921,15 @@
         };
     }
     
-    // Create the debounced version of applyFilters
-    const debouncedApplyFilters = debounce(function() {
-        applyFilters();
+    // Create the debounced version of rt.draw for search
+    const debouncedSearch = debounce(function() {
+        if (rt) {
+            console.log("Running debounced search");
+            // First ensure our custom search extension is active
+            addCustomSearchFunction();
+            // Then draw the table
+            rt.draw();
+        }
     }, 300);
     
     // Create a completely rewritten dropdown handling approach
@@ -2151,11 +2227,26 @@
         const buildingDropdown = $('.building-dropdown');
         buildingDropdown.find('.dropdown-item:not(:first)').remove();
         
+        console.log("Updating building dropdown items, available options:", $('#building option').length);
+        
+        // Sort building options alphabetically
+        let buildingOptions = [];
         $('#building option:not(:first)').each(function() {
-            const value = $(this).val();
-            const text = $(this).text();
-            buildingDropdown.append('<div class="dropdown-item" data-value="' + value + '">' + text + '</div>');
+            buildingOptions.push({
+                value: $(this).val(),
+                text: $(this).text()
+            });
         });
+        
+        buildingOptions.sort(function(a, b) {
+            return a.text.localeCompare(b.text);
+        });
+        
+        // Add them to the dropdown
+        for (let i = 0; i < buildingOptions.length; i++) {
+            const option = buildingOptions[i];
+            buildingDropdown.append('<div class="dropdown-item" data-value="' + option.value + '">' + option.text + '</div>');
+        }
         
         // Reattach click handlers for the new items
         $('.building-dropdown .dropdown-item').on('click', function(e) {
@@ -2176,8 +2267,13 @@
                 pillElement.addClass('active');
             }
             
-            // Update building select
-            $('#building').val(value).trigger('change');
+            // Update building select and data attribute
+            $('#building').val(value).attr('data-selected-value', value).trigger('change');
+            
+            // Hide portal dropdown if it exists
+            $('#portal-dropdown').fadeOut(100, function() {
+                $(this).remove();
+            });
             
             // Hide dropdown after selection
             dropdownElement.hide();
@@ -2195,10 +2291,14 @@
 
     function applyFilters() {
         console.log("Applying filters...");
-        // Clear existing custom search filters to avoid stacking them
-        while ($.fn.dataTable.ext.search.length > 1) {
+        // Reset search functions and ensure we have our custom search function first
+        // Remove all existing search functions
+        while ($.fn.dataTable.ext.search.length > 0) {
             $.fn.dataTable.ext.search.pop();
         }
+        
+        // Re-add our custom search function
+        addCustomSearchFunction();
         
         // Get selected values from data attributes for better reliability
         const selectedCollege = $('#college').attr('data-selected-value') || $('#college').val() || "";
@@ -2209,67 +2309,7 @@
         console.log("Applying filters with occupancy:", selectedOccupancy);
         console.log("Applying filters with size:", selectedSize);
         
-        // Re-add our original search function
-        $.fn.dataTable.ext.search.push(
-          function(settings, data, dataIndex) {
-            try {
-                // Only apply to rooms-table
-                if (settings.nTable.id !== 'rooms-table') {
-                  return true;
-                }
-                
-                const searchValue = $('#search').val().toLowerCase().trim();
-                if (!searchValue) {
-                  return true; // Show all when no search text
-                }
-                
-                // Get the row data directly from DataTables API
-                const rowData = rt.row(dataIndex).data();
-                if (!rowData) return true; // Safety check
-                
-                // Access the data from the row object
-                const building = rowData.building ? rowData.building.toLowerCase() : '';
-                const college = rowData.res_college ? rowData.res_college.toLowerCase() : '';
-                const roomNo = rowData.room_no ? rowData.room_no.toLowerCase() : '';
-                
-                // Direct match check
-                if (building.includes(searchValue) || 
-                    college.includes(searchValue) || 
-                    roomNo.includes(searchValue) ||
-                    (building + ' ' + roomNo).includes(searchValue)) {
-                  return true;
-                }
-                
-                // Handle Forbes/Maine alias
-                if ((searchValue.includes('forbes') && building === 'maine') ||
-                    (searchValue.includes('maine') && college.includes('forbes'))) {
-                  return true;
-                }
-                
-                // Handle partial matches for building names (for better UX)
-                if (searchValue.length >= 3) {
-                  const buildingWords = building.split(' ');
-                  const searchWords = searchValue.split(' ');
-                  
-                  for (let i = 0; i < searchWords.length; i++) {
-                    const searchWord = searchWords[i];
-                    if (searchWord.length >= 3) {
-                      for (let j = 0; j < buildingWords.length; j++) {
-                        if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
-                          return true;
-                        }
-                      }
-                    }
-                  }
-                }
-                
-                return false;
-            } catch (e) {
-                console.error("Error in search filter:", e);
-                return true; // In case of error, show the row
-            }
-          }
-        );
+        // Search text is handled by our custom search function at the top of the file
         
         // Create size filter
         $.fn.dataTable.ext.search.push(
@@ -2458,6 +2498,70 @@
         }
     }
 
+    // Add the custom search function after the table is initialized
+    function addCustomSearchFunction() {
+        // Remove any existing search functions first
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
+        
+        // Add our custom search function
+        $.fn.dataTable.ext.search.push(
+          function(settings, searchData, index, rowData, counter) {
+            // Only apply to rooms-table
+            if (settings.nTable.id !== 'rooms-table') {
+              return true;
+            }
+            
+            const searchValue = $('#search').val().toLowerCase().trim();
+            if (!searchValue) {
+              return true; // Show all when no search text
+            }
+            
+            // Safety check
+            if (!rowData) return true;
+            
+            // Check building, college, and room number for matches
+            const building = (rowData.building || '').toLowerCase();
+            const college = (rowData.res_college || '').toLowerCase();
+            const roomNo = (rowData.room_no || '').toLowerCase();
+            
+            // Direct match check
+            if (building.includes(searchValue) || 
+                college.includes(searchValue) || 
+                roomNo.includes(searchValue) ||
+                (building + ' ' + roomNo).includes(searchValue)) {
+              return true;
+            }
+            
+            // Handle Forbes/Maine alias
+            if ((searchValue.includes('forbes') && building === 'maine') ||
+                (searchValue.includes('maine') && college.includes('forbes'))) {
+              return true;
+            }
+            
+            // Handle partial matches for building names (for better UX)
+            if (searchValue.length >= 3) {
+              const buildingWords = building.split(' ');
+              const searchWords = searchValue.split(' ');
+              
+              for (let i = 0; i < searchWords.length; i++) {
+                const searchWord = searchWords[i];
+                if (searchWord.length >= 3) {
+                  for (let j = 0; j < buildingWords.length; j++) {
+                    if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+            
+            return false;
+          }
+        );
+    }
+
     // Initialize the debounced search handler
     const debouncedSearchHandler = debounce(function() {
         applyFilters();
@@ -2465,9 +2569,6 @@
 
     // Wait for DOM to be fully loaded
     $(document).ready(function() {
-        // Initialize DataTable first to ensure it's available for filters
-        getResults({data: {}});
-        
         // Set up event handlers
         setup();
         
@@ -2495,13 +2596,21 @@
         );
         
         // Make search more responsive by handling each keypress
-        $('#search').off('keyup').on('keyup', debouncedSearchHandler);
+        $('#search').off('keyup').on('keyup', function() {
+            // This will trigger our custom search function that was added at the top
+            console.log("Search keyup: " + $(this).val());
+            if (rt) {
+                rt.draw(); // Redraw the table to apply the search filter
+            }
+        });
         
         // Use keydown for special keys like Enter
         $('#search').on('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                applyFilters(); // Apply immediately on Enter
+                if (rt) {
+                    rt.draw(); // Apply immediately on Enter
+                }
             }
         });
         
@@ -2512,7 +2621,10 @@
                 .on('click', function() {
                     $('#search').val('').focus();
                     $(this).hide();
-                    applyFilters();
+                    // Use our search mechanism directly
+                    if (rt) {
+                        rt.draw();
+                    }
                 });
             
             // Show/hide clear button based on search content
