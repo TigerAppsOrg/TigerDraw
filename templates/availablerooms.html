@@ -2019,10 +2019,11 @@
         // Favorites pill
         $('#favorites-pill').on('click', function() {
             $(this).toggleClass('active');
-            debouncedApplyFilters();
+            // Apply filters immediately
+            applyFilters();
         });
         
-        // Toggle state pills (AC and Bathroom) with debounced filter application
+        // Toggle state pills (AC and Bathroom) with immediate filter application
         $('.toggle-pill').on('click', function() {
             const pillElement = $(this);
             const currentState = parseInt(pillElement.attr('data-state'));
@@ -2065,8 +2066,8 @@
                 }
             }
             
-            // Apply filters with debounce
-            debouncedApplyFilters();
+            // Apply filters immediately
+            applyFilters();
         });
         
         // Dropdown pills with improved handling
