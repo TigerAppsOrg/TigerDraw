@@ -466,8 +466,12 @@
     }
 
     /* New styles for the redesigned table layout */
-    .room-location, .room-occupancy, .room-amenities {
+    .room-location, .room-occupancy {
         padding: 8px 0;
+    }
+    
+    .room-amenities {
+        padding: 12px 0;
     }
     
     .room-location {
@@ -551,34 +555,98 @@
     
     .amenity-icons {
         display: flex;
-        margin-bottom: 12px;
-        align-content: center;
-        flex-wrap: wrap;
-        flex-direction: column;
+        align-items: center;
+        flex-direction: row;
     }
     
     .amenity-icon {
-        margin-right: 12px;
-        margin-bottom: 6px;
+        margin-right: 16px;
     }
     
     .table-amenity-icon {
-        width: 32px;
-        height: 32px;
+        width: 42px;
+        height: 42px;
     }
     
     .table-icon-img {
-        width: 32px;
-        height: 32px;
+        width: 42px;
+        height: 42px;
     }
     
     .distances {
-        font-size: 0.9em;
-        color: #555;
+        font-size: 0.95em;
+        color: #444;
+        flex: 1;
     }
     
     .distance-item {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        font-size: 0.85em;
+    }
+    
+    .distance-item i {
+        font-size: 0.9em;
+        margin-right: 2px;
+        width: 14px;
+        text-align: center;
+    }
+    
+    .distance-label {
+        font-weight: 500;
+        width: auto;
+        display: inline-block;
+        font-size: 0.8em;
+        margin-right: 4px;
+    }
+    
+    .distance-value {
+        font-weight: 600;
+        color: #474bc9;
+        font-size: 0.8em;
+        white-space: nowrap;
+    }
+    
+    .amenities-divider {
+        border-left: 1px solid #e0e0e0;
+        margin: 0 15px;
+        align-self: stretch;
+        height: 40px;
+    }
+    
+    .distances-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+        grid-gap: 2px 6px;
+    }
+    
+    .amenities-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .amenities-section {
+        display: flex;
+        flex-direction: column;
+        min-width: 110px;
+    }
+    
+    .distances-section {
+        flex: 1;
+    }
+    
+    .section-heading {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
     }
     
     .rooms-table td {
@@ -656,10 +724,10 @@
     }
     
     /* Fix table cell widths for new layout */
-    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; } /* Location */
-    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Occupancy */
-    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; } /* Amenities */
-    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; } /* Reviews */
+    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; } /* Location */
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; } /* Occupancy */
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; } /* Amenities & Distances */
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; } /* Reviews */
     
     /* Better table design */
     #rooms-table {
@@ -852,7 +920,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
-                <th>Amenities</th>
+                <th>Amenities & Distances</th>
                 <th>Reviews</th>
             </tr>
             </thead>
@@ -860,7 +928,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
-                <th>Amenities</th>
+                <th>Amenities & Distances</th>
                 <th>Reviews</th>
             </tr>
             </tfoot>
@@ -1112,51 +1180,63 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        // AC icon
+                        // AC icon with larger size
                         let acIcon = '';
                         if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
-                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 32px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         } else {
-                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
                         
-                        // Bathroom icon
+                        // Bathroom icon with larger size
                         let bathroomIcon = '';
                         if (data.bathroom) {
                             if (data.bathroom.trim().toLowerCase() === 'private') {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             } else if (data.bathroom.trim().toLowerCase() === 'suite') {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             } else {
-                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                             }
                         } else {
-                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 32px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
                         
-                        // Distances
+                        // Collect all distances with shorter names
                         const distances = [
-                            {name: 'UStore', value: data.ustore},
-                            {name: 'Wawa', value: data.wawa},
-                            {name: 'Nassau St', value: data['Nassau Street']},
-                            {name: 'Jadwin Gym', value: data['Jadwin Gym']},
-                            {name: 'Frist', value: data.frist}
-                        ];
+                            {name: 'U-Store', value: data.ustore, icon: '<i class="bi bi-shop"></i>'},
+                            {name: 'Wawa', value: data.wawa, icon: '<i class="bi bi-bag"></i>'},
+                            {name: 'Nassau', value: data['Nassau Street'], icon: '<i class="bi bi-signpost"></i>'},
+                            {name: 'Jadwin', value: data['Jadwin Gym'], icon: '<i class="bi bi-bicycle"></i>'},
+                            {name: 'Frist', value: data.frist, icon: '<i class="bi bi-building"></i>'},
+                            {name: 'E-Quad', value: data.equad, icon: '<i class="bi bi-book"></i>'},
+                            {name: 'Dillon', value: data.dillon, icon: '<i class="bi bi-trophy"></i>'},
+                            {name: 'Street', value: data.street, icon: '<i class="bi bi-house-door"></i>'}
+                        ].filter(dist => dist.value !== undefined && dist.value !== null);
                         
-                        // Display the 3 closest distances
+                        // Sort by distance (closest first)
                         distances.sort((a, b) => a.value - b.value);
-                        const closestThree = distances.slice(0, 3);
                         
-                        let distanceHtml = '<div class="distances">';
-                        closestThree.forEach(dist => {
-                            distanceHtml += '<div class="distance-item">' + dist.name + ': ' + dist.value + 'min</div>';
+                        // Create the distance items HTML in a more compact format
+                        let distanceHtml = '<div class="distances-grid">';
+                        distances.forEach(dist => {
+                            distanceHtml += '<div class="distance-item">' + 
+                                          dist.icon + ' <span class="distance-label">' + dist.name + '</span>' + 
+                                          '<span class="distance-value">' + dist.value + 'm</span>' + 
+                                          '</div>';
                         });
                         distanceHtml += '</div>';
                         
+                        // Put it all together with a horizontal structure
                         return '<div class="room-amenities">' +
-                               '<div class="d-flex">' +
-                               '<div class="amenity-icons mr-4">' + acIcon + bathroomIcon + '</div>' +
+                               '<div class="amenities-container">' +
+                               '<div class="amenities-section">' +
+                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
+                               '</div>' +
+                               '<div class="amenities-divider"></div>' +
+                               '<div class="distances-section">' +
                                distanceHtml +
+                               '</div>' +
                                '</div>' +
                                '</div>';
                     }
