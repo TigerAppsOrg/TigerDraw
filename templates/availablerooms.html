@@ -2158,8 +2158,8 @@
                     // For non-empty college selection, trigger the server query
                     $('#college').trigger('change');
                 } else {
-                    // For "All", just reapply local filters
-                    setTimeout(applyFilters, 100);
+                    // For "All", just reapply local filters immediately
+                    applyFilters();
                 }
             } else if (dropdownElement.hasClass('building-dropdown')) {
                 console.log("Building dropdown clicked, setting value to:", value);
@@ -2167,20 +2167,18 @@
             } else if (dropdownElement.hasClass('occupancy-dropdown')) {
                 console.log("Occupancy dropdown clicked, setting value to:", value);
                 $('#occupancy').val(value).attr('data-selected-value', value);
-                // For occupancy, refresh the data
-                setTimeout(function() {
-                    // Only trigger server request if value is non-empty
-                    if (value) {
-                        $('#occupancy').trigger('change');
-                    } else {
-                        applyFilters();
-                    }
-                }, 100);
+                // For occupancy, refresh the data immediately
+                // Only trigger server request if value is non-empty
+                if (value) {
+                    $('#occupancy').trigger('change');
+                } else {
+                    applyFilters();
+                }
             } else if (dropdownElement.hasClass('size-dropdown')) {
                 console.log("Size dropdown clicked, setting value to:", value);
                 $('#size').val(value).attr('data-selected-value', value);
                 // Size doesn't trigger a server request, so apply filter explicitly
-                setTimeout(applyFilters, 100);
+                applyFilters();
             }
             
             // Hide dropdown after selection
