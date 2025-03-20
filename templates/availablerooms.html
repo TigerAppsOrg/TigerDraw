@@ -499,6 +499,7 @@
         color: #f0ad4e;
         display: flex;
         justify-content: center;
+        align-items: center;
     }
     
     .star-icon {
@@ -507,12 +508,25 @@
         margin-right: 2px;
     }
     
-    .room-stars {
-        padding-left: 15px;
+    .rating-number {
+        margin-left: 5px;
+        font-weight: 600;
+        font-size: 1.2em;
     }
     
-    .room-info {
+    .room-stars {
+        margin-left: auto;
+        padding-left: 10px;
+        min-width: 120px;
+        text-align: right;
+    }
+    
+    .room-details {
         flex: 1;
+    }
+    
+    .room-location-wrapper {
+        width: 100%;
     }
     
     .occupancy-icons {
@@ -731,6 +745,7 @@
     <h2 style="font-weight:700;">Rooms</h2>
     <p class="text-center mx-2">Browse <b>{{ total_reviews }}</b> reviews (and counting!) across <b>{{ total_rooms }}</b> rooms.</p>
     <p class="text-center mx-2">Select a Residential College to get started. Please find your room and <b>leave an honest review</b> for future inhabitants!</p>
+    <p class="text-center mx-2 text-muted small"><i>Tip: Click on column headers to sort rooms by location, rating, occupancy, or amenities</i></p>
     <!-- <p class="text-center mx-2 font-italic">Note: Data comes from the 2017 and 2019 draws. Check the official rooms list for up-to-date information.</p> -->
     <div class="announcement-banner alert alert-info text-center mb-0" role="alert">
         <strong>Do you have a room draw PDF?</strong>
@@ -835,7 +850,7 @@
          -->
             <thead>
             <tr>
-                <th>Location</th>
+                <th>Location & Rating</th>
                 <th>Occupancy</th>
                 <th>Amenities</th>
                 <th>Reviews</th>
@@ -843,7 +858,7 @@
             </thead>
             <tfoot>
             <tr>
-                <th>Location</th>
+                <th>Location & Rating</th>
                 <th>Occupancy</th>
                 <th>Amenities</th>
                 <th>Reviews</th>
@@ -989,15 +1004,29 @@
         });
 
         // added button
+        // Custom rating sorter for DataTables
+        $.fn.dataTable.ext.order['dom-rating'] = function (settings, col) {
+            return this.api().column(col, {order:'index'}).nodes().map(function (td, i) {
+                const wrapper = $(td).find('.room-location-wrapper');
+                return parseFloat(wrapper.attr('data-rating')) || 0;
+            });
+        };
+        
         rt = $('#rooms-table').DataTable({
             destroy: true,
             searching: true,
             columnDefs: [
-                {targets: 0, type: "formatted-num"},
+                {
+                    targets: 0,
+                    type: "formatted-num",
+                    orderData: 0, // Sort by this column 
+                    orderSequence: ['asc', 'desc'],
+                    orderDataType: 'dom-rating' // Use our custom sorter
+                },
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
-            "order": [[0, "asc"]],
+            "order": [[0, "desc"]], // Start with highest ratings first
             "pageLength": 20,
             "processing": true,
             "ajax": {
@@ -1009,6 +1038,11 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
+                        // For sorting purposes
+                        if (type === 'sort') {
+                            return data.building + ' ' + data.room_no;
+                        }
+                        
                         // Create the favorite heart
                         let heartIcon = data.favorite ? '♥' : '♡';
                         let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
@@ -1020,9 +1054,10 @@
                                            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
                                            '</button>';
                         
-                        // Generate the star rating HTML
-                        const full_stars = Math.floor(data.average_rating) || 0;
-                        const has_half_star = (data.average_rating - full_stars) >= 0.5;
+                        // Generate the star rating HTML with rating number
+                        const rating = data.average_rating || 0;
+                        const full_stars = Math.floor(rating);
+                        const has_half_star = (rating - full_stars) >= 0.5;
                         let empty_stars = 5 - full_stars;
                         if (has_half_star) {
                             empty_stars--;
@@ -1038,16 +1073,25 @@
                         for (let i = 0; i < empty_stars; i++) {
                             ratingHtml += '<i class="bi bi-star star-icon"></i>';
                         }
+                        
+                        // Add rating number
+                        if (rating > 0) {
+                            ratingHtml += '<span class="rating-number">' + rating.toFixed(1) + '</span>';
+                        }
                         ratingHtml += '</div>';
                         
-                        return '<div class="room-location d-flex justify-content-between align-items-center">' +
-                               '<div class="room-info">' +
+                        // Store rating as a data attribute for custom sorting
+                        const ratingAttr = 'data-rating="' + (rating || 0) + '"';
+                        
+                        return '<div class="room-location-wrapper" ' + ratingAttr + '>' +
+                               '<div class="room-location d-flex align-items-center">' +
+                               '<div class="room-details">' +
                                '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
                                '<div class="room-actions">' + favoriteHtml + addRoomHtml + '</div>' +
                                '</div>' +
                                '<div class="room-stars">' + ratingHtml + '</div>' +
-                               '</div>';
+                               '</div></div>';
                     }
                 },
                 {
@@ -1511,9 +1555,6 @@
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
         
-        // Make sure body has the rooms-page class for CSS targeting
-        $('body').addClass('rooms-page');
-        
         // Ensure jQuery Confirm is available
         if (typeof $.confirm !== 'function') {
             console.log("Loading jQuery Confirm for reviews");
@@ -1600,9 +1641,6 @@
         
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        
-        // Make sure body has the rooms-page class for CSS targeting
-        $('body').addClass('rooms-page');
         
         // Ensure jQuery Confirm is available
         if (typeof $.confirm !== 'function') {

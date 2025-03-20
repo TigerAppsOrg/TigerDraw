@@ -115,66 +115,45 @@
       border-bottom: thin solid #7884f1;
     }
 
-    .star-rating {
-      display: flex;
-      flex-direction: row-reverse;
-      justify-content: center;
-      margin: 20px 0;
+    .star {
+      visibility: hidden;
+      display: inline-block;
     }
 
-    .star-rating input {
-      display: none;
+    .star:before {
+      content: "\2661";
+      display: inline-block;
+      visibility: visible;
+      height: 20px;
+      width: 20px;
+      padding-bottom: 10px;
     }
 
-    .star-rating label {
-      cursor: pointer;
-      width: 50px;
-      height: 50px;
-      margin: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e5e5e5'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 50px;
-    }
-
-    .star-rating input:checked ~ label {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
-    }
-
-    .star-rating label:hover,
-    .star-rating label:hover ~ label {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f5c842'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+    .star:checked:before {
+      content: "\2665";
+      display: inline-block;
+      padding-bottom: 10px;
+      color: #f15156;
     }
 
     textarea {
       resize: none;
     }
 
-    .character-counter {
-      text-align: right;
-      margin-top: 5px;
-      color: #6c757d;
-      font-size: 14px;
+    #count_message {
+      background-color: #474bc9 !important;
+      color: white !important;
+      margin-top: -20px;
+      margin-right: 5px;
     }
 
-    h1, h2 {
+    h2 {
       font-family: helveticaneue-light, helvetica neue light, helvetica neue,
         Helvetica, Arial, lucida grande, sans-serif;
       text-align: center;
       font-weight: normal;
+      font-size: 2em;
       margin-top: 20px;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      font-weight: bold;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      font-size: 1.6em;
-      margin-bottom: 15px;
-      color: #474bc9;
     }
 
     .help-tip {
@@ -202,11 +181,13 @@
     .help-tip:hover p {
       display: block;
       transform-origin: 100% 0%;
+
       -webkit-animation: fadeIn 0.3s ease-in-out;
       animation: fadeIn 0.3s ease-in-out;
     }
 
     .help-tip p {
+      /* The tooltip */
       display: none;
       text-align: left;
       background-color: #7884f1;
@@ -222,6 +203,7 @@
     }
 
     .help-tip p:before {
+      /* The pointer of the tooltip */
       position: absolute;
       content: "";
       width: 0;
@@ -233,6 +215,7 @@
     }
 
     .help-tip p:after {
+      /* Prevents the tooltip from being hidden */
       width: 100%;
       height: 40px;
       content: "";
@@ -263,6 +246,8 @@
     #rooms-table_filter {
       display: none;
     }
+
+    /* CSS animation */
 
     @-webkit-keyframes fadeIn {
       0% {
@@ -302,331 +287,101 @@
       justify-content: center;
       margin: 0;
       padding: 20px;
-      background-color: #f8f9fa;
     }
 
     .main-container {
       width: 100%;
-      max-width: 800px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 30px;
+      max-width: 600px;
     }
 
     #searchResults {
-      max-height: 250px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-    }
-
-    .search-container {
-      margin-bottom: 20px;
-    }
-
-    .divider {
-      width: 100%;
-      height: 1px;
-      background-color: #e9ecef;
-      margin: 20px 0;
-    }
-
-    .submit-button {
-      background-color: #4e73df;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 10px 30px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 16px;
-    }
-
-    .submit-button:hover {
-      background-color: #3a5fc9;
-    }
-
-    .coming-soon {
-      display: inline-block;
-      background-color: #f8f9fa;
-      color: #6c757d;
-      padding: 10px 20px;
-      border-radius: 4px;
-      border: 1px dashed #adb5bd;
-      font-style: italic;
-      margin: 10px 0;
-    }
-
-    .form-check {
-      margin: 15px 0;
-    }
-
-    .room-info {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: #333;
-      padding: 10px;
-      background-color: #f0f2ff;
-      border-radius: 8px;
-    }
-
-    .search-input {
-      padding-right: 50px;
-      font-size: 16px;
-      height: 45px;
-    }
-
-    .search-icon {
-      background-color: #f8f9fa;
-      border-color: #ced4da;
-    }
-    
-    /* More compact layout with less vertical space */
-    .review-form-section {
-      margin-bottom: 15px;
-    }
-    
-    .compact-form h2 {
-      margin: 10px 0;
-      font-size: 1.4em;
-    }
-    
-    .compact-form .star-rating {
-      margin: 10px 0;
-    }
-    
-    .compact-form .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .compact-form textarea {
-      height: 100px;
-    }
-    
-    .compact-form .form-check {
-      margin: 10px 0;
-    }
-    
-    /* Message styling */
-    #message {
-      text-align: center;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-      font-weight: 500;
-    }
-    
-    #message.success {
-      background-color: #d4edda;
-      color: #155724;
-    }
-    
-    #message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-    
-    /* Highlight invalid search */
-    .search-input.is-invalid {
-      border-color: #dc3545;
-      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-      animation: shake 0.5s linear;
-    }
-    
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      20% { transform: translateX(-10px); }
-      40% { transform: translateX(10px); }
-      60% { transform: translateX(-10px); }
-      80% { transform: translateX(10px); }
-      100% { transform: translateX(0); }
-    }
-    
-    /* Style for active selection */
-    .list-group-item.active {
-      background-color: #474bc9 !important;
-      color: white;
-      border-color: #474bc9;
-    }
-    
-    /* Style for no results */
-    .list-group-item.text-muted {
-      background-color: #f8f9fa;
-      font-style: italic;
-    }
-    
-    /* Show loading spinner during room search */
-    .search-loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-left: 5px;
-      vertical-align: middle;
-      border: 2px solid #f3f3f3;
-      border-top: 2px solid #474bc9;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .review-item {
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-    
-    /* Hide reviews on the review page while user is writing a review */
-    body:not(.rooms-page) #reviews-div .review-item {
-      display: none;
-    }
-    
-    body:not(.rooms-page) #reviews-div p:first-child {
-      display: none;
-    }
-    
-    body:not(.rooms-page) #reviews-div hr {
-      display: none;
+      min-height: 250px;
     }
   </style>
 
   <body>
-    <div class="main-container">
-      <h1>Please help us by leaving a review on your room!</h1>
-      <div class="divider"></div>
-      
-      <h2>What room did you live in?</h2>
-      <div class="search-container">
-        <div class="input-group">
-          <input
-            type="text"
-            id="searchInput"
-            class="form-control search-input"
-            placeholder="Search for a room"
-            aria-label="Search"
-            aria-describedby="search-icon"
-          />
-          <div class="input-group-append">
-            <span class="input-group-text search-icon" id="search-icon">
-              <i class="bi bi-search"></i>
-            </span>
-          </div>
+    <div
+      class="main-container"
+      style="max-width: 600px; margin-left: auto; margin-right: auto"
+    >
+      <h2 class="text-center" style="padding-bottom: 8px">
+        Search for your room
+      </h2>
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control"
+          placeholder="Search..."
+          aria-label="Search"
+          aria-describedby="search-icon"
+        />
+        <div class="input-group-append">
+          <span class="input-group-text" id="search-icon">
+            <i class="bi bi-search"></i>
+          </span>
         </div>
       </div>
 
-      <div id="searchResults"></div>
+      <ul class="list-group" id="searchResults"></ul>
 
-      <div id="reviews-body" class="compact-form"></div>
-      <div id="message"></div>
-
+      <div id="reviews-body"></div>
+      <div style="text-align: left; max-width: 75%" id="message"></div>
     </div>
   </body>
 </html>
 
 <script>
   const items = JSON.parse(`{{ items | safe }}`);
-  const forbesRooms = JSON.parse(`{{ forbes_rooms | safe }}`);
-  
-  const buildingAliases = {
-    'Maine': 'Forbes', // Map Maine to Forbes
-    'Forbes': 'Forbes'
-  };
 
   let selectedIndex = -1;
 
   function submitReviewWithoutRefresh() {
-    // Get values directly from the form
-    const rating = $('input[name="overall-rating"]:checked').val() || "";
-    const review = $("#written-review").val();
-    
-    // Get the building and room values from the global variables set during selection
-    // This is a key fix - we're using the stored values instead of trying to parse the form
-    const building = window.selectedBuilding || "";
-    const room = window.selectedRoom || "";
-    
-    // Validate all required fields
-    if (!rating) {
-      $("#message").text("Please select a rating.").removeClass("success").addClass("error");
-      return;
-    }
-    
-    if (!review || review.trim().length < 100) {
-      $("#message").text("Please write a review with at least 100 characters.").removeClass("success").addClass("error");
-      return;
-    }
-    
-    if (!building || !room) {
-      $("#message").text("Please select a room first.").removeClass("success").addClass("error");
-      return;
-    }
-    
-    // Check if checkbox is checked
-    const checkbox = $('input[name="submission-check-2"]').is(':checked');
-    if (!checkbox) {
-      $("#message").text("Please check the box to acknowledge that your netID will be shown with your review.").removeClass("success").addClass("error");
-      return;
-    }
-    
-    // Create request data manually instead of using FormData
-    const requestData = {
-      'building-name': building,
-      'room-number': room,
-      'overall-rating': rating,
-      'written-review': review,
-      'submission-check-2': 'on',
-      'override': 'no'
-    };
-    
-    // Submit the review
-    
-    // Send the AJAX request
+    rating = $("#overall-rating").val();
+    review = $("#written-review").val();
+    let reviewForm = $("form#submit-review-form")[0];
+    let formData = new FormData(reviewForm);
     $.ajax({
       type: "POST",
       url: "/submitReview",
-      data: requestData,
+      contentType: false,
+      dataType: "json",
+      cache: false,
+      processData: false,
+      data: formData,
       success: function (data, textStatus, jqXHR) {
         $("#submit-review-form").trigger("reset");
         $("#message")
           .text("Review submitted, thank you!")
-          .removeClass("error")
-          .addClass("success");
+          .css("color", "green");
       },
       error: function (jqXHR) {
-        if (jqXHR.responseJSON && jqXHR.responseJSON.message === "override") {
+        if (jqXHR.responseJSON.message === "override") {
           $.confirm({
             title: "You will override your old review with this new review.",
             buttons: {
               confirm: {
                 action: function () {
-                  requestData.override = 'yes';
+                  $("#override").val("yes");
+                  reviewForm = $("form#submit-review-form")[0];
+                  formData = new FormData(reviewForm);
                   $.ajax({
                     type: "POST",
                     url: "/submitReview",
-                    data: requestData,
+                    contentType: false,
+                    dataType: "json",
+                    cache: false,
+                    processData: false,
+                    data: formData,
                     success: function (data, textStatus, jqXHR) {
                       $("#submit-review-form").trigger("reset");
                       $("#message")
                         .text("Review submitted, thank you!")
-                        .removeClass("error")
-                        .addClass("success");
+                        .css("color", "green");
                     },
                     error: function (jqXHR) {
-                      if (jqXHR.responseJSON) {
-                        $("#message")
-                          .text(jqXHR.responseJSON.message)
-                          .removeClass("success")
-                          .addClass("error");
-                      } else {
-                        $("#message")
-                          .text("An error occurred while submitting your review.")
-                          .removeClass("success")
-                          .addClass("error");
-                      }
+                      $("#message").text(jqXHR.responseJSON.message);
+                      $("#message").css("color", "red");
                     },
                   });
                 },
@@ -638,16 +393,9 @@
               },
             },
           });
-        } else if (jqXHR.responseJSON) {
-          $("#message")
-            .text(jqXHR.responseJSON.message)
-            .removeClass("success")
-            .addClass("error");
         } else {
-          $("#message")
-            .text("An error occurred while submitting your review.")
-            .removeClass("success")
-            .addClass("error");
+          $("#message").text(jqXHR.responseJSON.message);
+          $("#message").css("color", "red");
         }
       },
     });
@@ -660,48 +408,15 @@
 
     if (filteredItems.length === 0) {
       resultsContainer.append(
-        '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i> No results found. Try adjusting your search.</div>'
+        '<li class="list-group-item text-muted">No results found</li>'
       );
-      roomSelected = false; // Ensure room is not selected when no results
     } else {
-      resultsContainer.append('<ul class="list-group shadow-sm"></ul>');
-      const listGroup = resultsContainer.find('.list-group');
-      
-      // Add a header with result count
-      if (filteredItems.length === 1) {
-        listGroup.append(`<li class="list-group-item bg-light text-primary"><i class="bi bi-info-circle"></i> Found 1 room</li>`);
-      } else {
-        listGroup.append(`<li class="list-group-item bg-light text-primary"><i class="bi bi-info-circle"></i> Found ${filteredItems.length} rooms</li>`);
-      }
-      
-      // Add each result item
       filteredItems.forEach((item, index) => {
-        const itemParts = item.split(' ');
-        const buildingName = itemParts[0];
-        const roomNumber = itemParts.length > 1 ? itemParts[1] : '';
-        
-        // Special styling for Maine/Forbes
-        let specialClass = '';
-        let specialIcon = '';
-        
-        if (buildingName.toLowerCase() === 'maine') {
-          specialClass = 'text-info';
-          specialIcon = '<i class="bi bi-info-circle-fill text-info me-2" title="Maine is part of Forbes College"></i>';
-        }
-        
-        listGroup.append(
-          `<li class="list-group-item ${specialClass}" data-index="${index}" tabindex="0">
-             ${specialIcon}${item}
-           </li>`
+        resultsContainer.append(
+          `<li class="list-group-item" data-index="${index}" tabindex="0">${item}</li>`
         );
       });
     }
-    
-    // Add click handlers to the newly rendered list items
-    $("#searchResults .list-group-item").not('.bg-light').on('click', function() {
-      const selectedText = $(this).text().trim();
-      handleSelection(selectedText);
-    });
   }
 
   async function fetchWithTimeout(resource, options = {}) {
@@ -717,103 +432,30 @@
     return response;
   }
 
-  // Add a global variable to track if a room has been selected
-  let roomSelected = false;
-
   function handleSelection(selectedText) {
     const resultsContainer = $("#searchResults");
-    resultsContainer.empty();
+    resultsContainer.empty().css("display", "none");
     $("#message").empty();
     selectedIndex = -1;
-    
-    // If no text was selected, don't proceed
-    if (!selectedText || selectedText.trim() === "" || selectedText.toLowerCase().includes("no results found")) {
-      $("#reviews-body").empty();
-      roomSelected = false;
-      $("#message").text("Please select a valid room.").removeClass("success").addClass("error");
-      return;
+    spaceIndex = selectedText.lastIndexOf(" ");
+    building_name = selectedText.slice(0, spaceIndex);
+    if (building_name.includes("FORBES")) {
+      building_name = building_name.slice(building_name.indexOf(" ") + 1);
     }
-    
-    // Parse the room information from the selected text
-    // Format should be "BuildingName RoomNumber"
-    const parts = selectedText.trim().split(" ");
-    let building_name = parts[0];
-    const room_no = parts.length > 1 ? parts[1] : "";
-    
-    // Validation check - must have both building name and room number
-    if (!building_name || !room_no) {
-      $("#reviews-body").empty();
-      roomSelected = false;
-      $("#message").text("Invalid room format. Please select a valid room.").removeClass("success").addClass("error");
-      return;
-    }
-    
-    // Handle Forbes/Maine alias
-    if (building_name === "Maine") {
-      building_name = "Forbes";
-    }
-    
-    // Add a loading indicator
-    $("#reviews-body").html('<div class="text-center p-3"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div><p class="mt-2">Loading room reviews...</p></div>');
-    $("#message").text(`Loading reviews for ${selectedText}...`).removeClass("error").addClass("success");
-    
-    // Store the selected room information for the form submission
-    // This is crucial for the review submission to work correctly
-    window.selectedBuilding = building_name;
-    window.selectedRoom = room_no;
-    
-    // Add the selected room information to the top of the results
-    $("#searchInput").val(selectedText);
-    resultsContainer.html(`
-      <div class="room-info p-2 mb-3">
-        <i class="bi bi-building"></i> Selected: <strong>${selectedText}</strong>
-      </div>
-    `);
-    
-    fetchWithTimeout(
-      "/get_reviews?" +
-        "&building_name=" +
-        building_name +
-        "&room_no=" +
-        room_no,
-      { timeout: 15000 } // Extend timeout to 15 seconds
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.text();
-      })
-      .then((data) => {
-        $("#reviews-body").html(data);
-        roomSelected = true;
-        $("#message").text(`Room ${selectedText} selected. You can now leave a review.`).removeClass("error").addClass("success");
-        
-        // Fix: Set hidden form values for the building and room
-        setTimeout(() => {
-          // Make sure the form fields are populated correctly
-          $("#building-name").val(building_name);
-          $("#room-number").val(room_no);
-          
-          // Also update the display text (belt and suspenders approach)
-          $("#building-name-display").text(building_name);
-          $("#room-number-display").text(room_no);
-          
-        }, 300);
-        
-        // Focus on the first star rating after loading
-        setTimeout(() => {
-          const firstStar = $('input[name="overall-rating"]').last();
-          if (firstStar.length) {
-            firstStar.focus();
-          }
-        }, 300);
-      })
-      .catch((error) => {
-        $("#reviews-body").html('<div class="alert alert-danger">Error loading reviews. Please try again.</div>');
-        roomSelected = false;
-        $("#message").text(`Error loading room ${selectedText}. Please try again.`).removeClass("success").addClass("error");
-      });
+    room_no = selectedText.slice(spaceIndex + 1);
+    setTimeout(function () {
+      fetchWithTimeout(
+        "/get_reviews?" +
+          "&building_name=" +
+          building_name +
+          "&room_no=" +
+          room_no
+      )
+        .then((response) => response.text())
+        .then((data) => {
+          $("#reviews-body").html(data);
+        });
+    });
   }
 
   $(document).ready(function () {
@@ -823,89 +465,11 @@
         resultsContainer.empty();
         selectedIndex = -1;
       } else {
-        const searchQuery = $(this).val().toLowerCase().trim();
-        
-        // FORBES SEARCH WITH PROPER FILTERING
-        if (searchQuery === "forbes" || 
-            searchQuery === "for" || 
-            searchQuery.startsWith("for")) {
-          
-          // Get the part after "forbes" if it exists
-          let additionalSearch = "";
-          if (searchQuery.startsWith("forbes") && searchQuery.length > 6) {
-            additionalSearch = searchQuery.substring(6).trim().toLowerCase();
-          }
-          
-          // Filter Forbes rooms based on the additional search term
-          let filteredForbesRooms = forbesRooms;
-          if (additionalSearch) {
-            filteredForbesRooms = forbesRooms.filter(room => {
-              const roomLower = room.toLowerCase();
-              return roomLower.includes(additionalSearch);
-            });
-          }
-          
-          // Limit to first 20 for display
-          const displayedForbesRooms = filteredForbesRooms.slice(0, 20);
-          renderList(displayedForbesRooms);
-          return [];  // Return empty since we've already rendered the list
-        }
-      
-        // Standard search logic for non-Forbes searches
-        const filteredItems = items.filter((item) => {
-          const itemLower = item.toLowerCase();
-          
-          // Split the item into building and room number
-          const itemParts = itemLower.split(" ");
-          const buildingName = itemParts[0]; // First part is the building name
-          
-          // Direct match first (most specific)
-          if (itemLower.includes(searchQuery)) {
-            return true;
-          }
-          
-          // Handle the Forbes/Maine relationship specifically
-          if (buildingName === "maine" && searchQuery.includes("forbes")) {
-            return true;
-          }
-          
-          if (buildingName === "forbes" && searchQuery.includes("maine")) {
-            return true;
-          }
-          
-          // Check if the search query is contained within the building name
-          if (buildingName.includes(searchQuery)) {
-            return true;
-          }
-          
-          // Check if the building name is contained within the search query
-          if (searchQuery.includes(buildingName) && buildingName.length >= 3) {
-            return true;
-          }
-          
-          // Special case for Forbes College buildings
-          if ((buildingName === "forbes" || buildingName === "maine") && 
-              searchQuery.includes("forbes")) {
-            return true;
-          }
-          
-          // Handle room number searches
-          if (itemParts.length > 1 && itemParts[1].startsWith(searchQuery)) {
-            return true;
-          }
-          
-          // More flexible matching for building names
-          const searchTerms = searchQuery.split(/\s+/);
-          for (const term of searchTerms) {
-            if (term.length >= 3 && buildingName.includes(term)) {
-              return true;
-            }
-          }
-          
-          return false;
-        });
-        
-        renderList(filteredItems.slice(0, 10)); // Show top 10 results
+        const searchQuery = $(this).val().toLowerCase();
+        const filteredItems = items.filter((item) =>
+          item.toLowerCase().includes(searchQuery)
+        );
+        renderList(filteredItems.slice(0, 5));
       }
     });
 
@@ -917,11 +481,8 @@
     // Handle keyboard navigation & Enter key selection
     $("#searchInput").on("keydown", function (e) {
       const visibleItems = $("#searchResults .list-group-item");
-      
-      // Don't clear message on every keypress, only on actions that would change the selection
-      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter") {
-        $("#message").empty();
-      }
+      // if (visibleItems.length === 0) return;
+      $("#message").empty();
 
       if (e.key === "ArrowDown") {
         selectedIndex = Math.min(selectedIndex + 1, visibleItems.length - 1);
@@ -932,63 +493,21 @@
         visibleItems.removeClass("active");
         $(visibleItems[selectedIndex]).addClass("active").focus();
       } else if (e.key === "Enter") {
-        e.preventDefault(); // Prevent form submission on Enter
-        
-        // Only process Enter if there are results to select and they're not "No results found"
-        if (visibleItems.length > 0 && !$(visibleItems[0]).hasClass('text-muted')) {
-          if (selectedIndex >= 0) {
+        if (selectedIndex >= 0) {
+          if (
+            visibleItems[selectedIndex] &&
+            visibleItems[selectedIndex].innerText !== "No results found"
+          ) {
             handleSelection($(visibleItems[selectedIndex]).text());
-          } else {
+          }
+        } else if (visibleItems.length > 0 && selectedIndex == -1) {
+          if (visibleItems[0].innerText !== "No results found") {
             handleSelection($(visibleItems[0]).text());
           }
-        } else {
-          // No valid results to select, show error message
-          $("#message").text("No rooms found. Please refine your search.").removeClass("success").addClass("error");
-          $("#reviews-body").empty();
-          roomSelected = false;
-          
-          // Highlight the search box to indicate error
-          $("#searchInput").addClass("is-invalid");
-          setTimeout(() => {
-            $("#searchInput").removeClass("is-invalid");
-          }, 1500);
         }
-      }
-    });
-
-    // Modify submit event handler to check if a room is selected
-    $(document).on("submit", "#submit-review-form", function(e) {
-      e.preventDefault();
-      if (!roomSelected) {
-        $("#message").text("Please select a room first before submitting a review.").removeClass("success").addClass("error");
-        // Scroll back to the top where the search box is
-        $('html, body').animate({
-          scrollTop: $("#searchInput").offset().top - 50
-        }, 500);
-        return false;
-      }
-      submitReviewWithoutRefresh();
-      return false;
-    });
-
-    // Add click event handler for submit button to enforce room selection
-    $(document).on("click", ".submit-button", function(e) {
-      if (!roomSelected) {
-        e.preventDefault();
-        $("#message").text("Please select a room first before submitting a review.").removeClass("success").addClass("error");
-        // Scroll back to the top where the search box is
-        $('html, body').animate({
-          scrollTop: $("#searchInput").offset().top - 50
-        }, 500);
-        return false;
-      }
-    });
-    
-    // Reset roomSelected when search input changes
-    $("#searchInput").on("input", function() {
-      if ($(this).val().trim() === "") {
-        roomSelected = false;
+      } else {
         $("#reviews-body").empty();
+        $("#searchResults").empty().css("display", "");
       }
     });
   });
