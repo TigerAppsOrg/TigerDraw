@@ -466,6 +466,54 @@
             opacity: 100%;
         }
     }
+
+    /* New styles for the redesigned table layout */
+    .room-location, .room-occupancy, .room-amenities {
+        padding: 8px 0;
+    }
+    
+    .room-building-number {
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+    
+    .room-college {
+        font-size: 0.9em;
+        color: #666;
+    }
+    
+    .occupancy-icons {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .person-icon {
+        display: inline-block;
+        margin-right: 2px;
+    }
+    
+    .room-size {
+        display: inline-block;
+        font-size: 0.9em;
+    }
+    
+    .amenity-icons {
+        display: flex;
+        margin-bottom: 8px;
+    }
+    
+    .amenity-icon {
+        margin-right: 10px;
+    }
+    
+    .distances {
+        font-size: 0.8em;
+        color: #666;
+    }
+    
+    .distance-item {
+        margin-bottom: 2px;
+    }
 </style>
 
 <body data-username={{ username }}>
@@ -629,24 +677,9 @@
             <thead>
             <tr>
                 <th>Favorite</th>
-                <th>College</th>
-                <th>Building</th>
-                <th>Room No.</th>
+                <th>Location</th>
                 <th>Occupancy</th>
-                <th>Sq. Footage</th>
-                <th style="min-width: 84px;">Rating</th>
-                <th>Elevator</th>
-                <th>Bathroom</th>
-                <th>AC</th>
-                <th>Floor</th>
-                <th>Wawa</th>
-                <th>UStore</th>
-                <th>Nassau St</th>
-                <th>Jadwin Gym</th>
-                <th>Frist</th>
-                <th>Street</th>
-                <th>Eng Quad</th>
-                <th>Dillon</th>
+                <th>Amenities</th>
                 <th>Reviews</th>
                 <th>Add Room to Group</th>
             </tr>
@@ -654,24 +687,9 @@
             <tfoot>
             <tr>
                 <th>Favorite</th>
-                <th>College</th>
-                <th>Building</th>
-                <th>Room No.</th>
+                <th>Location</th>
                 <th>Occupancy</th>
-                <th>Sq. Footage</th>
-                <th style="min-width: 84px;">Rating</th>
-                <th>Elevator</th>
-                <th>Bathroom</th>
-                <th>AC</th>
-                <th>Floor</th>
-                <th>Wawa</th>
-                <th>UStore</th>
-                <th>Nassau St</th>
-                <th>Jadwin Gym</th>
-                <th>Frist</th>
-                <th>Street</th>
-                <th>Eng Quad</th>
-                <th>Dillon</th>
+                <th>Amenities</th>
                 <th>Reviews</th>
                 <th>Add Room to Group</th>
             </tr>
@@ -847,75 +865,84 @@
                         }
                     },
                 },
-                {"data": "res_college"},
-                {"data": "building"},
-                {"data": "room_no"},
-                {"data": "occupancy"},
-                {"data": "sq_footage"},
                 {
-                    data: null, targets: -1, render: function (data, type, row) {
-                        const full_stars = Math.floor(data.average_rating)
-                        const has_half_star = (data.average_rating - full_stars) >= 0.5
-                        let empty_stars = 5 - full_stars
-                        if (has_half_star) {
-                            empty_stars--
-                        }
-                        let html = ""
-                        for (let i = 0; i < full_stars; i++) {
-                            html += '<i class="bi bi-star-fill text-warning"></i>'
-                        }
-                        if (has_half_star) {
-                            html += '<i class="bi bi-star-half text-warning"></i>'
-                        }
-                        if (empty_stars == 5) {
-                            return html
-                        }
-                        for (let i = 0; i < empty_stars; i++) {
-                            html += '<i class="bi bi-star text-warning"></i>'
-                        }
-                        return html
-                    }
-                },
-                {"data": "elevator"},
-                {
-                    data: "bathroom", 
+                    data: null, 
                     render: function(data, type, row) {
-                        if (type === 'display') {
-                            if (data.trim().toLowerCase() === 'private') {
-                                return '<div class="text-center"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';"></div></div>';
-                            } else if (data.trim().toLowerCase() === 'suite') {
-                                return '<div class="text-center"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';"></div></div>';
-                            } else {
-                                return '<div class="text-center"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';"></div></div>';
-                            }
-                        }
-                        return data;
+                        return '<div class="room-location">' +
+                               '<div class="room-building-number"><strong>' + data.building + ' ' + data.room_no + '</strong></div>' +
+                               '<div class="room-college">' + data.res_college + '</div>' +
+                               '</div>';
                     }
                 },
                 {
-                    data: "ac", 
+                    data: null,
                     render: function(data, type, row) {
-                        if (type === 'display') {
-                            if (data.trim().toLowerCase() === 'yes') {
-                                return '<div class="text-center"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';"></div></div>';
-                            } else {
-                                return '<div class="text-center"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';"></div></div>';
-                            }
+                        // Create occupancy icons based on the number
+                        let occupancyIcons = '';
+                        for (let i = 0; i < data.occupancy; i++) {
+                            occupancyIcons += '<span class="person-icon">&#128100;</span>'; // Using person emoji as placeholder
                         }
-                        return data;
+                        
+                        return '<div class="room-occupancy">' +
+                               '<div class="occupancy-icons">' + occupancyIcons + '</div>' +
+                               '<div class="room-size">' + data.sq_footage + ' sq.ft.</div>' +
+                               '</div>';
                     }
                 },
-                {"data": "floor"},
-                {"data": "wawa"},
-                {"data": "ustore"},
-                {"data": "Nassau Street"},
-                {"data": "Jadwin Gym"},
-                {"data": "frist"},
-                {"data": "street"},
-                {"data": "equad"},
-                {"data": "dillon"},
                 {
-                    data: null, targets: -1, render: function (data, type, row) {
+                    data: null,
+                    render: function(data, type, row) {
+                        // AC icon
+                        let acIcon = '';
+                        if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                        } else {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                        }
+                        
+                        // Bathroom icon
+                        let bathroomIcon = '';
+                        if (data.bathroom) {
+                            if (data.bathroom.trim().toLowerCase() === 'private') {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            } else if (data.bathroom.trim().toLowerCase() === 'suite') {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            } else {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                            }
+                        } else {
+                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 24px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\';">;</div></div>';
+                        }
+                        
+                        // Distances
+                        const distances = [
+                            {name: 'Wawa', value: data.wawa},
+                            {name: 'UStore', value: data.ustore},
+                            {name: 'Nassau St', value: data['Nassau Street']},
+                            {name: 'Jadwin Gym', value: data['Jadwin Gym']},
+                            {name: 'Frist', value: data.frist}
+                        ];
+                        
+                        // Display the 3 closest distances
+                        distances.sort((a, b) => a.value - b.value);
+                        const closestThree = distances.slice(0, 3);
+                        
+                        let distanceHtml = '<div class="distances">';
+                        closestThree.forEach(dist => {
+                            distanceHtml += '<div class="distance-item">' + dist.name + ': ' + dist.value + 'min</div>';
+                        });
+                        distanceHtml += '</div>';
+                        
+                        return '<div class="room-amenities">' +
+                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
+                               distanceHtml +
+                               '</div>';
+                    }
+                },
+                {
+                    data: null, 
+                    targets: -1, 
+                    render: function (data, type, row) {
                         return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
                     }
                 },
