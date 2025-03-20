@@ -898,6 +898,170 @@
     #rooms-table tr:hover {
         background-color: rgba(236, 237, 255, 0.7);
     }
+
+    /* Pill filter styling */
+    .filter-pills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+        padding: 8px 0;
+    }
+    
+    .filter-pill {
+        display: flex;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #495057;
+        white-space: nowrap;
+    }
+    
+    .filter-pill:hover {
+        background-color: #e9ecef;
+    }
+    
+    .filter-pill.active {
+        background-color: rgba(120, 132, 241, 0.1);
+        border-color: #7884F1;
+        color: #7884F1;
+    }
+    
+    .filter-pill.positive {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-color: #28a745;
+        color: #28a745;
+    }
+    
+    .filter-pill.negative {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+        color: #dc3545;
+    }
+    
+    .dropdown-pill {
+        position: relative;
+    }
+    
+    .pill-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 5px;
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+        min-width: 150px;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+    }
+    
+    .dropdown-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .dropdown-item.selected {
+        background-color: rgba(120, 132, 241, 0.1);
+        color: #7884F1;
+        font-weight: 500;
+    }
+    
+    .pill-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+    }
+    
+    /* Update search filter styling */
+    .search-filters {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 10px !important;
+        border: 1px solid #e8e8e8;
+        background-color: #f9f9f9;
+        margin-top: 8px;
+        padding: 4px 12px;
+        display: none;
+    }
+    
+    /* Keep existing toggle styling to ensure compatibility */
+    .custom-switch {
+        padding-left: 0;
+        position: relative;
+        width: 54px;
+        height: 18px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    
+    .custom-switch .custom-control-label {
+        padding-left: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .custom-switch .custom-control-input {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .custom-switch .custom-control-label::before {
+        position: absolute;
+        width: 54px;
+        height: 18px;
+        border-radius: 9px;
+        background-color: #e0e0e0;
+        border: none;
+        left: 0;
+        top: 0;
+        transition: background-color 0.15s ease-in-out;
+        box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #7884F1;
+        border-color: #7884F1;
+    }
+    
+    .custom-switch .custom-control-label::after {
+        position: absolute;
+        top: 2.5px !important;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.15s ease-in-out;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(36px);
+        background-color: #fff;
+    }
+    
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
+    }
 </style>
 
 <body data-username={{ username }}>
@@ -975,80 +1139,96 @@
             </button>
         </div>
         
-        <!-- Expandable filters section -->
-        <div id="search-filters" class="search-filters">
-            <div class="row" style="margin-bottom: 10px;">
-                <div class="col-md-3 mb-2">
-                    <label class="d-block">College</label>
-                    <select class="form-control" name="college" id="college">
-                        <option disabled selected value></option>
-                        <option value="Butler College">Butler</option>
-                        <option value="Forbes College">Forbes</option>
-                        <option value="Mathey College">Mathey</option>
-                        <option value="New College West">New College West</option>
-                        <option value="No Res College Associated">No Res College Associated</option>
-                        <option value="Rockefeller College">Rocky</option>
-                        <option value="Whitman College">Whitman</option>
-                        <option value="Upperclass">Upperclassman</option>
-                        <option value="Yeh College">Yeh</option>
-                    </select>
+        <!-- Expandable filters section with pill-style design -->
+        <div id="search-filters" class="search-filters row">
+            <div class="filter-pills-container">
+                <!-- Favorites filter pill -->
+                <div class="filter-pill" id="favorites-pill">
+                    <i class="bi bi-heart-fill mr-1"></i> Favorites
                 </div>
-                <div class="col-md-3 mb-2">
-                    <label class="d-block">Building</label>
-                    <select class="form-control" name="building" id="building">
-                        <option value="">All</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-2">
-                    <label class="d-block">Occupancy</label>
-                    <select class="form-control" name="occupancy" id="occupancy">
-                        <option value="">All</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-2">
-                    <label class="d-block">Size</label>
-                    <select class="form-control" name="size" id="size">
-                        <option value="">All</option>
-                        <option value="small">Small (&lt;300 sq ft)</option>
-                        <option value="medium">Medium (300-450 sq ft)</option>
-                        <option value="large">Large (&gt;450 sq ft)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 0;">
-                <div class="col-12">
-                    <label class="amenities-heading">Amenities</label>
-                    <div class="amenities-container">
-                        <div class="toggle-wrapper">
-                            <label class="toggle-label" for="ac-toggle">
-                                <div class="icon-container">
-                                    <img src="{{ url_for('static', filename='assets/img/ac-icon.svg') }}" 
-                                         alt="AC" width="28" height="28" id="ac-icon-img"
-                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-fan\' style=\'font-size: 28px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
-                                </div>
-                                <span>A/C</span>
-                            </label>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="ac-toggle">
-                                <label class="custom-control-label" for="ac-toggle"></label>
-                            </div>
-                        </div>
-                        <div class="toggle-wrapper">
-                            <label class="toggle-label" for="bathroom-toggle">
-                                <div class="icon-container">
-                                    <img src="{{ url_for('static', filename='assets/img/bathroom-icon.svg') }}" 
-                                         alt="Bathroom" width="28" height="28" id="bathroom-icon-img"
-                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-water\' style=\'font-size: 28px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
-                                </div>
-                                <span>Private Bathroom</span>
-                            </label>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="bathroom-toggle">
-                                <label class="custom-control-label" for="bathroom-toggle"></label>
-                            </div>
-                        </div>
+                
+                <!-- College filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="college-pill">
+                    <span>College</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown college-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="Butler College">Butler</div>
+                        <div class="dropdown-item" data-value="Forbes College">Forbes</div>
+                        <div class="dropdown-item" data-value="Mathey College">Mathey</div>
+                        <div class="dropdown-item" data-value="New College West">New College West</div>
+                        <div class="dropdown-item" data-value="No Res College Associated">No Res College Associated</div>
+                        <div class="dropdown-item" data-value="Rockefeller College">Rocky</div>
+                        <div class="dropdown-item" data-value="Whitman College">Whitman</div>
+                        <div class="dropdown-item" data-value="Upperclass">Upperclassman</div>
+                        <div class="dropdown-item" data-value="Yeh College">Yeh</div>
                     </div>
                 </div>
+                
+                <!-- Building filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="building-pill">
+                    <span>Building</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown building-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <!-- Building options will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- People/Occupancy filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="people-pill">
+                    <span>People</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown occupancy-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="1">1</div>
+                        <div class="dropdown-item" data-value="2">2</div>
+                        <div class="dropdown-item" data-value="3">3</div>
+                        <div class="dropdown-item" data-value="4">4</div>
+                        <div class="dropdown-item" data-value="5">5</div>
+                        <div class="dropdown-item" data-value="6">6</div>
+                        <div class="dropdown-item" data-value="7">7</div>
+                        <div class="dropdown-item" data-value="8">8</div>
+                        <div class="dropdown-item" data-value="9">9</div>
+                        <div class="dropdown-item" data-value="10">10</div>
+                    </div>
+                </div>
+                
+                <!-- Size filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="size-pill">
+                    <span>Size</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown size-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="small">Small (&lt;300 sq ft)</div>
+                        <div class="dropdown-item" data-value="medium">Medium (300-450 sq ft)</div>
+                        <div class="dropdown-item" data-value="large">Large (&gt;450 sq ft)</div>
+                    </div>
+                </div>
+                
+                <!-- AC filter toggle pill -->
+                <div class="filter-pill toggle-pill" id="ac-pill" data-state="0">
+                    <img src="{{ url_for('static', filename='assets/img/ac-icon.svg') }}" alt="AC" class="pill-icon" 
+                         onerror="this.onerror=null; this.outerHTML='<i class=\'bi bi-fan pill-icon\'></i>';">
+                    <span>A/C</span>
+                </div>
+                
+                <!-- Private Bathroom filter toggle pill -->
+                <div class="filter-pill toggle-pill" id="bathroom-pill" data-state="0">
+                    <img src="{{ url_for('static', filename='assets/img/bathroom-icon.svg') }}" alt="Bathroom" class="pill-icon"
+                         onerror="this.onerror=null; this.outerHTML='<i class=\'bi bi-water pill-icon\'></i>';">
+                    <span>Private Bathroom</span>
+                </div>
+            </div>
+            
+            <!-- Hidden form elements to maintain compatibility with existing code -->
+            <div class="d-none">
+                <select id="college" name="college"></select>
+                <select id="building" name="building"></select>
+                <select id="occupancy" name="occupancy"></select>
+                <select id="size" name="size"></select>
+                <input type="checkbox" id="ac-toggle">
+                <input type="checkbox" id="bathroom-toggle">
             </div>
         </div>
     </div>
@@ -1533,6 +1713,9 @@
             applyFilters();
             console.log("Applying custom search filter:", this.value);
         });
+        
+        // Handle pill filter interactions
+        setupPillFilters();
 
         // on clicking stars, either favorite or unfavorite
         $('#rooms-table').on('change', '.heart-checkbox', function () {
@@ -1606,6 +1789,153 @@
 
         });
 
+    }
+    
+    // Setup pill filter interactions
+    function setupPillFilters() {
+        // Favorites pill
+        $('#favorites-pill').on('click', function() {
+            $(this).toggleClass('active');
+            // Filter logic for favorites would go here
+        });
+        
+        // Toggle state pills (AC and Bathroom)
+        $('.toggle-pill').on('click', function() {
+            const pillElement = $(this);
+            const currentState = parseInt(pillElement.attr('data-state'));
+            const nextState = (currentState + 1) % 3; // 0 -> 1 -> 2 -> 0
+            
+            // Remove all state classes
+            pillElement.removeClass('active positive negative');
+            
+            // Handle different states
+            if (nextState === 1) {
+                // Positive state (green)
+                pillElement.addClass('positive');
+                if (pillElement.attr('id') === 'ac-pill') {
+                    $('#ac-toggle').prop('checked', true).trigger('change');
+                } else if (pillElement.attr('id') === 'bathroom-pill') {
+                    $('#bathroom-toggle').prop('checked', true).trigger('change');
+                }
+            } else if (nextState === 2) {
+                // Negative state (red)
+                pillElement.addClass('negative');
+                if (pillElement.attr('id') === 'ac-pill') {
+                    // TODO: Add negative AC filter logic 
+                    $('#ac-toggle').prop('checked', false).trigger('change');
+                } else if (pillElement.attr('id') === 'bathroom-pill') {
+                    // TODO: Add negative bathroom filter logic
+                    $('#bathroom-toggle').prop('checked', false).trigger('change');
+                }
+            } else {
+                // Reset state
+                if (pillElement.attr('id') === 'ac-pill') {
+                    $('#ac-toggle').prop('checked', false).trigger('change');
+                } else if (pillElement.attr('id') === 'bathroom-pill') {
+                    $('#bathroom-toggle').prop('checked', false).trigger('change');
+                }
+            }
+            
+            pillElement.attr('data-state', nextState);
+        });
+        
+        // Dropdown pills
+        $('.dropdown-pill').on('click', function(e) {
+            e.stopPropagation();
+            const pillElement = $(this);
+            const dropdownElement = pillElement.find('.pill-dropdown');
+            
+            // Close other dropdowns
+            $('.pill-dropdown').not(dropdownElement).hide();
+            
+            // Toggle this dropdown
+            dropdownElement.toggle();
+        });
+        
+        // Handle dropdown item selection
+        $('.dropdown-item').on('click', function(e) {
+            e.stopPropagation();
+            const itemElement = $(this);
+            const value = itemElement.data('value');
+            const dropdownElement = itemElement.closest('.pill-dropdown');
+            const pillElement = itemElement.closest('.dropdown-pill');
+            
+            // Update selection visually
+            dropdownElement.find('.dropdown-item').removeClass('selected');
+            itemElement.addClass('selected');
+            
+            // Update pill appearance
+            if (value === '') {
+                pillElement.removeClass('active');
+            } else {
+                pillElement.addClass('active');
+            }
+            
+            // Update hidden form controls based on which dropdown was clicked
+            if (dropdownElement.hasClass('college-dropdown')) {
+                $('#college').val(value).trigger('change');
+            } else if (dropdownElement.hasClass('building-dropdown')) {
+                $('#building').val(value).trigger('change');
+            } else if (dropdownElement.hasClass('occupancy-dropdown')) {
+                $('#occupancy').val(value).trigger('change');
+            } else if (dropdownElement.hasClass('size-dropdown')) {
+                $('#size').val(value).trigger('change');
+            }
+            
+            // Hide dropdown after selection
+            dropdownElement.hide();
+        });
+        
+        // Close dropdowns when clicking elsewhere
+        $(document).on('click', function() {
+            $('.pill-dropdown').hide();
+        });
+        
+        // Populate building dropdown items when college changes
+        $('#college').on('change', function() {
+            // This function will be called after populateDropdowns() updates the building select
+            setTimeout(function() {
+                updateBuildingDropdownItems();
+            }, 100);
+        });
+    }
+    
+    // Update building dropdown items based on the building select
+    function updateBuildingDropdownItems() {
+        const buildingDropdown = $('.building-dropdown');
+        buildingDropdown.find('.dropdown-item:not(:first)').remove();
+        
+        $('#building option:not(:first)').each(function() {
+            const value = $(this).val();
+            const text = $(this).text();
+            buildingDropdown.append('<div class="dropdown-item" data-value="' + value + '">' + text + '</div>');
+        });
+        
+        // Reattach click handlers for the new items
+        $('.building-dropdown .dropdown-item').on('click', function(e) {
+            e.stopPropagation();
+            const itemElement = $(this);
+            const value = itemElement.data('value');
+            const dropdownElement = itemElement.closest('.pill-dropdown');
+            const pillElement = itemElement.closest('.dropdown-pill');
+            
+            // Update selection visually
+            dropdownElement.find('.dropdown-item').removeClass('selected');
+            itemElement.addClass('selected');
+            
+            // Update pill appearance
+            if (value === '') {
+                pillElement.removeClass('active');
+            } else {
+                pillElement.addClass('active');
+            }
+            
+            // Update building select
+            $('#building').val(value).trigger('change');
+            
+            // Hide dropdown after selection
+            dropdownElement.hide();
+        });
     }
 
     function applyFilters() {
@@ -1712,7 +2042,9 @@
                 }
                 
                 const acToggled = $('#ac-toggle').is(':checked');
-                if (!acToggled) {
+                const acPillState = parseInt($('#ac-pill').attr('data-state'));
+                
+                if (acPillState === 0) {
                     return true; // Show all when toggle is off
                 }
                 
@@ -1720,7 +2052,9 @@
                 const rowData = rt.row(dataIndex).data();
                 const hasAC = rowData.ac && rowData.ac.trim().toLowerCase() === 'yes';
                 
-                return hasAC;
+                // State 1: Positive (show only rooms WITH AC)
+                // State 2: Negative (show only rooms WITHOUT AC)
+                return (acPillState === 1) ? hasAC : !hasAC;
             }
         );
         
@@ -1733,7 +2067,9 @@
                 }
                 
                 const bathroomToggled = $('#bathroom-toggle').is(':checked');
-                if (!bathroomToggled) {
+                const bathroomPillState = parseInt($('#bathroom-pill').attr('data-state'));
+                
+                if (bathroomPillState === 0) {
                     return true; // Show all when toggle is off
                 }
                 
@@ -1741,9 +2077,26 @@
                 const rowData = rt.row(dataIndex).data();
                 const hasBathroom = rowData.bathroom && rowData.bathroom.trim().toLowerCase() === 'private';
                 
-                return hasBathroom;
+                // State 1: Positive (show only rooms WITH bathroom)
+                // State 2: Negative (show only rooms WITHOUT bathroom)
+                return (bathroomPillState === 1) ? hasBathroom : !hasBathroom;
             }
         );
+        
+        // Add favorites filter
+        if ($('#favorites-pill').hasClass('active')) {
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    // Only apply to rooms-table
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    return rowData.favorite === true;
+                }
+            );
+        }
         
         // Redraw table with filters applied
         if (rt) {
