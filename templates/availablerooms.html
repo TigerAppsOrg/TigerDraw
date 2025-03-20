@@ -77,7 +77,7 @@
 
     #search {
         border: none;
-        height: 50px;
+        height: 54px;
         padding-left: 20px;
         font-size: 16px;
         box-shadow: none !important;
@@ -93,6 +93,9 @@
         color: #6c757d;
         white-space: nowrap;
         border-left: 1px solid #e0e0e0;
+        font-size: 16px;
+        min-width: 180px;
+        text-align: center;
     }
 
     #search-specifics-btn:hover {
@@ -111,33 +114,34 @@
         border-radius: 10px !important;
         border: 1px solid #e8e8e8;
         background-color: #f9f9f9;
-        margin-top: 12px;
-        padding: 20px 25px;
+        margin-top: 8px;
+        padding: 12px 20px;
         display: none;
     }
     
     .search-filters label {
         font-weight: 500;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         color: #333;
     }
     
     .search-filters .form-control {
         border-radius: 8px;
-        height: 42px;
+        height: 38px;
         background-color: #fff;
         border: 1px solid #ddd;
     }
     
     .amenities-heading {
         font-weight: 500;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         color: #333;
     }
     
     .amenities-container {
         display: flex;
-        gap: 40px;
+        flex-wrap: wrap;
+        gap: 30px;
         margin-top: 10px;
     }
 
@@ -145,24 +149,33 @@
     .toggle-wrapper {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        padding: 4px 0;
+        min-width: 200px;
     }
     
     .toggle-label {
         display: flex;
         align-items: center;
-        margin-right: 15px;
+        margin-right: 10px;
         cursor: pointer;
         user-select: none;
+        font-size: 15px;
+        flex: 1;
+    }
+    
+    .toggle-label span {
+        margin-left: 2px;
     }
     
     .icon-container {
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         margin-right: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
     }
     
     .icon-container img, 
@@ -176,8 +189,10 @@
     .custom-switch {
         padding-left: 0;
         position: relative;
-        width: 42px;
-        height: 22px;
+        width: 54px;
+        height: 18px;
+        margin: 0;
+        flex-shrink: 0;
     }
     
     .custom-switch .custom-control-label {
@@ -197,34 +212,42 @@
     }
     
     .custom-switch .custom-control-label::before {
-        width: 42px;
-        height: 22px;
-        border-radius: 30px;
-        background-color: #ddd;
+        position: absolute;
+        width: 54px;
+        height: 18px;
+        border-radius: 9px;
+        background-color: #e0e0e0;
         border: none;
         left: 0;
         top: 0;
+        transition: background-color 0.15s ease-in-out;
         box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
     }
-
+    
     .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
         background-color: #7884F1;
         border-color: #7884F1;
     }
-
+    
     .custom-switch .custom-control-label::after {
-        top: 3px;
-        left: 3px;
-        width: 16px;
-        height: 16px;
+        position: absolute;
+        top: 2.5px !important;
+        left: 2px;
+        width: 14px;
+        height: 14px;
         background-color: #fff;
         border-radius: 50%;
-        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        transition: transform 0.15s ease-in-out;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
-
+    
     .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-        transform: translateX(20px);
+        transform: translateX(36px);
+        background-color: #fff;
+    }
+    
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
     }
     
     /* Room table icons */
@@ -233,8 +256,8 @@
     }
     
     .table-amenity-icon {
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
         position: relative;
         display: inline-block;
     }
@@ -246,13 +269,13 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23dc3545' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'%3E%3C/line%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23dc3545' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'%3E%3C/line%3E%3C/svg%3E");
         background-size: contain;
     }
     
     .table-icon-img {
-        width: 24px;
-        height: 24px;
+        width: 28px;
+        height: 28px;
     }
 
     .rooms-table {
@@ -521,8 +544,8 @@
         
         <!-- Expandable filters section -->
         <div id="search-filters" class="search-filters">
-            <div class="row">
-                <div class="col-md-3 mb-3">
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-md-3 mb-2">
                     <label class="d-block">College</label>
                     <select class="form-control" name="college" id="college">
                         <option disabled selected value></option>
@@ -537,19 +560,19 @@
                         <option value="Yeh College">Yeh</option>
                     </select>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-2">
                     <label class="d-block">Building</label>
                     <select class="form-control" name="building" id="building">
                         <option value="">All</option>
                     </select>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-2">
                     <label class="d-block">Occupancy</label>
                     <select class="form-control" name="occupancy" id="occupancy">
                         <option value="">All</option>
                     </select>
                 </div>
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-2">
                     <label class="d-block">Size</label>
                     <select class="form-control" name="size" id="size">
                         <option value="">All</option>
@@ -559,7 +582,7 @@
                     </select>
                 </div>
             </div>
-            <div class="row mt-3">
+            <div class="row" style="margin-top: 0;">
                 <div class="col-12">
                     <label class="amenities-heading">Amenities</label>
                     <div class="amenities-container">
@@ -567,8 +590,8 @@
                             <label class="toggle-label" for="ac-toggle">
                                 <div class="icon-container">
                                     <img src="{{ url_for('static', filename='assets/img/ac-icon.svg') }}" 
-                                         alt="AC" width="24" height="24" id="ac-icon-img"
-                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-fan\' style=\'font-size: 24px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
+                                         alt="AC" width="28" height="28" id="ac-icon-img"
+                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-fan\' style=\'font-size: 28px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
                                 </div>
                                 <span>A/C</span>
                             </label>
@@ -581,8 +604,8 @@
                             <label class="toggle-label" for="bathroom-toggle">
                                 <div class="icon-container">
                                     <img src="{{ url_for('static', filename='assets/img/bathroom-icon.svg') }}" 
-                                         alt="Bathroom" width="24" height="24" id="bathroom-icon-img"
-                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-water\' style=\'font-size: 24px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
+                                         alt="Bathroom" width="28" height="28" id="bathroom-icon-img"
+                                         onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\'bi bi-water\' style=\'font-size: 28px; color: #7884F1;\'></i>'; this.src='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';">
                                 </div>
                                 <span>Private Bathroom</span>
                             </label>
@@ -1007,14 +1030,17 @@
 
         // Search specifics button toggle functionality
         $('#search-specifics-btn').on('click', function() {
-            $('#search-filters').slideToggle(300);
+            var $filtersDiv = $('#search-filters');
+            var $button = $(this);
             
-            // Change button text based on current state
-            if ($('#search-filters').is(':visible')) {
-                $(this).text('Hide filters');
-            } else {
-                $(this).text('Search by specifics');
-            }
+            $filtersDiv.slideToggle(300, function() {
+                // This callback runs after the animation completes
+                if ($filtersDiv.is(':visible')) {
+                    $button.text('Hide filters');
+                } else {
+                    $button.text('Search by specifics');
+                }
+            });
         });
 
         // Remove the old search handler that was causing conflicts
