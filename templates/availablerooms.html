@@ -2526,11 +2526,44 @@
             const college = (rowData.res_college || '').toLowerCase();
             const roomNo = (rowData.room_no || '').toLowerCase();
             
-            // Direct match check
+            // Full combined search string
+            const fullSearchString = building + ' ' + roomNo + ' ' + college;
+            
+            // Handle searching with multiple terms (split by space)
+            const searchTerms = searchValue.split(/\s+/).filter(term => term.length > 0);
+            
+            // If all search terms are found in the combined fields, show the row
+            let allTermsFound = true;
+            for (let i = 0; i < searchTerms.length; i++) {
+                const term = searchTerms[i];
+                
+                // Check if this term is found in any field
+                const termFound = 
+                    building.includes(term) || 
+                    college.includes(term) || 
+                    roomNo.includes(term) ||
+                    fullSearchString.includes(term);
+                
+                // Special case for Forbes/Maine
+                const isForbesMaine = 
+                    (term.includes('forbes') && building === 'maine') ||
+                    (term.includes('maine') && college.includes('forbes'));
+                    
+                if (!termFound && !isForbesMaine) {
+                    allTermsFound = false;
+                    break;
+                }
+            }
+            
+            if (allTermsFound && searchTerms.length > 0) {
+                return true;
+            }
+            
+            // Direct match check for backward compatibility
             if (building.includes(searchValue) || 
                 college.includes(searchValue) || 
                 roomNo.includes(searchValue) ||
-                (building + ' ' + roomNo).includes(searchValue)) {
+                fullSearchString.includes(searchValue)) {
               return true;
             }
             
@@ -2538,23 +2571,6 @@
             if ((searchValue.includes('forbes') && building === 'maine') ||
                 (searchValue.includes('maine') && college.includes('forbes'))) {
               return true;
-            }
-            
-            // Handle partial matches for building names (for better UX)
-            if (searchValue.length >= 3) {
-              const buildingWords = building.split(' ');
-              const searchWords = searchValue.split(' ');
-              
-              for (let i = 0; i < searchWords.length; i++) {
-                const searchWord = searchWords[i];
-                if (searchWord.length >= 3) {
-                  for (let j = 0; j < buildingWords.length; j++) {
-                    if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
-                      return true;
-                    }
-                  }
-                }
-              }
             }
             
             return false;
