@@ -882,13 +882,14 @@
     }
     
     #rooms-table th {
-        background-color: #474bc9;
-        color: white;
-        font-weight: 500;
+        background-color: white;
+        color: #333333;
+        font-weight: 600;
         text-transform: uppercase;
         font-size: 0.9em;
         letter-spacing: 0.5px;
         padding: 12px 16px;
+        border-bottom: 2px solid #e0e0e0;
     }
     
     #rooms-table tr:nth-child(even) {
@@ -1713,59 +1714,77 @@
         }
     }
 
-    // Dynamic dropdown for college-specific buildings
+    // Optimized dropdown for college-specific buildings with better performance
     function populateDropdowns(json) {
         // Make sure we have data to work with
         if (json && json.data && Array.isArray(json.data)) {
             const collegeFilter = $('#college').val();
-            const buildings = [];
+            const buildings = new Set(); // Use Set for faster uniqueness checks
             
-            // Always update the buildings data
-            json.data.forEach(function (obj) {
-                if (obj.res_college && obj.building) {
-                    // Initialize college if needed
-                    if (!allBuildingsData[obj.res_college]) {
-                        allBuildingsData[obj.res_college] = [];
-                    }
-                    
-                    // Add to college's buildings if not already there
-                    if (allBuildingsData[obj.res_college].indexOf(obj.building) === -1) {
-                        allBuildingsData[obj.res_college].push(obj.building);
-                    }
-                    
-                    // If no college filter or matches current filter, add to current buildings list
-                    if ((!collegeFilter || obj.res_college === collegeFilter) && 
-                        buildings.indexOf(obj.building) === -1) {
-                        buildings.push(obj.building);
+            // Only process if we have a reasonable amount of data
+            if (json.data.length > 0) {
+                // First pass: Update college-to-buildings mapping efficiently
+                for (let i = 0; i < json.data.length; i++) {
+                    const obj = json.data[i];
+                    if (obj.res_college && obj.building) {
+                        // Initialize college if needed
+                        if (!allBuildingsData[obj.res_college]) {
+                            allBuildingsData[obj.res_college] = [];
+                        }
+                        
+                        // Add to college's buildings if not already there (faster with Set)
+                        const collegeBuildings = new Set(allBuildingsData[obj.res_college]);
+                        if (!collegeBuildings.has(obj.building)) {
+                            allBuildingsData[obj.res_college].push(obj.building);
+                        }
+                        
+                        // If no college filter or matches current filter, add to buildings Set
+                        if (!collegeFilter || obj.res_college === collegeFilter) {
+                            buildings.add(obj.building);
+                        }
                     }
                 }
-            });
-            
-            // Sort all building lists
-            for (let college in allBuildingsData) {
-                allBuildingsData[college].sort();
+                
+                // Sort all building lists (only once per college)
+                for (const college in allBuildingsData) {
+                    if (Array.isArray(allBuildingsData[college])) {
+                        allBuildingsData[college].sort();
+                    }
+                }
+                
+                // Convert Set to sorted Array
+                const buildingsArray = Array.from(buildings).sort();
+                
+                // Update select element with filtered buildings (batched DOM operations)
+                const buildingSelect = $('#building');
+                buildingSelect.empty();
+                
+                // Add "All" option
+                const fragment = document.createDocumentFragment();
+                const allOption = document.createElement('option');
+                allOption.value = "";
+                allOption.textContent = "All";
+                fragment.appendChild(allOption);
+                
+                // Add building options
+                for (let i = 0; i < buildingsArray.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = buildingsArray[i];
+                    option.textContent = buildingsArray[i];
+                    fragment.appendChild(option);
+                }
+                
+                // Append all options at once
+                buildingSelect[0].appendChild(fragment);
+                
+                // Reset building selection when college changes to avoid invalid combinations
+                if (collegeFilter !== lastFilterState.college) {
+                    buildingSelect.val("").attr('data-selected-value', "");
+                }
+                
+                // Update the UI dropdown
+                updateBuildingDropdownItems();
             }
-            
-            // Sort current buildings
-            buildings.sort();
-            
-            // Update select element with filtered buildings
-            $('#building').empty().append($("<option>").val("").html("All"));
-            
-            buildings.forEach(function(building) {
-                $("#building").append($("<option>").val(building).html(building));
-            });
-            
-            console.log("Filtered buildings for college:", collegeFilter, buildings);
-            console.log("All buildings data:", allBuildingsData);
-            
-            // Empty the building selection when college changes
-            if (collegeFilter !== lastFilterState.college) {
-                $('#building').val("").attr('data-selected-value', "");
-            }
-            
-            // Update the UI dropdown
-            updateBuildingDropdownItems();
         } else {
             console.warn("Unable to populate college buildings dropdown - no data available");
         }
@@ -2201,16 +2220,33 @@
                             pillElement.removeClass('active');
                         }
                         
-                        // First reset building to avoid filter conflicts
-                        $('#building').val("").attr('data-selected-value', "");
-                        
                         // Set college value
                         $('#college').val(value).attr('data-selected-value', value);
+                        
+                        // Reset building to match college filter
+                        const currentBuilding = $('#building').val();
+                        
+                        // Check if current building is in this college
+                        let buildingInCollege = false;
+                        if (currentBuilding && value && allBuildingsData[value]) {
+                            buildingInCollege = allBuildingsData[value].includes(currentBuilding);
+                        }
+                        
+                        // If building doesn't belong to the selected college, clear it
+                        if (!buildingInCollege && currentBuilding && value) {
+                            $('#building').val("").attr('data-selected-value', "");
+                            $('#building-pill').removeClass('active');
+                            
+                            // Show a notification about clearing building filter
+                            if (typeof notyf !== 'undefined') {
+                                notyf.info(`Building filter cleared as "${currentBuilding}" is not in ${value}`);
+                            }
+                        }
                         
                         // For either "All" or specific college, make a direct server query
                         const requestUrl = '/queryrooms?college=' + encodeURIComponent(value || '') + 
                                         '&occupancy=' + encodeURIComponent($('#occupancy').val() || '') + 
-                                        '&year=&building=';
+                                        '&year=&building=' + encodeURIComponent($('#building').val() || '');
                         
                         // Make API request and refresh data - always make a fresh request
                         $.ajax({
@@ -2300,6 +2336,53 @@
                         // Update pill appearance
                         if (value) {
                             pillElement.addClass('active');
+                            
+                            // When a building is selected, efficiently find which college it belongs to
+                            let belongsToCollege = null;
+                            
+                            // Create a mapping from building to college if it doesn't exist yet
+                            // This is a performance optimization to avoid searching every time
+                            if (!window.buildingToCollegeMap) {
+                                window.buildingToCollegeMap = {};
+                                
+                                // Build the mapping once
+                                for (const college in allBuildingsData) {
+                                    if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                                        for (const building of allBuildingsData[college]) {
+                                            window.buildingToCollegeMap[building] = college;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Update the mapping for this building just in case
+                            window.buildingToCollegeMap[value] = window.buildingToCollegeMap[value] || null;
+                            
+                            // Do a direct lookup instead of searching each time
+                            belongsToCollege = window.buildingToCollegeMap[value];
+                            
+                            // If we found which college this building belongs to
+                            if (belongsToCollege) {
+                                // First check if we need to change college
+                                const currentCollege = $('#college').val();
+                                if (currentCollege && currentCollege !== belongsToCollege) {
+                                    // We need to change the college filter to match the building
+                                    console.log(`Building ${value} belongs to ${belongsToCollege}, updating college filter`);
+                                    
+                                    // Update college filter UI and value (do DOM operations in batch)
+                                    $('#college').val(belongsToCollege).attr('data-selected-value', belongsToCollege);
+                                    $('#college-pill').addClass('active');
+                                    
+                                    // Update dropdown selection
+                                    $('.college-dropdown .dropdown-item').removeClass('selected');
+                                    $(`.college-dropdown .dropdown-item[data-value="${belongsToCollege}"]`).addClass('selected');
+                                    
+                                    // Show a notification to the user
+                                    if (typeof notyf !== 'undefined') {
+                                        notyf.success(`College filter updated to ${belongsToCollege}`);
+                                    }
+                                }
+                            }
                         } else {
                             pillElement.removeClass('active');
                         }
@@ -2368,16 +2451,42 @@
             if (dropdownElement.hasClass('college-dropdown')) {
                 console.log("College dropdown clicked, setting value to:", value);
                 
-                // First reset building to avoid filter conflicts
-                $('#building').val("").attr('data-selected-value', "");
-                
                 // Set college value
                 $('#college').val(value).attr('data-selected-value', value);
+                
+                // Update the pill UI immediately
+                if (value) {
+                    // This is a college selection
+                    $('#college-pill').addClass('active');
+                    
+                    // Reset building to match college filter
+                    const currentBuilding = $('#building').val();
+                    
+                    // Check if current building is in this college
+                    let buildingInCollege = false;
+                    if (currentBuilding && allBuildingsData[value]) {
+                        buildingInCollege = allBuildingsData[value].includes(currentBuilding);
+                    }
+                    
+                    // If building doesn't belong to the selected college, clear it
+                    if (!buildingInCollege && currentBuilding) {
+                        $('#building').val("").attr('data-selected-value', "");
+                        $('#building-pill').removeClass('active');
+                        
+                        // Show a notification about clearing building filter
+                        if (typeof notyf !== 'undefined') {
+                            notyf.info(`Building filter cleared as "${currentBuilding}" is not in ${value}`);
+                        }
+                    }
+                } else {
+                    // This is "All" colleges
+                    $('#college-pill').removeClass('active');
+                }
                 
                 // For either "All" or specific college, make a direct server query
                 const requestUrl = '/queryrooms?college=' + encodeURIComponent(value || '') + 
                                 '&occupancy=' + encodeURIComponent($('#occupancy').val() || '') + 
-                                '&year=&building=';
+                                '&year=&building=' + encodeURIComponent($('#building').val() || '');
                 
                 // Make API request and refresh data - always make a fresh request
                 $.ajax({
@@ -2458,18 +2567,101 @@
                             $('.college-dropdown .dropdown-item[data-value=""]').addClass('selected');
                         }
                         
+                        // Also update building pill coloring based on actual state
+                        if ($('#building').val()) {
+                            $('#building-pill').addClass('active');
+                        } else {
+                            $('#building-pill').removeClass('active');
+                        }
+                        
                         // Reload the data table with the new data from the server
                         rt.ajax.url(requestUrl).load();
                     }
                 });
             } else if (dropdownElement.hasClass('building-dropdown')) {
                 console.log("Building dropdown clicked, setting value to:", value);
-                $('#building').val(value).attr('data-selected-value', value).trigger('change');
+                
+                if (value) {
+                    // When a building is selected, efficiently find which college it belongs to
+                    let belongsToCollege = null;
+                    
+                    // Use the building-to-college mapping if it exists
+                    if (window.buildingToCollegeMap && window.buildingToCollegeMap[value]) {
+                        belongsToCollege = window.buildingToCollegeMap[value];
+                    } else {
+                        // Create the mapping if it doesn't exist
+                        if (!window.buildingToCollegeMap) {
+                            window.buildingToCollegeMap = {};
+                            // Build the mapping
+                            for (const college in allBuildingsData) {
+                                if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                                    for (const building of allBuildingsData[college]) {
+                                        window.buildingToCollegeMap[building] = college;
+                                    }
+                                }
+                            }
+                            // Try the lookup again
+                            belongsToCollege = window.buildingToCollegeMap[value];
+                        } else {
+                            // Fallback to the original method if mapping doesn't have this building
+                            for (const college in allBuildingsData) {
+                                if (allBuildingsData[college] && allBuildingsData[college].includes(value)) {
+                                    belongsToCollege = college;
+                                    // Update the map for next time
+                                    window.buildingToCollegeMap[value] = college;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If we found which college this building belongs to
+                    if (belongsToCollege) {
+                        // First check if we need to change college
+                        const currentCollege = $('#college').val();
+                        if (currentCollege && currentCollege !== belongsToCollege) {
+                            // We need to change the college filter to match the building
+                            console.log(`Building ${value} belongs to ${belongsToCollege}, updating college filter`);
+                            
+                            // Update college filter UI and value
+                            $('#college').val(belongsToCollege).attr('data-selected-value', belongsToCollege);
+                            $('#college-pill').addClass('active');
+                            $('.college-dropdown .dropdown-item').removeClass('selected');
+                            $(`.college-dropdown .dropdown-item[data-value="${belongsToCollege}"]`).addClass('selected');
+                            
+                            // Show a notification to the user
+                            if (typeof notyf !== 'undefined') {
+                                notyf.success(`College filter updated to ${belongsToCollege}`);
+                            }
+                        }
+                    }
+                    
+                    // Set building filter value and update UI
+                    $('#building').val(value).attr('data-selected-value', value);
+                    pillElement.addClass('active');
+                } else {
+                    // Clear building filter
+                    $('#building').val("").attr('data-selected-value', "");
+                    pillElement.removeClass('active');
+                }
+                
+                // Trigger change to update data
+                $('#building').trigger('change');
+                
             } else if (dropdownElement.hasClass('occupancy-dropdown')) {
                 console.log("Occupancy dropdown clicked, setting value to:", value);
+                
+                // Update occupancy filter
                 $('#occupancy').val(value).attr('data-selected-value', value);
+                
+                // Update UI
+                if (value) {
+                    pillElement.addClass('active');
+                } else {
+                    pillElement.removeClass('active');
+                }
+                
                 // For occupancy, refresh the data immediately
-                // Only trigger server request if value is non-empty
                 if (value) {
                     $('#occupancy').trigger('change');
                 } else {
@@ -2477,7 +2669,17 @@
                 }
             } else if (dropdownElement.hasClass('size-dropdown')) {
                 console.log("Size dropdown clicked, setting value to:", value);
+                
+                // Update size filter
                 $('#size').val(value).attr('data-selected-value', value);
+                
+                // Update UI
+                if (value) {
+                    pillElement.addClass('active');
+                } else {
+                    pillElement.removeClass('active');
+                }
+                
                 // Size doesn't trigger a server request, so apply filter explicitly
                 applyFilters();
             }
@@ -2527,74 +2729,83 @@
         const buildingDropdown = $('.building-dropdown');
         const selectedCollege = $('#college').val() || '';
         
+        // Cache selected value before emptying dropdown
+        const currentBuilding = $('#building').val();
+        
         // Completely remove and rebuild the dropdown (faster than manipulating individual items)
         buildingDropdown.empty();
         
         // Always add the "All" option
         buildingDropdown.append('<div class="dropdown-item selected" data-value="">All</div>');
         
-        // Determine which buildings to show
+        // Determine which buildings to show (with optimized approach)
         let buildingsToShow = [];
         
         if (selectedCollege && allBuildingsData[selectedCollege]) {
             // If a college is selected, show only buildings for that college
-            buildingsToShow = [...allBuildingsData[selectedCollege]]; // Clone the array
-            console.log("Showing buildings for college:", selectedCollege, buildingsToShow);
+            // Shallow copy for better performance
+            buildingsToShow = allBuildingsData[selectedCollege].slice(0);
         } else {
-            // If no college selected, show all buildings from all colleges
+            // If no college selected, show all buildings from all colleges (optimized)
+            // Use Set for faster uniqueness checks
+            const uniqueBuildings = new Set();
+            
             for (const college in allBuildingsData) {
-                allBuildingsData[college].forEach(building => {
-                    if (buildingsToShow.indexOf(building) === -1) {
-                        buildingsToShow.push(building);
-                    }
-                });
+                if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                    // Add all buildings directly to the Set (automatically handles duplicates)
+                    allBuildingsData[college].forEach(building => uniqueBuildings.add(building));
+                }
             }
-            console.log("Showing all buildings, count:", buildingsToShow.length);
+            
+            // Convert Set to Array
+            buildingsToShow = Array.from(uniqueBuildings);
         }
         
-        // Sort buildings alphabetically
-        buildingsToShow.sort();
-        
-        // Create all items at once for better performance
-        let html = '';
-        for (let i = 0; i < buildingsToShow.length; i++) {
-            const building = buildingsToShow[i];
-            html += `<div class="dropdown-item" data-value="${building}">${building}</div>`;
+        // Sort buildings alphabetically only if buildings were found
+        if (buildingsToShow.length > 0) {
+            buildingsToShow.sort();
         }
         
-        // Add all items at once
-        buildingDropdown.append(html);
+        // Only generate HTML if we have buildings to show
+        if (buildingsToShow.length > 0) {
+            // Create all items at once as HTML string (faster than multiple DOM operations)
+            let html = '';
+            for (let i = 0; i < buildingsToShow.length; i++) {
+                const building = buildingsToShow[i];
+                const isSelected = building === currentBuilding ? ' selected' : '';
+                html += `<div class="dropdown-item${isSelected}" data-value="${building}">${building}</div>`;
+            }
+            
+            // Add all items at once (single DOM operation)
+            buildingDropdown.append(html);
+        }
         
-        // Attach event handler to all dropdown items
-        buildingDropdown.find('.dropdown-item').on('click', function(e) {
+        // Use event delegation for performance instead of binding to each item
+        buildingDropdown.off('click.buildingItem').on('click.buildingItem', '.dropdown-item', function(e) {
             e.stopPropagation();
             const value = $(this).data('value');
             const pillElement = $(this).closest('.dropdown-pill');
             
+            // Batch DOM operations for better performance
             // Update selection visually
             buildingDropdown.find('.dropdown-item').removeClass('selected');
             $(this).addClass('selected');
             
             // Update pill appearance
-            if (value === '') {
-                pillElement.removeClass('active');
-            } else {
-                pillElement.addClass('active');
-            }
+            pillElement.toggleClass('active', value !== '');
             
-            // Update building select
+            // Update building select and trigger change
             $('#building').val(value).attr('data-selected-value', value);
             
-            // Hide dropdown
+            // Hide dropdown immediately for better UX
             buildingDropdown.hide();
             $('#portal-dropdown').remove();
             
-            // Trigger change event
-            $('#building').trigger('change');
+            // Trigger change event after a small delay to allow UI to update first
+            setTimeout(() => $('#building').trigger('change'), 0);
         });
         
-        // Mark the currently selected building as selected
-        const currentBuilding = $('#building').val();
+        // Make sure the correct item is selected to match the hidden form element
         if (currentBuilding) {
             const selectedItem = buildingDropdown.find(`.dropdown-item[data-value="${currentBuilding}"]`);
             if (selectedItem.length) {
@@ -2936,6 +3147,24 @@
     }, 300);
 
     // Wait for DOM to be fully loaded
+    // Helper function to maintain and update the building-to-college mapping
+    function updateBuildingToCollegeMapping() {
+        // Create a fresh mapping
+        window.buildingToCollegeMap = {};
+        
+        // Build the mapping
+        for (const college in allBuildingsData) {
+            if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                for (const building of allBuildingsData[college]) {
+                    window.buildingToCollegeMap[building] = college;
+                }
+            }
+        }
+        
+        console.log("Building-to-college mapping updated with", Object.keys(window.buildingToCollegeMap).length, "buildings");
+        return window.buildingToCollegeMap;
+    }
+    
     $(document).ready(function() {
         // Set up event handlers
         setup();
@@ -2949,6 +3178,9 @@
         $('#building').attr('data-selected-value', '');
         $('#occupancy').attr('data-selected-value', '');
         $('#size').attr('data-selected-value', '');
+        
+        // Initialize the building-to-college mapping for better performance
+        setTimeout(updateBuildingToCollegeMapping, 1000);
         
         // Reinitialize occupancy options with max of 6
         $("#occupancy").empty();
