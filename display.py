@@ -312,22 +312,34 @@ def allFavoriteRooms(username):
 def changeFavorite(room_id, username, remove):
     sqlalchemy_session = db_session
 
-    # CAS is weird and sometimes has newline char in the username
-    # Postgres doesn't like that so just strip it of whitespace
+    # CAS can include stray whitespace/newline characters, so strip them
     username = username.strip()
 
-    # get user's favorite rooms
-    user_fav_room_query = sqlalchemy_session.query(User)
-    user = user_fav_room_query.filter(User.username == username).first()
+    # Query for the user
+    user = sqlalchemy_session.query(User).filter(User.username == username).first()
+    print("step 1:", user)
 
-    # add/remove to user's fav rooms
+    # If the user does not exist, create and commit a new instance
+    if not user:
+        user = User(username=username, rooms=[], group_ids=[])
+        sqlalchemy_session.add(user)
+        sqlalchemy_session.commit()  # commit to persist the user
+        print("Inserted new user.")
+
+    # Re-querying isn't necessary because 'user' is already the instance,
+    # but if you need to refresh, you can also do:
+    # sqlalchemy_session.refresh(user)
+    print("step 2:", user.username)
+
+    # Add or remove the room from user's favorites
     if remove:
         if int(room_id) in user.rooms:
             user.rooms.remove(int(room_id))
     else:
         user.rooms.append(int(room_id))
-    flag_modified(user, "rooms")  # this is needed b/c we're changing an array
 
+    # Notify SQLAlchemy that the mutable column 'rooms' has been modified
+    flag_modified(user, "rooms")
     sqlalchemy_session.commit()
 
 

@@ -133,17 +133,11 @@ def review():
     forbes_rooms = []  # Create a special list just for Forbes rooms
     
     for row in data:
-        building_name = row[0].building
-        room_no = row[0].room_no
-        full_name = f"{building_name} {room_no}"
-        
-        # Add all rooms to the main list
-        room_names.append(full_name)
-        
-        # If this is a Forbes-related building, add it to the special Forbes list
-        if building_name in forbes_buildings or row[0].res_college == "Forbes College":
-            forbes_rooms.append(full_name)
-    
+        if row[0].building in ["MAIN", "ANNEX"]:
+            room_names.append(f"FORBES {row[0].building} {row[0].room_no}")
+        else:
+            room_names.append(f"{row[0].building} {row[0].room_no}")
+
     html = render_template(
         "review.html",
         items=json.dumps(room_names),
