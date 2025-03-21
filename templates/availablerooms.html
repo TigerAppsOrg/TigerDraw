@@ -958,7 +958,6 @@
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 9999; /* Extremely high z-index */
         min-width: 180px;
         max-height: 300px;
         overflow-y: auto;
@@ -978,7 +977,7 @@
         width: 100%;
         padding: 8px 0;
         position: relative;
-        z-index: 10000;
+        z-index: 1;
         justify-content: center;
         align-items: center;
         align-content: center;
@@ -2449,7 +2448,7 @@
             if (visibleRows < totalRows) {
                 // Create or update the filter count notification
                 if ($('#filter-count-toast').length === 0) {
-                    $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1050; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
+                    $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
                         .appendTo('body');
                 }
                 
