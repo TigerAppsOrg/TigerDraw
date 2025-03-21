@@ -80,6 +80,10 @@ def get_reviews():
     # CASClient().authenticate()
     building_name = request.args.get("building_name")
     room_number = request.args.get("room_no")
+    
+    # Handle the Forbes/Maine case
+    if building_name == "Maine":
+        building_name = "Forbes"
 
     reviews = (
         db_session.query(Reviews)
@@ -122,7 +126,12 @@ def review():
         "",
     )
 
+    # Hard-coded list of rooms that belong to Forbes College
+    forbes_buildings = ["Forbes", "Maine", "Annex"]
+
     room_names = []
+    forbes_rooms = []  # Create a special list just for Forbes rooms
+    
     for row in data:
         if row[0].building in ["MAIN", "ANNEX"]:
             room_names.append(f"FORBES {row[0].building} {row[0].room_no}")
@@ -131,7 +140,8 @@ def review():
 
     html = render_template(
         "review.html",
-        items=json.dumps(room_names)
+        items=json.dumps(room_names),
+        forbes_rooms=json.dumps(forbes_rooms)  # Pass the Forbes rooms as a separate list
     )
     return make_response(html)
 
@@ -260,7 +270,19 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
-                "average_rating": average_rating
+                "average_rating": average_rating,
+                "elevator": room.Room.elevator,
+                "bathroom": room.Room.bathroom,
+                "ac": room.Room.ac,
+                "floor": room.Room.floor,
+                "wawa": room.Room.wawa,
+                "ustore": room.Room.ustore,
+                "Nassau Street": room.Room.nassau_street,
+                "Jadwin Gym": room.Room.jadwin_gym,
+                "frist": room.Room.frist,
+                "street": room.Room.street,
+                "equad": room.Room.equad,
+                "dillon": room.Room.dillon
             }
             roomsList.append(roomDict)
         else:
@@ -274,7 +296,19 @@ def queryRooms():
                 "room_id": room.Room.room_id,
                 "taken": room.Room.taken,
                 "number_of_reviews": review_count,
-                "average_rating": average_rating
+                "average_rating": average_rating,
+                "elevator": room.Room.elevator,
+                "bathroom": room.Room.bathroom,
+                "ac": room.Room.ac,
+                "floor": room.Room.floor,
+                "wawa": room.Room.wawa,
+                "ustore": room.Room.ustore,
+                "Nassau Street": room.Room.nassau_street,
+                "Jadwin Gym": room.Room.jadwin_gym,
+                "frist": room.Room.frist,
+                "street": room.Room.street,
+                "equad": room.Room.equad,
+                "dillon": room.Room.dillon
             }
             roomsList.append(roomDict)
             i += 1
@@ -305,6 +339,18 @@ def queryFavorites():
             "favorite": room[2],
             "room_id": room.Room.room_id,
             "taken": room.Room.taken,
+            "elevator": room.Room.elevator,
+            "bathroom": room.Room.bathroom,
+            "ac": room.Room.ac,
+            "floor": room.Room.floor,
+            "wawa": room.Room.wawa,
+            "ustore": room.Room.ustore,
+            "Nassau Street": room.Room.nassau_street,
+            "Jadwin Gym": room.Room.jadwin_gym,
+            "frist": room.Room.frist,
+            "street": room.Room.street,
+            "equad": room.Room.equad,
+            "dillon": room.Room.dillon
         }
         roomsList.append(roomDict)
     response = {
@@ -634,11 +680,22 @@ def submit_review():
     # username = "proxy"
     username = CASClient().authenticate()
     valid_ratings = ["1", "2", "3", "4", "5"]
-    building_name = request.form["building-name"]
-    room_no = request.form["room-number"]
-    overall_rating = request.form["overall-rating"]
-    written_review = request.form["written-review"]
-    override = request.form["override"]
+    
+    # Get form data, with better error handling
+    try:
+        building_name = request.form["building-name"]
+        room_no = request.form["room-number"]
+        overall_rating = request.form["overall-rating"]
+        written_review = request.form["written-review"]
+        override = request.form["override"]
+        
+    except KeyError as e:
+        return jsonify(message=f"Missing required field: {str(e)}"), 400
+    
+    # Handle Forbes/Maine case
+    if building_name == "Maine":
+        building_name = "Forbes"
+    
     # first_checkbox = request.form.getlist('submission-check-1')
     second_checkbox = request.form.getlist("submission-check-2")
     if overall_rating not in valid_ratings:
