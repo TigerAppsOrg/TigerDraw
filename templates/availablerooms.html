@@ -951,7 +951,9 @@
     }
     
     .pill-dropdown {
-        position: absolute; /* Back to absolute positioning */
+        position: absolute; /* Absolute positioning relative to the parent pill */
+        top: 100%; /* Position directly below the pill */
+        left: 0; /* Align with the left edge of the pill */
         background-color: white;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
@@ -965,6 +967,7 @@
         opacity: 0;
         transform: translateY(-10px);
         animation-fill-mode: forwards;
+        margin-top: 5px; /* Add a small margin between the pill and dropdown */
     }
     
     /* Create a container for pill filter buttons with proper z-index */
@@ -2019,68 +2022,26 @@
         }
     }, 300);
     
-    // Create a completely rewritten dropdown handling approach
+    // Simplified dropdown positioning function that keeps the dropdown attached to the pill
     function positionDropdown(pillElement, dropdownElement) {
-        // Reset any previous style modifications first
+        // Reset any previous style modifications
         dropdownElement.attr('style', '');
         
-        // Make sure we have default CSS positioning
+        // Make sure the pill has relative positioning
+        pillElement.css('position', 'relative');
+        
+        // Position the dropdown directly below the pill
         dropdownElement.css({
             position: 'absolute',
             top: '100%',  // Position directly below the pill
             left: '0',
             margin: '5px 0 0 0',
-            maxHeight: '300px'
+            maxHeight: '300px',
+            zIndex: 9999
         });
         
-        // Make sure we're properly contained in the parent
-        pillElement.css('position', 'relative');
-        
-        // Create a dropdown portal container if it doesn't exist
-        if ($('#dropdown-portal').length === 0) {
-            $('body').append('<div id="dropdown-portal" style="position: absolute; top: 0; left: 0; width: 100%; height: 0; overflow: visible; pointer-events: none; z-index: 10001;"></div>');
-        }
-        
-        // Hide and reset dropdowns
+        // Hide other dropdowns
         $('.pill-dropdown').not(dropdownElement).hide();
-        
-        // Move to portal and show to measure
-        const originalParent = dropdownElement.parent();
-        dropdownElement.detach().appendTo('#dropdown-portal').css('opacity', 0).show();
-        
-        // Get pill button position
-        const pillOffset = pillElement.offset();
-        const pillHeight = pillElement.outerHeight();
-        const pillWidth = pillElement.outerWidth();
-        const windowHeight = $(window).height();
-        const windowWidth = $(window).width();
-        
-        // Position dropdown relative to the pill
-        dropdownElement.css({
-            position: 'absolute',
-            top: (pillOffset.top + pillHeight + 5) + 'px',
-            left: pillOffset.left + 'px',
-            'pointer-events': 'auto'
-        });
-        
-        // Measure dropdown
-        const dropdownHeight = dropdownElement.outerHeight();
-        const dropdownWidth = dropdownElement.outerWidth();
-        
-        // Check if it would go off bottom of screen
-        if (pillOffset.top + pillHeight + 5 + dropdownHeight > windowHeight) {
-            // Position above the pill
-            dropdownElement.css('top', (pillOffset.top - dropdownHeight - 5) + 'px');
-        }
-        
-        // Check if it would go off right side of screen
-        if (pillOffset.left + dropdownWidth > windowWidth) {
-            // Align to right edge of the pill
-            dropdownElement.css('left', (pillOffset.left + pillWidth - dropdownWidth) + 'px');
-        }
-        
-        // Reattach to original parent and hide for animation
-        dropdownElement.detach().appendTo(originalParent).css('opacity', '').hide();
     }
     
     // Central filter state object - single source of truth
