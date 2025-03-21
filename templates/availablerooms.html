@@ -1676,8 +1676,12 @@
                         allBuildingsData[obj.res_college] = [];
                     }
                     
-                    // Add building if not already in this college's list
-                    if (allBuildingsData[obj.res_college].indexOf(obj.building) === -1) {
+                    // Add building if not already in this college's list (case-insensitive check)
+                    const collegeBuildings = allBuildingsData[obj.res_college];
+                    const buildingExists = collegeBuildings.some(b =>
+                        b.toLowerCase() === obj.building.toLowerCase());
+                    
+                    if (!buildingExists) {
                         allBuildingsData[obj.res_college].push(obj.building);
                         
                         // Also maintain the reverse mapping
@@ -1741,9 +1745,12 @@
                             allBuildingsData[obj.res_college] = [];
                         }
                         
-                        // Add to college's buildings if not already there (faster with Set)
-                        const collegeBuildings = new Set(allBuildingsData[obj.res_college]);
-                        if (!collegeBuildings.has(obj.building)) {
+                        // Add to college's buildings if not already there (case-insensitive)
+                        const collegeBuildings = allBuildingsData[obj.res_college];
+                        const buildingExists = collegeBuildings.some(b =>
+                            b.toLowerCase() === obj.building.toLowerCase());
+                        
+                        if (!buildingExists) {
                             allBuildingsData[obj.res_college].push(obj.building);
                             
                             // Also update the building-to-college mapping
@@ -2109,7 +2116,10 @@
         console.log("Updating building filter to:", building);
         
         // Update state
-        filterState.building = building;
+        // this is to ensure that the building is always treated as a string
+        // (avoids issues with 1901, 1903, 1967, 1976)
+        filterState.building = building ? String(building) : '';
+
         
         // Handle college constraints
         if (building) {
@@ -2590,7 +2600,8 @@
                     // Check if the room's building matches the selected building
                     const roomBuilding = rowData.building || '';
                     
-                    return roomBuilding === filterState.building;
+                    // Case-insensitive comparison for building names
+                    return roomBuilding.toLowerCase() === filterState.building.toLowerCase();
                 } catch (e) {
                     console.error("Error in building filter:", e);
                     return true;
@@ -2738,9 +2749,9 @@
         
         // Check if we have the college in our mapping
         if (!filterState.buildingsByCollege[college]) return false;
-        
-        // Check if the building is in the college's building list
-        return filterState.buildingsByCollege[college].includes(building);
+        // Check if the building is in the college's building list (case-insensitive)
+        return filterState.buildingsByCollege[college].some(b =>
+            b.toLowerCase() === building.toLowerCase());
     }
     
     // Process room data to build mappings
@@ -2761,8 +2772,12 @@
                     filterState.buildingsByCollege[room.res_college] = [];
                 }
                 
-                // Add building to college if not already there
-                if (!filterState.buildingsByCollege[room.res_college].includes(room.building)) {
+                // Add building to college if not already there (case-insensitive check)
+                const collegeBuildings = filterState.buildingsByCollege[room.res_college];
+                const buildingExists = collegeBuildings.some(b =>
+                    b.toLowerCase() === room.building.toLowerCase());
+                
+                if (!buildingExists) {
                     filterState.buildingsByCollege[room.res_college].push(room.building);
                 }
                 
@@ -2963,8 +2978,9 @@
             // Shallow copy for better performance
             buildingsToShow = allBuildingsData[selectedCollege].slice(0);
             
-            // Check if current building is in this college's buildings
-            if (currentBuilding && buildingsToShow.indexOf(currentBuilding) === -1) {
+            // Check if current building is in this college's buildings (case-insensitive)
+            if (currentBuilding && !buildingsToShow.some(b =>
+                b.toLowerCase() === currentBuilding.toLowerCase())) {
                 buildingStillValid = false;
             }
         } else {
@@ -3534,3 +3550,4 @@
     }
 
 </script>
+    
