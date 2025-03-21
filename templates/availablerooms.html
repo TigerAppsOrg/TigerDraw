@@ -889,15 +889,6 @@
     #rooms-table tr:hover {
         background-color: rgba(236, 237, 255, 0.7);
     }
-
-    /* Pill filter styling */
-    .filter-pills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
-        padding: 8px 0;
-    }
     
     .filter-pill {
         display: flex;
@@ -948,6 +939,7 @@
     
     .dropdown-pill {
         position: relative;
+        z-index: 1; /* Add z-index to the parent container */
     }
     
     .pill-dropdown {
@@ -967,6 +959,7 @@
         transform: translateY(-10px);
         animation-fill-mode: forwards;
         margin-top: 5px; /* Add a small margin between the pill and dropdown */
+        z-index: 2; /* Higher z-index than parent */
     }
     
     /* Create a container for pill filter buttons with proper z-index */
