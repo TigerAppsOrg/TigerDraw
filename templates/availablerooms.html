@@ -61,7 +61,6 @@
         border: 1px solid #dee2e6;
     }
 
-    /* Custom styles for the search bar */
     .search-bar-wrapper {
         transition: all 0.3s ease;
         border-radius: 10px !important;
@@ -145,7 +144,6 @@
         margin-top: 10px;
     }
 
-    /* Custom toggle switch styling */
     .toggle-wrapper {
         display: flex;
         align-items: center;
@@ -185,7 +183,6 @@
         color: #7884F1;
     }
     
-    /* Toggle switch styling to match mockup */
     .custom-switch {
         padding-left: 0;
         position: relative;
@@ -466,7 +463,6 @@
         }
     }
 
-    /* New styles for the redesigned table layout */
     .room-location {
         padding: 8px 0;
     }
@@ -629,7 +625,6 @@
         height: 40px;
     }
     
-    /* Fixed grid layout that doesn't change with screen size */
     .distances-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -637,7 +632,6 @@
         grid-gap: 2px 6px;
     }
     
-    /* Responsive classes for hiding elements at different screen widths */
     @media (max-width: 1500px) {
         .hide-xl {
             display: none !important;
@@ -662,7 +656,6 @@
         }
     }
     
-    /* Mobile-specific adjustments */
     @media (max-width: 767px) {
         .amenities-container {
             flex-direction: column;
@@ -701,12 +694,10 @@
             grid-template-columns: repeat(2, 1fr);
         }
         
-        /* Only show 4 most important distances on mobile */
         .distance-item:nth-child(n+5) {
             display: none !important;
         }
         
-        /* Make distance items more compact */
         .distance-item {
             margin-bottom: 1px;
         }
@@ -720,18 +711,15 @@
         }
     }
     
-    /* Very small screen adjustments */
     @media (max-width: 480px) {
         .distances-grid {
             grid-template-columns: repeat(1, 1fr);
         }
         
-        /* Only show 2 most important distances on very small screens */
         .distance-item:nth-child(n+3) {
             display: none !important;
         }
         
-        /* Even smaller amenity icons */
         .table-amenity-icon, .table-icon-img {
             width: 32px;
             height: 32px;
@@ -742,19 +730,19 @@
         display: flex;
         align-items: center;
         width: 100%;
-        flex-wrap: nowrap; /* Prevent wrapping to keep horizontal layout */
+        flex-wrap: nowrap;
     }
     
     .amenities-section {
         display: flex;
         flex-direction: column;
         min-width: 110px;
-        flex-shrink: 0; /* Prevent this section from shrinking */
+        flex-shrink: 0;
     }
     
     .distances-section {
         flex: 1;
-        overflow: hidden; /* Ensure content doesn't overflow */
+        overflow: hidden;
     }
     
     .section-heading {
@@ -801,17 +789,14 @@
         margin-left: 6px !important;
     }
     
-    /* Ensure proper vertical alignment */
     #rooms-table td {
         vertical-align: middle !important;
     }
     
-    /* Make the row taller to accommodate vertical layout */
     #rooms-table tr {
         min-height: 80px;
     }
     
-    /* Star styling for favorites */
     .favorite-heart {
         position: relative;
         font-size: 1.5em;
@@ -829,40 +814,33 @@
         width: 0;
     }
     
-    /* Removed checkmark button */
+    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; }
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; }
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; }
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
     
-    /* Fix table cell widths for new layout with responsive breakpoints */
-    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; } /* Location */
-    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; } /* Occupancy */
-    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; } /* Amenities & Distances */
-    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; } /* Reviews */
-    
-    /* Responsive adjustments for column widths */
     @media (max-width: 1200px) {
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; } /* Reduce amenities width */
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
     }
     
     @media (max-width: 992px) {
-        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; } /* Increase location */
-        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; } /* Increase occupancy */
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; } /* Further reduce amenities */
-        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; } /* Increase reviews */
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; }
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; }
     }
     
-    /* Mobile table adjustments */
     @media (max-width: 767px) {
-        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 30%; } /* Location takes more space */
-        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; } /* Reduce occupancy slightly */
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; } /* Keep amenities prominent */
-        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; } /* Reviews */
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 30%; }
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
         
-        /* Increase the row height on mobile to fit stacked content */
         #rooms-table td {
             padding: 15px 8px;
         }
     }
     
-    /* Better table design */
     #rooms-table {
         border-collapse: separate;
         border-spacing: 0;
@@ -880,6 +858,7 @@
         letter-spacing: 0.5px;
         padding: 12px 16px;
         border-bottom: 2px solid #e0e0e0;
+        text-align: center;
     }
     
     #rooms-table tr:nth-child(even) {
@@ -939,13 +918,13 @@
     
     .dropdown-pill {
         position: relative;
-        z-index: 1; /* Add z-index to the parent container */
+        z-index: 1;
     }
     
     .pill-dropdown {
-        position: absolute; /* Absolute positioning relative to the parent pill */
-        top: 100%; /* Position directly below the pill */
-        left: 0; /* Align with the left edge of the pill */
+        position: absolute;
+        top: 100%;
+        left: 0;
         background-color: white;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
@@ -958,15 +937,14 @@
         opacity: 0;
         transform: translateY(-10px);
         animation-fill-mode: forwards;
-        margin-top: 5px; /* Add a small margin between the pill and dropdown */
-        z-index: 2; /* Higher z-index than parent */
+        margin-top: 5px;
+        z-index: 2;
     }
     
-    /* Create a container for pill filter buttons with proper z-index */
     .filter-pills-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 3%;
+        gap: 1.25em;
         width: 100%;
         padding: 8px 0;
         position: relative;
@@ -1023,7 +1001,6 @@
         margin-right: 6px;
     }
     
-    /* Update search filter styling */
     .search-filters {
         transition: all 0.3s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
@@ -1035,7 +1012,6 @@
         display: none;
     }
     
-    /* Keep existing toggle styling to ensure compatibility */
     .custom-switch {
         padding-left: 0;
         position: relative;
@@ -1114,35 +1090,6 @@
 
 {% include 'updates_modal.html' %}
 
-
-<!--{#-->
-<!--<div style="padding:10px; background: #474bc9; text-align: center;">#}-->
-<!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
-            style="color: white; text-decoration: underline; font-weight: bold;"
-            target="_blank"
-            href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
-          search/sort through the 2022-2023 rooms list!</h5>
-      <br>
-      <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
-          buildings can be accessed <a style="color: white; text-decoration: underline;"
-            target="_blank"
-            href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
-      </h5>
-      <br> -->
-<!--    {# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have-->
-<!--        to#}-->
-<!--        {# wait at most 3 minutes for the site to fully load.</h3>#}-->
-
-
-<!--    {#-->
-<!--</div>-->
-<!--#}-->
-
-<!-- <div style="padding:10px; background: #474bc9; text-align: center;">
-    <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have to wait at most 3 minutes for the site to fully load.</h3>
-</div> -->
-
-
 <div class="container" style="margin-top: 25px;">
     <div class="row">
         <div class="col text-center">
@@ -1166,7 +1113,7 @@
       </div>
 </div>
 
-<!-- New Search Bar Implementation -->
+<!--  Search Bar  -->
 <div class="container mt-4">
     <div class="search-container">
         <div class="search-bar-wrapper d-flex">
@@ -1275,7 +1222,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
-                <th>Amenities & Distances</th>
+                <th>Amenities & Walking Distances</th>
                 <th>Reviews</th>
             </tr>
             </thead>
@@ -1283,7 +1230,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
-                <th>Amenities & Distances</th>
+                <th>Amenities & Walking Distances</th>
                 <th>Reviews</th>
             </tr>
             </tfoot>
@@ -1306,7 +1253,6 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
-    // Initialize Notyf globally for notifications throughout the page
     const notyf = new Notyf({
         duration: 5000,
         position: {
@@ -1327,7 +1273,6 @@
         ]
     });
     
-    // Ensure the Notyf instance is available globally
     window.notyf = notyf;
     
     let text_max;
@@ -1336,17 +1281,15 @@
     let request = null;
     let controller = null;
 
-    // Keep the original custom search extension for DataTables that was working
     $.fn.dataTable.ext.search.push(
       function(settings, searchData, index, rowData, counter) {
-        // Only apply to rooms-table
         if (settings.nTable.id !== 'rooms-table') {
           return true;
         }
         
         const searchValue = $('#search').val().toLowerCase().trim();
         if (!searchValue) {
-          return true; // Show all when no search text
+          return true;
         }
         
         // Safety check
@@ -1393,17 +1336,14 @@
     );
 
     function getResults(e) {
-        // Use a more robust error mode to prevent freezing
         $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
             console.error("DataTables error:", message);
         };
         
         let college = $('#college').val();
-        // Ensure we're not sending "null" as a string
         college = college ? encodeURIComponent(college) : "";
         
         let occupancy = $('#occupancy').val();
-        // Ensure we're not sending "null" as a string
         occupancy = occupancy ? encodeURIComponent(occupancy) : "";
         
         let year = $('#year').val();
@@ -1458,14 +1398,14 @@
                 {
                     targets: 0,
                     type: "formatted-num",
-                    orderData: 0, // Sort by this column 
+                    orderData: 0,
                     orderSequence: ['asc', 'desc'],
-                    orderDataType: 'dom-rating' // Use our custom sorter
+                    orderDataType: 'dom-rating'
                 },
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
-            "order": [[0, "desc"]], // Start with highest ratings first
+            "order": [[0, "desc"]],
             "pageLength": 20,
             "processing": true,
             "ajax": {
@@ -1482,13 +1422,12 @@
                             return data.building + ' ' + data.room_no;
                         }
                         
-                        // Create the favorite heart
+                        // Create the fav heart
                         let heartIcon = data.favorite ? '♥' : '♡';
                         let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
                                           '<input type="checkbox" class="heart-checkbox star" name="star"' + 
                                           (data.favorite ? ' checked="true"' : '') + '></label>';
                         
-                        // No longer using the checkmark button
                         const addRoomHtml = '';
                         
                         // Generate the star rating HTML with rating number
@@ -1511,13 +1450,11 @@
                             ratingHtml += '<i class="bi bi-star star-icon"></i>';
                         }
                         
-                        // Add rating number
                         if (rating > 0) {
                             ratingHtml += '<span class="rating-number">' + rating.toFixed(1) + '</span>';
                         }
                         ratingHtml += '</div>';
                         
-                        // Store rating as a data attribute for custom sorting
                         const ratingAttr = 'data-rating="' + (rating || 0) + '"';
                         
                         return '<div class="room-location-wrapper" ' + ratingAttr + '>' +
@@ -1534,7 +1471,6 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        // Create occupancy icons based on the number with larger size
                         let occupancyIcons = '';
                         for (let i = 0; i < data.occupancy; i++) {
                             occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 28px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
@@ -1549,7 +1485,6 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        // AC icon with larger size
                         let acIcon = '';
                         if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
                             acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
@@ -1557,7 +1492,6 @@
                             acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
                         
-                        // Bathroom icon with larger size
                         let bathroomIcon = '';
                         if (data.bathroom) {
                             if (data.bathroom.trim().toLowerCase() === 'private') {
@@ -1577,30 +1511,27 @@
                             {name: 'Wawa', value: data.wawa, icon: '<i class="bi bi-bag"></i>'},
                             {name: 'Nassau', value: data['Nassau Street'], icon: '<i class="bi bi-signpost"></i>'},
                             {name: 'Jadwin', value: data['Jadwin Gym'], icon: '<i class="bi bi-bicycle"></i>'},
-                            {name: 'Frist', value: data.frist, icon: '<i class="bi bi-building"></i>'},
+                            {name: 'Frist', value: data.frist, icon: '<i class="bi bi-envelope"></i>'},
                             {name: 'E-Quad', value: data.equad, icon: '<i class="bi bi-book"></i>'},
                             {name: 'Dillon', value: data.dillon, icon: '<i class="bi bi-trophy"></i>'},
                             {name: 'Street', value: data.street, icon: '<i class="bi bi-house-door"></i>'}
                         ].filter(dist => dist.value !== undefined && dist.value !== null);
                         
-                        // Sort by distance (closest first)
                         distances.sort((a, b) => a.value - b.value);
                         
                         // Create the distance items HTML with responsive class markers
                         let distanceHtml = '<div class="distances-grid">';
                         
-                        // Add more granular responsive classes to hide items on smaller screens
                         distances.forEach((dist, index) => {
-                            // Determine which responsive class to use based on priority
                             let responsiveClass = '';
                             if (index >= 7) {
-                                responsiveClass = 'hide-sm'; // Hide on smallest screens (<900px)
+                                responsiveClass = 'hide-sm';
                             } else if (index >= 6) {
-                                responsiveClass = 'hide-md'; // Hide on medium-small screens (<1100px)
+                                responsiveClass = 'hide-md';
                             } else if (index >= 5) {
-                                responsiveClass = 'hide-lg'; // Hide on medium-large screens (<1300px)
+                                responsiveClass = 'hide-lg';
                             } else if (index >= 4) {
-                                responsiveClass = 'hide-xl'; // Hide on largest screens (<1500px)
+                                responsiveClass = 'hide-xl';
                             }
                             
                             distanceHtml += '<div class="distance-item ' + responsiveClass + '">' + 
@@ -1610,7 +1541,6 @@
                         });
                         distanceHtml += '</div>';
                         
-                        // Put it all together with a horizontal structure
                         return '<div class="room-amenities">' +
                                '<div class="amenities-container">' +
                                '<div class="amenities-section">' +
@@ -1643,7 +1573,6 @@
         } else {
             rt.ajax.url(url).load()
         }
-
     }
 
     // Store all buildings data for quicker filtering
