@@ -308,6 +308,14 @@ def changeFavorite(room_id, username, remove):
     user_fav_room_query = sqlalchemy_session.query(User)
     user = user_fav_room_query.filter(User.username == username).first()
 
+    if not user:
+        ins_command = insert(User).values(username=username, rooms=[], group_ids=[])
+        conn = db.connect()
+        conn.execute(ins_command)
+        conn.close()
+
+    user = user_fav_room_query.filter(User.username == username).first()
+
     # add/remove to user's fav rooms
     if remove:
         if int(room_id) in user.rooms:
