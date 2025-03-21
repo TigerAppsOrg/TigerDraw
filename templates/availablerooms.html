@@ -1651,15 +1651,18 @@
     // Store all buildings data for quicker filtering
     let allBuildingsData = {};
     
-    // New function to populate ALL buildings regardless of college
-    function populateAllBuildings(json) {
+    // Create a mapping from buildings to colleges for faster lookups
+    let buildingToCollegeMap = {};
+    
+    // Function to initialize the college-building relationship data
+    function initializeCollegeBuildingRelationship(json) {
         const buildings = [];
-        // Don't empty the dropdown here, we'll do it inside updateBuildingDropdownItems
         
         // Make sure we have data to work with
         if (json && json.data && Array.isArray(json.data)) {
             // Create a map of colleges to their buildings
             allBuildingsData = {};
+            buildingToCollegeMap = {};
             
             json.data.forEach(function (obj) {
                 if (obj.building && obj.res_college) {
@@ -1671,6 +1674,9 @@
                     // Add building if not already in this college's list
                     if (allBuildingsData[obj.res_college].indexOf(obj.building) === -1) {
                         allBuildingsData[obj.res_college].push(obj.building);
+                        
+                        // Also maintain the reverse mapping
+                        buildingToCollegeMap[obj.building] = obj.res_college;
                     }
                     
                     // Add to overall buildings list if not already there
@@ -1687,6 +1693,7 @@
             }
             
             console.log("Building data by college:", allBuildingsData);
+            console.log("Building to college mapping:", buildingToCollegeMap);
             
             // Update building dropdown (the select element)
             $('#building').empty();
@@ -1701,8 +1708,14 @@
             // Update the UI dropdown as well
             updateBuildingDropdownItems();
         } else {
-            console.warn("Unable to populate ALL buildings dropdown - no data available");
+            console.warn("Unable to initialize college-building relationship - no data available");
         }
+    }
+    
+    // New function to populate ALL buildings regardless of college
+    function populateAllBuildings(json) {
+        // Initialize the college-building relationship data
+        initializeCollegeBuildingRelationship(json);
     }
 
     // Optimized dropdown for college-specific buildings with better performance
@@ -1727,6 +1740,9 @@
                         const collegeBuildings = new Set(allBuildingsData[obj.res_college]);
                         if (!collegeBuildings.has(obj.building)) {
                             allBuildingsData[obj.res_college].push(obj.building);
+                            
+                            // Also update the building-to-college mapping
+                            buildingToCollegeMap[obj.building] = obj.res_college;
                         }
                         
                         // If no college filter or matches current filter, add to buildings Set
@@ -2067,651 +2083,894 @@
         dropdownElement.detach().appendTo(originalParent).css('opacity', '').hide();
     }
     
-    // Setup pill filter interactions
+    // Central filter state object - single source of truth
+    const filterState = {
+        college: '',
+        building: '',
+        occupancy: '',
+        size: '',
+        acState: 0,  // 0: off, 1: required, 2: excluded
+        bathroomState: 0,
+        favorites: false,
+        
+        // Mapping data
+        buildingsByCollege: {},  // College -> [Buildings]
+        buildingToCollege: {}    // Building -> College
+    };
+    
     // Track last filter state to prevent unnecessary redraws
     let lastFilterState = {
         college: '',
         building: '',
         occupancy: '',
         size: '',
-        ac: false,
-        bathroom: false,
+        ac: 0,
+        bathroom: 0,
         favorites: false
     };
     
+    // STATE MANAGEMENT FUNCTIONS
+    
+    // Update college filter
+    function updateCollegeFilter(college) {
+        console.log("Updating college filter to:", college);
+        
+        // Update state
+        filterState.college = college;
+        
+        // Handle building constraints
+        if (college && filterState.building) {
+            // Check if current building belongs to selected college
+            if (!buildingBelongsToCollege(filterState.building, college)) {
+                // Clear building if it doesn't belong to the college
+                console.log(`Building ${filterState.building} doesn't belong to ${college}, clearing building filter`);
+                filterState.building = "";
+                
+                // Show notification
+                if (typeof notyf !== 'undefined') {
+                    notyf.info(`Building filter cleared as it's not in ${college}`);
+                }
+            }
+        }
+        
+        // Update UI
+        updateCollegeUI();
+        updateBuildingUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update building filter
+    function updateBuildingFilter(building) {
+        console.log("Updating building filter to:", building);
+        
+        // Update state
+        filterState.building = building;
+        
+        // Handle college constraints
+        if (building) {
+            const college = filterState.buildingToCollege[building];
+            if (college && filterState.college !== college) {
+                // Update college if building belongs to a different college
+                console.log(`Building ${building} belongs to ${college}, updating college filter`);
+                filterState.college = college;
+                
+                // Show notification
+                if (typeof notyf !== 'undefined') {
+                    notyf.success(`College filter updated to ${college}`);
+                }
+                
+                // Update college UI
+                updateCollegeUI();
+            }
+        }
+        
+        // Update UI
+        updateBuildingUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update occupancy filter
+    function updateOccupancyFilter(occupancy) {
+        console.log("Updating occupancy filter to:", occupancy);
+        
+        // Update state
+        filterState.occupancy = occupancy;
+        
+        // Update UI
+        updateOccupancyUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update size filter
+    function updateSizeFilter(size) {
+        console.log("Updating size filter to:", size);
+        
+        // Update state
+        filterState.size = size;
+        
+        // Update UI
+        updateSizeUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update AC filter state
+    function updateACFilter(state) {
+        console.log("Updating AC filter to state:", state);
+        
+        // Update state
+        filterState.acState = state;
+        
+        // Update UI
+        updateACUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update bathroom filter state
+    function updateBathroomFilter(state) {
+        console.log("Updating bathroom filter to state:", state);
+        
+        // Update state
+        filterState.bathroomState = state;
+        
+        // Update UI
+        updateBathroomUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update favorites filter
+    function updateFavoritesFilter(active) {
+        console.log("Updating favorites filter to:", active);
+        
+        // Update state
+        filterState.favorites = active;
+        
+        // Update UI
+        updateFavoritesUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // UI UPDATE FUNCTIONS
+    
+    // Update college UI
+    function updateCollegeUI() {
+        // Update hidden form element
+        $('#college').val(filterState.college).attr('data-selected-value', filterState.college);
+        
+        // Update pill text
+        if (filterState.college) {
+            // Find the display text for the college
+            const collegeItem = $(`.college-dropdown .dropdown-item[data-value="${filterState.college}"]`);
+            if (collegeItem.length) {
+                $('#college-pill > span').text(collegeItem.text());
+            } else {
+                $('#college-pill > span').text(filterState.college);
+            }
+        } else {
+            $('#college-pill > span').text('College');
+        }
+        
+        // Update pill appearance
+        $('#college-pill').toggleClass('active', !!filterState.college);
+        
+        // Update dropdown selection
+        $('.college-dropdown .dropdown-item').removeClass('selected');
+        $(`.college-dropdown .dropdown-item[data-value="${filterState.college}"]`).addClass('selected');
+    }
+    
+    // Update building UI
+    function updateBuildingUI() {
+        // Update hidden form element
+        $('#building').val(filterState.building).attr('data-selected-value', filterState.building);
+        
+        // Update pill text
+        $('#building-pill > span').text(filterState.building || 'Building');
+        
+        // Update pill appearance
+        $('#building-pill').toggleClass('active', !!filterState.building);
+        
+        // Update dropdown options based on selected college
+        updateBuildingDropdownOptions();
+    }
+    
+    // Update occupancy UI
+    function updateOccupancyUI() {
+        // Update hidden form element
+        $('#occupancy').val(filterState.occupancy).attr('data-selected-value', filterState.occupancy);
+        
+        // Update pill text
+        $('#people-pill > span').text(filterState.occupancy || 'People');
+        
+        // Update pill appearance
+        $('#people-pill').toggleClass('active', !!filterState.occupancy);
+        
+        // Update dropdown selection
+        $('.occupancy-dropdown .dropdown-item').removeClass('selected');
+        $(`.occupancy-dropdown .dropdown-item[data-value="${filterState.occupancy}"]`).addClass('selected');
+    }
+    
+    // Update size UI
+    function updateSizeUI() {
+        // Update hidden form element
+        $('#size').val(filterState.size).attr('data-selected-value', filterState.size);
+        
+        // Update pill text
+        if (filterState.size) {
+            let sizeText = filterState.size.charAt(0).toUpperCase() + filterState.size.slice(1);
+            $('#size-pill > span').text(sizeText);
+        } else {
+            $('#size-pill > span').text('Size');
+        }
+        
+        // Update pill appearance
+        $('#size-pill').toggleClass('active', !!filterState.size);
+        
+        // Update dropdown selection
+        $('.size-dropdown .dropdown-item').removeClass('selected');
+        $(`.size-dropdown .dropdown-item[data-value="${filterState.size}"]`).addClass('selected');
+    }
+    
+    // Update AC UI
+    function updateACUI() {
+        // Update hidden form element
+        $('#ac-toggle').prop('checked', filterState.acState === 1);
+        
+        // Update pill appearance
+        const pillElement = $('#ac-pill');
+        pillElement.removeClass('active positive negative');
+        pillElement.attr('data-state', filterState.acState);
+        
+        if (filterState.acState === 1) {
+            pillElement.addClass('positive');
+        } else if (filterState.acState === 2) {
+            pillElement.addClass('negative');
+        }
+    }
+    
+    // Update bathroom UI
+    function updateBathroomUI() {
+        // Update hidden form element
+        $('#bathroom-toggle').prop('checked', filterState.bathroomState === 1);
+        
+        // Update pill appearance
+        const pillElement = $('#bathroom-pill');
+        pillElement.removeClass('active positive negative');
+        pillElement.attr('data-state', filterState.bathroomState);
+        
+        if (filterState.bathroomState === 1) {
+            pillElement.addClass('positive');
+        } else if (filterState.bathroomState === 2) {
+            pillElement.addClass('negative');
+        }
+    }
+    
+    // Update favorites UI
+    function updateFavoritesUI() {
+        // Update pill appearance
+        $('#favorites-pill').toggleClass('active', filterState.favorites);
+    }
+    
+    // Update building dropdown options
+    function updateBuildingDropdownOptions() {
+        const buildingDropdown = $('.building-dropdown');
+        buildingDropdown.empty();
+        
+        // Always add "All" option
+        const allSelected = !filterState.building ? ' selected' : '';
+        buildingDropdown.append(`<div class="dropdown-item${allSelected}" data-value="">All</div>`);
+        
+        // Add buildings based on selected college
+        let buildings = [];
+        
+        if (filterState.college && filterState.buildingsByCollege[filterState.college]) {
+            // If a college is selected, show only buildings from that college
+            buildings = filterState.buildingsByCollege[filterState.college];
+        } else {
+            // If no college selected, show all buildings
+            // Use Set for faster uniqueness checks
+            const uniqueBuildings = new Set();
+            
+            for (const college in filterState.buildingsByCollege) {
+                if (filterState.buildingsByCollege[college] && Array.isArray(filterState.buildingsByCollege[college])) {
+                    // Add all buildings directly to the Set (automatically handles duplicates)
+                    filterState.buildingsByCollege[college].forEach(building => uniqueBuildings.add(building));
+                }
+            }
+            
+            // Convert Set to Array
+            buildings = Array.from(uniqueBuildings);
+        }
+        
+        // Sort buildings alphabetically
+        buildings.sort();
+        
+        // Add building options to dropdown
+        buildings.forEach(building => {
+            const isSelected = building === filterState.building ? ' selected' : '';
+            buildingDropdown.append(`<div class="dropdown-item${isSelected}" data-value="${building}">${building}</div>`);
+        });
+        
+        // Attach event handlers to new dropdown items
+        attachBuildingDropdownHandlers(buildingDropdown);
+    }
+    
+    // FILTER APPLICATION FUNCTIONS
+    
+    // Apply all filters
+    function applyAllFilters() {
+        // Check if filter state has actually changed to avoid unnecessary redraws
+        const currentState = {
+            college: filterState.college,
+            building: filterState.building,
+            occupancy: filterState.occupancy,
+            size: filterState.size,
+            ac: filterState.acState,
+            bathroom: filterState.bathroomState,
+            favorites: filterState.favorites
+        };
+        
+        // Skip redraw if nothing has changed
+        if (JSON.stringify(lastFilterState) === JSON.stringify(currentState) &&
+            $.fn.dataTable.ext.search.length > 0) {
+            console.log("Filter state unchanged, skipping redraw");
+            return;
+        }
+        
+        // Update last state
+        lastFilterState = {...currentState};
+        
+        // Clear existing filters
+        clearDataTableFilters();
+        
+        // Add search filter
+        addSearchFilter();
+        
+        // Add college filter
+        if (filterState.college) {
+            addCollegeFilter();
+        }
+        
+        // Add building filter
+        if (filterState.building) {
+            addBuildingFilter();
+        }
+        
+        // Add occupancy filter
+        if (filterState.occupancy) {
+            addOccupancyFilter();
+        }
+        
+        // Add size filter
+        if (filterState.size) {
+            addSizeFilter();
+        }
+        
+        // Add AC filter
+        if (filterState.acState > 0) {
+            addACFilter();
+        }
+        
+        // Add bathroom filter
+        if (filterState.bathroomState > 0) {
+            addBathroomFilter();
+        }
+        
+        // Add favorites filter
+        if (filterState.favorites) {
+            addFavoritesFilter();
+        }
+        
+        // Redraw table
+        if (rt) {
+            rt.draw();
+            
+            // Update UI to show how many rooms are visible
+            const visibleRows = rt.rows({filter: 'applied'}).count();
+            const totalRows = rt.rows().count();
+            
+            // Show a small toast notification with filter results
+            if (visibleRows < totalRows) {
+                // Create or update the filter count notification
+                if ($('#filter-count-toast').length === 0) {
+                    $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1050; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
+                        .appendTo('body');
+                }
+                
+                $('#filter-count-toast').text(`Showing ${visibleRows} of ${totalRows} rooms`)
+                    .fadeIn(200)
+                    .delay(3000)
+                    .fadeOut(500);
+            }
+            
+            // Debug - check which filters are applied
+            console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
+            console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
+        }
+    }
+    
+    // Clear DataTable filters
+    function clearDataTableFilters() {
+        // Remove any existing search extensions to avoid duplication
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
+    }
+    
+    // Add search filter
+    function addSearchFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, searchData, index, rowData, counter) {
+                // Only apply to rooms-table
+                if (settings.nTable.id !== 'rooms-table') {
+                    return true;
+                }
+                
+                const searchValue = $('#search').val().toLowerCase().trim();
+                if (!searchValue) {
+                    return true; // Show all when no search text
+                }
+                
+                // Safety check
+                if (!rowData) return true;
+                
+                // Check building, college, and room number for matches
+                const building = (rowData.building || '').toLowerCase();
+                const college = (rowData.res_college || '').toLowerCase();
+                const roomNo = (rowData.room_no || '').toLowerCase();
+                
+                // Full combined search string
+                const fullSearchString = building + ' ' + roomNo + ' ' + college;
+                
+                // Handle searching with multiple terms (split by space)
+                const searchTerms = searchValue.split(/\s+/).filter(term => term.length > 0);
+                
+                // If all search terms are found in the combined fields, show the row
+                let allTermsFound = true;
+                for (let i = 0; i < searchTerms.length; i++) {
+                    const term = searchTerms[i];
+                    
+                    // Check if this term is found in any field
+                    const termFound =
+                        building.includes(term) ||
+                        college.includes(term) ||
+                        roomNo.includes(term) ||
+                        fullSearchString.includes(term);
+                    
+                    // Special case for Forbes/Maine
+                    const isForbesMaine =
+                        (term.includes('forbes') && building === 'maine') ||
+                        (term.includes('maine') && college.includes('forbes'));
+                        
+                    if (!termFound && !isForbesMaine) {
+                        allTermsFound = false;
+                        break;
+                    }
+                }
+                
+                if (allTermsFound && searchTerms.length > 0) {
+                    return true;
+                }
+                
+                // Direct match check for backward compatibility
+                if (building.includes(searchValue) ||
+                    college.includes(searchValue) ||
+                    roomNo.includes(searchValue) ||
+                    fullSearchString.includes(searchValue)) {
+                    return true;
+                }
+                
+                // Handle Forbes/Maine alias
+                if ((searchValue.includes('forbes') && building === 'maine') ||
+                    (searchValue.includes('maine') && college.includes('forbes'))) {
+                    return true;
+                }
+                
+                return false;
+            }
+        );
+    }
+    
+    // Add college filter
+    function addCollegeFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's college matches the selected college
+                    const roomCollege = rowData.res_college || '';
+                    
+                    // Handle special case for "Upperclass"
+                    if (filterState.college === "Upperclass") {
+                        return roomCollege.toLowerCase().includes("upperclass");
+                    }
+                    
+                    return roomCollege === filterState.college;
+                } catch (e) {
+                    console.error("Error in college filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add building filter
+    function addBuildingFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's building matches the selected building
+                    const roomBuilding = rowData.building || '';
+                    
+                    return roomBuilding === filterState.building;
+                } catch (e) {
+                    console.error("Error in building filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add occupancy filter
+    function addOccupancyFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's occupancy matches the selected occupancy
+                    const roomOccupancy = parseInt(rowData.occupancy) || 0;
+                    const selectedOccupancy = parseInt(filterState.occupancy) || 0;
+                    
+                    return roomOccupancy === selectedOccupancy;
+                } catch (e) {
+                    console.error("Error in occupancy filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add size filter
+    function addSizeFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const footage = parseInt(rowData.sq_footage);
+                    
+                    if (isNaN(footage)) {
+                        return true; // If we can't parse the footage, just show it
+                    }
+                    
+                    if (filterState.size === 'small' && footage < 300) {
+                        return true;
+                    } else if (filterState.size === 'medium' && footage >= 300 && footage <= 450) {
+                        return true;
+                    } else if (filterState.size === 'large' && footage > 450) {
+                        return true;
+                    }
+                    
+                    return false;
+                } catch (e) {
+                    console.error("Error in size filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add AC filter
+    function addACFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const hasAC = rowData.ac && rowData.ac.trim().toLowerCase() === 'yes';
+                    
+                    // State 1: Positive (show only rooms WITH AC)
+                    // State 2: Negative (show only rooms WITHOUT AC)
+                    return (filterState.acState === 1) ? hasAC : !hasAC;
+                } catch (e) {
+                    console.error("Error in AC filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add bathroom filter
+    function addBathroomFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const hasBathroom = rowData.bathroom && rowData.bathroom.trim().toLowerCase() === 'private';
+                    
+                    // State 1: Positive (show only rooms WITH bathroom)
+                    // State 2: Negative (show only rooms WITHOUT bathroom)
+                    return (filterState.bathroomState === 1) ? hasBathroom : !hasBathroom;
+                } catch (e) {
+                    console.error("Error in bathroom filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add favorites filter
+    function addFavoritesFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    return rowData.favorite === true;
+                } catch (e) {
+                    console.error("Error in favorites filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // HELPER FUNCTIONS
+    
+    // Check if a building belongs to a college
+    function buildingBelongsToCollege(building, college) {
+        if (!building || !college) return false;
+        
+        // Check if we have the college in our mapping
+        if (!filterState.buildingsByCollege[college]) return false;
+        
+        // Check if the building is in the college's building list
+        return filterState.buildingsByCollege[college].includes(building);
+    }
+    
+    // Process room data to build mappings
+    function processRoomData(json) {
+        if (!json || !json.data || !Array.isArray(json.data)) {
+            return;
+        }
+        
+        // Reset mappings
+        filterState.buildingsByCollege = {};
+        filterState.buildingToCollege = {};
+        
+        // Process each room
+        json.data.forEach(function(room) {
+            if (room.building && room.res_college) {
+                // Initialize college array if needed
+                if (!filterState.buildingsByCollege[room.res_college]) {
+                    filterState.buildingsByCollege[room.res_college] = [];
+                }
+                
+                // Add building to college if not already there
+                if (!filterState.buildingsByCollege[room.res_college].includes(room.building)) {
+                    filterState.buildingsByCollege[room.res_college].push(room.building);
+                }
+                
+                // Map building to college
+                filterState.buildingToCollege[room.building] = room.res_college;
+            }
+        });
+        
+        // Sort building lists
+        for (const college in filterState.buildingsByCollege) {
+            filterState.buildingsByCollege[college].sort();
+        }
+        
+        console.log("Processed room data:", filterState.buildingsByCollege);
+    }
+    
+    // Toggle dropdown visibility
+    function toggleDropdown(dropdownElement) {
+        // Close other dropdowns first
+        $('.pill-dropdown').not(dropdownElement).slideUp(100);
+        $('#portal-dropdown').remove();
+        
+        // Toggle this dropdown
+        dropdownElement.slideToggle(150);
+    }
+    
+    // Hide all dropdowns
+    function hideAllDropdowns() {
+        $('.pill-dropdown').slideUp(100);
+        $('#portal-dropdown').remove();
+    }
+    
+    // EVENT HANDLERS
+    
+    // Attach event handlers to building dropdown items
+    function attachBuildingDropdownHandlers(buildingDropdown) {
+        buildingDropdown.find('.dropdown-item').on('click', function(e) {
+            e.stopPropagation();
+            const building = $(this).data('value');
+            updateBuildingFilter(building);
+            hideAllDropdowns();
+        });
+    }
+    
+    // Setup pill filter interactions
     function setupPillFilters() {
         // Initialize the hidden form elements with default values to show all rooms
-        $('#college').val('');
-        $('#building').val('');
-        $('#occupancy').val('');
-        $('#size').val('');
+        $('#college').val('').attr('data-selected-value', '');
+        $('#building').val('').attr('data-selected-value', '');
+        $('#occupancy').val('').attr('data-selected-value', '');
+        $('#size').val('').attr('data-selected-value', '');
         $('#ac-toggle').prop('checked', false);
         $('#bathroom-toggle').prop('checked', false);
         
         // Set "All" as selected in all dropdowns
         $('.pill-dropdown').each(function() {
+            $(this).find('.dropdown-item').removeClass('selected');
             $(this).find('.dropdown-item[data-value=""]').addClass('selected');
         });
         
-        // Trigger immediate initial load to show all rooms
-        setTimeout(() => {
-            applyFilters();
-        }, 100);
-        
         // Favorites pill
         $('#favorites-pill').on('click', function() {
-            $(this).toggleClass('active');
-            // Apply filters immediately
-            applyFilters();
+            updateFavoritesFilter(!filterState.favorites);
         });
         
-        // Toggle state pills (AC and Bathroom) with immediate filter application
+        // Toggle state pills (AC and Bathroom)
         $('.toggle-pill').on('click', function() {
             const pillElement = $(this);
             const currentState = parseInt(pillElement.attr('data-state'));
             const nextState = (currentState + 1) % 3; // 0 -> 1 -> 2 -> 0
             
-            // Remove all state classes first
-            pillElement.removeClass('active positive negative');
-            
-            // Add visual feedback immediately
-            if (nextState === 1) {
-                pillElement.addClass('positive');
-            } else if (nextState === 2) {
-                pillElement.addClass('negative');
-            }
-            
-            // Update the data-state attribute
-            pillElement.attr('data-state', nextState);
-            
-            // Handle different states
-            if (nextState === 1) {
-                // Positive state (green)
-                if (pillElement.attr('id') === 'ac-pill') {
-                    $('#ac-toggle').prop('checked', true);
-                } else if (pillElement.attr('id') === 'bathroom-pill') {
-                    $('#bathroom-toggle').prop('checked', true);
-                }
-            } else if (nextState === 2) {
-                // Negative state (red)
-                if (pillElement.attr('id') === 'ac-pill') {
-                    $('#ac-toggle').prop('checked', false);
-                } else if (pillElement.attr('id') === 'bathroom-pill') {
-                    $('#bathroom-toggle').prop('checked', false);
-                }
-            } else {
-                // Reset state
-                if (pillElement.attr('id') === 'ac-pill') {
-                    $('#ac-toggle').prop('checked', false);
-                } else if (pillElement.attr('id') === 'bathroom-pill') {
-                    $('#bathroom-toggle').prop('checked', false);
-                }
-            }
-            
-            // Apply filters immediately
-            applyFilters();
-        });
-        
-        // Dropdown pills with improved handling
-        $('.dropdown-pill').on('click', function(e) {
-            e.stopPropagation();
-            const pillElement = $(this);
-            const dropdownElement = pillElement.find('.pill-dropdown');
-            
-            // Close other dropdowns first
-            $('.pill-dropdown').not(dropdownElement).slideUp(100);
-            
-            // Position dropdown before showing it
-            positionDropdown(pillElement, dropdownElement);
-            
-            // Create a clone for the portal if needed
-            if ($('#dropdown-portal').length > 0 && !dropdownElement.is(':visible')) {
-                const clonedDropdown = dropdownElement.clone(true);
-                
-                // Get pill position
-                const pillOffset = pillElement.offset();
-                const pillHeight = pillElement.outerHeight();
-                
-                // Position the cloned dropdown
-                clonedDropdown.appendTo('#dropdown-portal')
-                    .css({
-                        position: 'absolute',
-                        top: (pillOffset.top + pillHeight + 5) + 'px',
-                        left: pillOffset.left + 'px',
-                        'pointer-events': 'auto',
-                        opacity: 0,
-                        display: 'block'
-                    })
-                    .attr('id', 'portal-dropdown')
-                    .animate({opacity: 1}, 150);
-                
-                // Hide original dropdown
-                dropdownElement.hide();
-                
-                // Replace the clone with a simpler, more direct approach
-                clonedDropdown.find('.dropdown-item').on('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const value = $(this).data('value');
-                    
-                    // First, immediately remove the dropdown for fast UI response
-                    $('#portal-dropdown').remove();
-                    $('.pill-dropdown').hide();
-                    
-                    // Store previous value to detect changes
-                    const prevCollegeValue = $('#college').val();
-                    
-                    // Based on dropdown type, update form controls directly
-                    if (pillElement.attr('id') === 'college-pill') {
-                        // Update pill appearance
-                        if (value) {
-                            pillElement.addClass('active');
-                        } else {
-                            pillElement.removeClass('active');
-                        }
-                        
-                        // Set college value
-                        $('#college').val(value).attr('data-selected-value', value);
-                        
-                        // Reset building to match college filter
-                        const currentBuilding = $('#building').val();
-                        
-                        // Check if current building is in this college
-                        let buildingInCollege = false;
-                        if (currentBuilding && value && allBuildingsData[value]) {
-                            buildingInCollege = allBuildingsData[value].includes(currentBuilding);
-                        }
-                        
-                        // If building doesn't belong to the selected college, clear it
-                        if (!buildingInCollege && currentBuilding && value) {
-                            $('#building').val("").attr('data-selected-value', "");
-                            $('#building-pill').removeClass('active');
-                            
-                            // Show a notification about clearing building filter
-                            if (typeof notyf !== 'undefined') {
-                                notyf.info(`Building filter cleared as "${currentBuilding}" is not in ${value}`);
-                            }
-                        }
-                        
-                        // For either "All" or specific college, make a direct server query
-                        const requestUrl = '/queryrooms?college=' + encodeURIComponent(value || '') + 
-                                        '&occupancy=' + encodeURIComponent($('#occupancy').val() || '') + 
-                                        '&year=&building=' + encodeURIComponent($('#building').val() || '');
-                        
-                        // Make API request and refresh data - always make a fresh request
-                        $.ajax({
-                            url: requestUrl,
-                            type: 'GET',
-                            dataType: 'json',
-                            success: function(json) {
-                                if (!value) {
-                                    // Process data for "All" colleges
-                                    const allBuildings = [];
-                                    allBuildingsData = {}; // Reset all data
-                                    
-                                    // Rebuild college->buildings map
-                                    json.data.forEach(function(obj) {
-                                        if (obj.res_college && obj.building) {
-                                            if (!allBuildingsData[obj.res_college]) {
-                                                allBuildingsData[obj.res_college] = [];
-                                            }
-                                            
-                                            if (allBuildingsData[obj.res_college].indexOf(obj.building) === -1) {
-                                                allBuildingsData[obj.res_college].push(obj.building);
-                                            }
-                                            
-                                            if (allBuildings.indexOf(obj.building) === -1) {
-                                                allBuildings.push(obj.building);
-                                            }
-                                        }
-                                    });
-                                    
-                                    // Sort everything
-                                    allBuildings.sort();
-                                    for (let college in allBuildingsData) {
-                                        allBuildingsData[college].sort();
-                                    }
-                                    
-                                    // Update building dropdown with all buildings
-                                    const buildingSelect = $('#building');
-                                    buildingSelect.empty().append($("<option>").val("").html("All"));
-                                    
-                                    allBuildings.forEach(function(building) {
-                                        buildingSelect.append($("<option>").val(building).html(building));
-                                    });
-                                } 
-                                else {
-                                    // Process data for specific college
-                                    const collegeBuildings = [];
-                                    
-                                    // Get buildings just for this college
-                                    json.data.forEach(function(obj) {
-                                        if (obj.building && collegeBuildings.indexOf(obj.building) === -1) {
-                                            collegeBuildings.push(obj.building);
-                                        }
-                                    });
-                                    
-                                    // Sort them
-                                    collegeBuildings.sort();
-                                    
-                                    // Update the building dropdown
-                                    const buildingSelect = $('#building');
-                                    buildingSelect.empty().append($("<option>").val("").html("All"));
-                                    
-                                    collegeBuildings.forEach(function(building) {
-                                        buildingSelect.append($("<option>").val(building).html(building));
-                                    });
-                                    
-                                    // Store in global map
-                                    allBuildingsData[value] = collegeBuildings;
-                                }
-                                
-                                // Update the UI dropdown menus
-                                updateBuildingDropdownItems();
-                                
-                                // Make sure the college dropdown shows the correct selection
-                                $('.college-dropdown .dropdown-item').removeClass('selected');
-                                if (value) {
-                                    $('.college-dropdown .dropdown-item[data-value="' + value + '"]').addClass('selected');
-                                } else {
-                                    $('.college-dropdown .dropdown-item[data-value=""]').addClass('selected');
-                                }
-                                
-                                // Reload the data table with the new data from the server
-                                rt.ajax.url(requestUrl).load();
-                            }
-                        });
-                    } 
-                    else if (pillElement.attr('id') === 'building-pill') {
-                        // Update pill appearance
-                        if (value) {
-                            pillElement.addClass('active');
-                            
-                            // When a building is selected, efficiently find which college it belongs to
-                            let belongsToCollege = null;
-                            
-                            // Create a mapping from building to college if it doesn't exist yet
-                            // This is a performance optimization to avoid searching every time
-                            if (!window.buildingToCollegeMap) {
-                                window.buildingToCollegeMap = {};
-                                
-                                // Build the mapping once
-                                for (const college in allBuildingsData) {
-                                    if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
-                                        for (const building of allBuildingsData[college]) {
-                                            window.buildingToCollegeMap[building] = college;
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            // Update the mapping for this building just in case
-                            window.buildingToCollegeMap[value] = window.buildingToCollegeMap[value] || null;
-                            
-                            // Do a direct lookup instead of searching each time
-                            belongsToCollege = window.buildingToCollegeMap[value];
-                            
-                            // If we found which college this building belongs to
-                            if (belongsToCollege) {
-                                // First check if we need to change college
-                                const currentCollege = $('#college').val();
-                                if (currentCollege && currentCollege !== belongsToCollege) {
-                                    // We need to change the college filter to match the building
-                                    console.log(`Building ${value} belongs to ${belongsToCollege}, updating college filter`);
-                                    
-                                    // Update college filter UI and value (do DOM operations in batch)
-                                    $('#college').val(belongsToCollege).attr('data-selected-value', belongsToCollege);
-                                    $('#college-pill').addClass('active');
-                                    
-                                    // Update dropdown selection
-                                    $('.college-dropdown .dropdown-item').removeClass('selected');
-                                    $(`.college-dropdown .dropdown-item[data-value="${belongsToCollege}"]`).addClass('selected');
-                                    
-                                    // Show a notification to the user
-                                    if (typeof notyf !== 'undefined') {
-                                        notyf.success(`College filter updated to ${belongsToCollege}`);
-                                    }
-                                }
-                            }
-                        } else {
-                            pillElement.removeClass('active');
-                        }
-                        
-                        // Set value and trigger change
-                        $('#building').val(value).attr('data-selected-value', value).trigger('change');
-                    }
-                    else if (pillElement.attr('id') === 'people-pill') {
-                        // Update pill appearance
-                        if (value) {
-                            pillElement.addClass('active');
-                        } else {
-                            pillElement.removeClass('active');
-                        }
-                        
-                        // Set value
-                        $('#occupancy').val(value).attr('data-selected-value', value);
-                        
-                        // Trigger change or apply filters
-                        if (value) {
-                            $('#occupancy').trigger('change');
-                        } else {
-                            applyFilters();
-                        }
-                    } 
-                    else if (pillElement.attr('id') === 'size-pill') {
-                        // Update pill appearance
-                        if (value) {
-                            pillElement.addClass('active');
-                        } else {
-                            pillElement.removeClass('active');
-                        }
-                        
-                        // Set value and apply filters
-                        $('#size').val(value).attr('data-selected-value', value);
-                        applyFilters();
-                    }
-                });
-            } else {
-                // Toggle original dropdown with animation
-                dropdownElement.slideToggle(150);
+            if (pillElement.attr('id') === 'ac-pill') {
+                updateACFilter(nextState);
+            } else if (pillElement.attr('id') === 'bathroom-pill') {
+                updateBathroomFilter(nextState);
             }
         });
         
-        // Handle dropdown item selection with improved performance
-        $('.dropdown-item').on('click', function(e) {
+        // College pill click handler
+        $('#college-pill').on('click', function(e) {
             e.stopPropagation();
-            const itemElement = $(this);
-            const value = itemElement.data('value');
-            const dropdownElement = itemElement.closest('.pill-dropdown');
-            const pillElement = itemElement.closest('.dropdown-pill');
-            
-            // Show visual feedback immediately
-            // Update selection visually
-            dropdownElement.find('.dropdown-item').removeClass('selected');
-            itemElement.addClass('selected');
-            
-            // Update pill appearance
-            if (value === '') {
-                pillElement.removeClass('active');
-            } else {
-                pillElement.addClass('active');
-            }
-            
-            // Update hidden form controls based on which dropdown was clicked
-            if (dropdownElement.hasClass('college-dropdown')) {
-                console.log("College dropdown clicked, setting value to:", value);
-                
-                // Set college value
-                $('#college').val(value).attr('data-selected-value', value);
-                
-                // Update the pill UI immediately
-                if (value) {
-                    // This is a college selection
-                    $('#college-pill').addClass('active');
-                    
-                    // Reset building to match college filter
-                    const currentBuilding = $('#building').val();
-                    
-                    // Check if current building is in this college
-                    let buildingInCollege = false;
-                    if (currentBuilding && allBuildingsData[value]) {
-                        buildingInCollege = allBuildingsData[value].includes(currentBuilding);
-                    }
-                    
-                    // If building doesn't belong to the selected college, clear it
-                    if (!buildingInCollege && currentBuilding) {
-                        $('#building').val("").attr('data-selected-value', "");
-                        $('#building-pill').removeClass('active');
-                        
-                        // Show a notification about clearing building filter
-                        if (typeof notyf !== 'undefined') {
-                            notyf.info(`Building filter cleared as "${currentBuilding}" is not in ${value}`);
-                        }
-                    }
-                } else {
-                    // This is "All" colleges
-                    $('#college-pill').removeClass('active');
-                }
-                
-                // For either "All" or specific college, make a direct server query
-                const requestUrl = '/queryrooms?college=' + encodeURIComponent(value || '') + 
-                                '&occupancy=' + encodeURIComponent($('#occupancy').val() || '') + 
-                                '&year=&building=' + encodeURIComponent($('#building').val() || '');
-                
-                // Make API request and refresh data - always make a fresh request
-                $.ajax({
-                    url: requestUrl,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(json) {
-                        if (!value) {
-                            // Process data for "All" colleges
-                            const allBuildings = [];
-                            allBuildingsData = {}; // Reset all data
-                            
-                            // Rebuild college->buildings map
-                            json.data.forEach(function(obj) {
-                                if (obj.res_college && obj.building) {
-                                    if (!allBuildingsData[obj.res_college]) {
-                                        allBuildingsData[obj.res_college] = [];
-                                    }
-                                    
-                                    if (allBuildingsData[obj.res_college].indexOf(obj.building) === -1) {
-                                        allBuildingsData[obj.res_college].push(obj.building);
-                                    }
-                                    
-                                    if (allBuildings.indexOf(obj.building) === -1) {
-                                        allBuildings.push(obj.building);
-                                    }
-                                }
-                            });
-                            
-                            // Sort everything
-                            allBuildings.sort();
-                            for (let college in allBuildingsData) {
-                                allBuildingsData[college].sort();
-                            }
-                            
-                            // Update building dropdown with all buildings
-                            const buildingSelect = $('#building');
-                            buildingSelect.empty().append($("<option>").val("").html("All"));
-                            
-                            allBuildings.forEach(function(building) {
-                                buildingSelect.append($("<option>").val(building).html(building));
-                            });
-                        } 
-                        else {
-                            // Process data for specific college
-                            const collegeBuildings = [];
-                            
-                            // Get buildings just for this college
-                            json.data.forEach(function(obj) {
-                                if (obj.building && collegeBuildings.indexOf(obj.building) === -1) {
-                                    collegeBuildings.push(obj.building);
-                                }
-                            });
-                            
-                            // Sort them
-                            collegeBuildings.sort();
-                            
-                            // Update the building dropdown
-                            const buildingSelect = $('#building');
-                            buildingSelect.empty().append($("<option>").val("").html("All"));
-                            
-                            collegeBuildings.forEach(function(building) {
-                                buildingSelect.append($("<option>").val(building).html(building));
-                            });
-                            
-                            // Store in global map
-                            allBuildingsData[value] = collegeBuildings;
-                        }
-                        
-                        // Update the UI dropdown menus
-                        updateBuildingDropdownItems();
-                        
-                        // Make sure the college dropdown shows the correct selection
-                        $('.college-dropdown .dropdown-item').removeClass('selected');
-                        if (value) {
-                            $('.college-dropdown .dropdown-item[data-value="' + value + '"]').addClass('selected');
-                        } else {
-                            $('.college-dropdown .dropdown-item[data-value=""]').addClass('selected');
-                        }
-                        
-                        // Also update building pill coloring based on actual state
-                        if ($('#building').val()) {
-                            $('#building-pill').addClass('active');
-                        } else {
-                            $('#building-pill').removeClass('active');
-                        }
-                        
-                        // Reload the data table with the new data from the server
-                        rt.ajax.url(requestUrl).load();
-                    }
-                });
-            } else if (dropdownElement.hasClass('building-dropdown')) {
-                console.log("Building dropdown clicked, setting value to:", value);
-                
-                if (value) {
-                    // When a building is selected, efficiently find which college it belongs to
-                    let belongsToCollege = null;
-                    
-                    // Use the building-to-college mapping if it exists
-                    if (window.buildingToCollegeMap && window.buildingToCollegeMap[value]) {
-                        belongsToCollege = window.buildingToCollegeMap[value];
-                    } else {
-                        // Create the mapping if it doesn't exist
-                        if (!window.buildingToCollegeMap) {
-                            window.buildingToCollegeMap = {};
-                            // Build the mapping
-                            for (const college in allBuildingsData) {
-                                if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
-                                    for (const building of allBuildingsData[college]) {
-                                        window.buildingToCollegeMap[building] = college;
-                                    }
-                                }
-                            }
-                            // Try the lookup again
-                            belongsToCollege = window.buildingToCollegeMap[value];
-                        } else {
-                            // Fallback to the original method if mapping doesn't have this building
-                            for (const college in allBuildingsData) {
-                                if (allBuildingsData[college] && allBuildingsData[college].includes(value)) {
-                                    belongsToCollege = college;
-                                    // Update the map for next time
-                                    window.buildingToCollegeMap[value] = college;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    
-                    // If we found which college this building belongs to
-                    if (belongsToCollege) {
-                        // First check if we need to change college
-                        const currentCollege = $('#college').val();
-                        if (currentCollege && currentCollege !== belongsToCollege) {
-                            // We need to change the college filter to match the building
-                            console.log(`Building ${value} belongs to ${belongsToCollege}, updating college filter`);
-                            
-                            // Update college filter UI and value
-                            $('#college').val(belongsToCollege).attr('data-selected-value', belongsToCollege);
-                            $('#college-pill').addClass('active');
-                            $('.college-dropdown .dropdown-item').removeClass('selected');
-                            $(`.college-dropdown .dropdown-item[data-value="${belongsToCollege}"]`).addClass('selected');
-                            
-                            // Show a notification to the user
-                            if (typeof notyf !== 'undefined') {
-                                notyf.success(`College filter updated to ${belongsToCollege}`);
-                            }
-                        }
-                    }
-                    
-                    // Set building filter value and update UI
-                    $('#building').val(value).attr('data-selected-value', value);
-                    pillElement.addClass('active');
-                } else {
-                    // Clear building filter
-                    $('#building').val("").attr('data-selected-value', "");
-                    pillElement.removeClass('active');
-                }
-                
-                // Trigger change to update data
-                $('#building').trigger('change');
-                
-            } else if (dropdownElement.hasClass('occupancy-dropdown')) {
-                console.log("Occupancy dropdown clicked, setting value to:", value);
-                
-                // Update occupancy filter
-                $('#occupancy').val(value).attr('data-selected-value', value);
-                
-                // Update UI
-                if (value) {
-                    pillElement.addClass('active');
-                } else {
-                    pillElement.removeClass('active');
-                }
-                
-                // For occupancy, refresh the data immediately
-                if (value) {
-                    $('#occupancy').trigger('change');
-                } else {
-                    applyFilters();
-                }
-            } else if (dropdownElement.hasClass('size-dropdown')) {
-                console.log("Size dropdown clicked, setting value to:", value);
-                
-                // Update size filter
-                $('#size').val(value).attr('data-selected-value', value);
-                
-                // Update UI
-                if (value) {
-                    pillElement.addClass('active');
-                } else {
-                    pillElement.removeClass('active');
-                }
-                
-                // Size doesn't trigger a server request, so apply filter explicitly
-                applyFilters();
-            }
-            
-            // Hide dropdown after selection
-            dropdownElement.hide();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // College dropdown item click handler
+        $('.college-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const college = $(this).data('value');
+            updateCollegeFilter(college);
+            hideAllDropdowns();
+        });
+        
+        // Building pill click handler
+        $('#building-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // People pill click handler
+        $('#people-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // People dropdown item click handler
+        $('.occupancy-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const occupancy = $(this).data('value');
+            updateOccupancyFilter(occupancy);
+            hideAllDropdowns();
+        });
+        
+        // Size pill click handler
+        $('#size-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // Size dropdown item click handler
+        $('.size-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const size = $(this).data('value');
+            updateSizeFilter(size);
+            hideAllDropdowns();
         });
         
         // Close dropdowns when clicking elsewhere
         $(document).on('click', function(e) {
             // Only if we clicked outside any pill
             if (!$(e.target).closest('.dropdown-pill').length) {
-                $('.pill-dropdown').slideUp(100);
-                $('#portal-dropdown').fadeOut(100, function() {
-                    $(this).remove();
-                });
+                hideAllDropdowns();
             }
         });
         
         // Add event listener for ESC key to close dropdowns
         $(document).on('keydown', function(e) {
             if (e.key === 'Escape') {
-                $('.pill-dropdown').slideUp(100);
-                $('#portal-dropdown').fadeOut(100, function() {
-                    $(this).remove();
-                });
+                hideAllDropdowns();
             }
         });
         
-        // Populate building dropdown items when college changes
-        $('#college').on('change', function() {
-            const collegeValue = $(this).val();
-            console.log("College changed to:", collegeValue);
-            
-            // This will trigger a server request to get available buildings for this college
-            setTimeout(function() {
-                updateBuildingDropdownItems();
-            }, 100);
-            
-            // Manually trigger a filter application to update shown rows
-            setTimeout(applyFilters, 200);
+        // Initialize filter state
+        initializeFilterState();
+    }
+    
+    // Initialize filter state
+    function initializeFilterState() {
+        // Load building data
+        $.ajax({
+            url: '/queryrooms?college=&occupancy=&year=&building=',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                // Process building data
+                processRoomData(json);
+                
+                // Initialize UI
+                updateCollegeUI();
+                updateBuildingUI();
+                updateOccupancyUI();
+                updateSizeUI();
+                updateACUI();
+                updateBathroomUI();
+                updateFavoritesUI();
+                
+                // Apply initial filters
+                applyAllFilters();
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading initial data:", error);
+            }
         });
     }
     
@@ -2722,12 +2981,14 @@
         
         // Cache selected value before emptying dropdown
         const currentBuilding = $('#building').val();
+        let buildingStillValid = true;
         
         // Completely remove and rebuild the dropdown (faster than manipulating individual items)
         buildingDropdown.empty();
         
         // Always add the "All" option
-        buildingDropdown.append('<div class="dropdown-item selected" data-value="">All</div>');
+        const allSelected = currentBuilding === '' ? ' selected' : '';
+        buildingDropdown.append(`<div class="dropdown-item${allSelected}" data-value="">All</div>`);
         
         // Determine which buildings to show (with optimized approach)
         let buildingsToShow = [];
@@ -2736,6 +2997,11 @@
             // If a college is selected, show only buildings for that college
             // Shallow copy for better performance
             buildingsToShow = allBuildingsData[selectedCollege].slice(0);
+            
+            // Check if current building is in this college's buildings
+            if (currentBuilding && buildingsToShow.indexOf(currentBuilding) === -1) {
+                buildingStillValid = false;
+            }
         } else {
             // If no college selected, show all buildings from all colleges (optimized)
             // Use Set for faster uniqueness checks
@@ -2757,13 +3023,26 @@
             buildingsToShow.sort();
         }
         
+        // If building is no longer valid with current college selection, reset it
+        if (!buildingStillValid && currentBuilding) {
+            // Reset building filter
+            $('#building').val('').attr('data-selected-value', '');
+            $('#building-pill').removeClass('active');
+            $('#building-pill > span').text('Building'); // Update the pill text
+            
+            // Notify user
+            if (typeof notyf !== 'undefined' && selectedCollege) {
+                notyf.info(`Building filter cleared as selected building is not in ${selectedCollege}`);
+            }
+        }
+        
         // Only generate HTML if we have buildings to show
         if (buildingsToShow.length > 0) {
             // Create all items at once as HTML string (faster than multiple DOM operations)
             let html = '';
             for (let i = 0; i < buildingsToShow.length; i++) {
                 const building = buildingsToShow[i];
-                const isSelected = building === currentBuilding ? ' selected' : '';
+                const isSelected = building === currentBuilding && buildingStillValid ? ' selected' : '';
                 html += `<div class="dropdown-item${isSelected}" data-value="${building}">${building}</div>`;
             }
             
@@ -2787,6 +3066,32 @@
             
             // Update building select and trigger change
             $('#building').val(value).attr('data-selected-value', value);
+            
+            // Update the building pill text
+            if (value) {
+                $('#building-pill > span').text(value);
+                
+                // If a building is selected, update the college filter if needed
+                const buildingCollege = buildingToCollegeMap[value];
+                if (buildingCollege && selectedCollege !== buildingCollege) {
+                    // Update college filter to match the building's college
+                    $('#college').val(buildingCollege).attr('data-selected-value', buildingCollege);
+                    $('#college-pill').addClass('active');
+                    
+                    // Update college pill text
+                    const collegeItem = $(`.college-dropdown .dropdown-item[data-value="${buildingCollege}"]`);
+                    if (collegeItem.length) {
+                        $('#college-pill > span').text(collegeItem.text());
+                    }
+                    
+                    // Show notification
+                    if (typeof notyf !== 'undefined') {
+                        notyf.success(`College filter updated to ${buildingCollege}`);
+                    }
+                }
+            } else {
+                $('#building-pill > span').text('Building');
+            }
             
             // Hide dropdown immediately for better UX
             buildingDropdown.hide();
@@ -2815,241 +3120,10 @@
         }
     });
 
+    // This function is now replaced by applyAllFilters() in the new filter system
     function applyFilters() {
-        console.log("Applying filters...");
-        
-        // Get selected values from data attributes for better reliability
-        const selectedCollege = $('#college').attr('data-selected-value') || $('#college').val() || "";
-        const selectedOccupancy = $('#occupancy').attr('data-selected-value') || $('#occupancy').val() || "";
-        const selectedSize = $('#size').attr('data-selected-value') || $('#size').val() || "";
-        const acState = parseInt($('#ac-pill').attr('data-state') || "0");
-        const bathroomState = parseInt($('#bathroom-pill').attr('data-state') || "0");
-        const favoritesActive = $('#favorites-pill').hasClass('active');
-        
-        // Check if filter state has actually changed to avoid unnecessary redraws
-        const currentState = {
-            college: selectedCollege,
-            building: $('#building').val() || "",
-            occupancy: selectedOccupancy,
-            size: selectedSize,
-            ac: acState,
-            bathroom: bathroomState,
-            favorites: favoritesActive
-        };
-        
-        // Skip redraw if nothing has changed
-        if (JSON.stringify(lastFilterState) === JSON.stringify(currentState) && 
-            $.fn.dataTable.ext.search.length > 0) {
-            console.log("Filter state unchanged, skipping redraw");
-            return;
-        }
-        
-        // Update last state
-        lastFilterState = {...currentState};
-        
-        // Only reset search functions if needed
-        // This prevents unnecessary recreation of functions causing freezing
-        if ($.fn.dataTable.ext.search.length === 0) {
-            // Add our custom search function if it's not already there
-            addCustomSearchFunction();
-        } else {
-            // Remove all filters except the first one (our custom search)
-            while ($.fn.dataTable.ext.search.length > 1) {
-                $.fn.dataTable.ext.search.pop();
-            }
-        }
-        
-        console.log("Applying filters with college:", selectedCollege);
-        console.log("Applying filters with occupancy:", selectedOccupancy);
-        console.log("Applying filters with size:", selectedSize);
-        
-        // Search text is handled by our custom search function at the top of the file
-        
-        // Create size filter
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                try {
-                    // Only apply to rooms-table
-                    if (settings.nTable.id !== 'rooms-table') {
-                        return true;
-                    }
-                    
-                    const sizeValue = $('#size').val();
-                    if (!sizeValue) {
-                        return true; // Show all when no size filter
-                    }
-                    
-                    // Get room data from the DataTable's data
-                    const rowData = rt.row(dataIndex).data();
-                    if (!rowData) return true; // Safety check
-                    
-                    const footage = parseInt(rowData.sq_footage);
-                    
-                    if (isNaN(footage)) {
-                        return true; // If we can't parse the footage, just show it
-                    }
-                    
-                    if (sizeValue === 'small' && footage < 300) {
-                        return true;
-                    } else if (sizeValue === 'medium' && footage >= 300 && footage <= 450) {
-                        return true;
-                    } else if (sizeValue === 'large' && footage > 450) {
-                        return true;
-                    }
-                    
-                    return false;
-                } catch (e) {
-                    console.error("Error in size filter:", e);
-                    return true; // In case of error, show the row
-                }
-            }
-        );
-        
-        // Create AC filter
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                try {
-                    // Only apply to rooms-table
-                    if (settings.nTable.id !== 'rooms-table') {
-                        return true;
-                    }
-                    
-                    const acPillState = parseInt($('#ac-pill').attr('data-state'));
-                    
-                    if (acPillState === 0) {
-                        return true; // Show all when toggle is off
-                    }
-                    
-                    // Get room data from the DataTable's data
-                    const rowData = rt.row(dataIndex).data();
-                    if (!rowData) return true; // Safety check
-                    
-                    const hasAC = rowData.ac && rowData.ac.trim().toLowerCase() === 'yes';
-                    
-                    // State 1: Positive (show only rooms WITH AC)
-                    // State 2: Negative (show only rooms WITHOUT AC)
-                    return (acPillState === 1) ? hasAC : !hasAC;
-                } catch (e) {
-                    console.error("Error in AC filter:", e);
-                    return true; // In case of error, show the row
-                }
-            }
-        );
-        
-        // Create bathroom filter
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                try {
-                    // Only apply to rooms-table
-                    if (settings.nTable.id !== 'rooms-table') {
-                        return true;
-                    }
-                    
-                    const bathroomPillState = parseInt($('#bathroom-pill').attr('data-state'));
-                    
-                    if (bathroomPillState === 0) {
-                        return true; // Show all when toggle is off
-                    }
-                    
-                    // Get room data from the DataTable's data
-                    const rowData = rt.row(dataIndex).data();
-                    if (!rowData) return true; // Safety check
-                    
-                    const hasBathroom = rowData.bathroom && rowData.bathroom.trim().toLowerCase() === 'private';
-                    
-                    // State 1: Positive (show only rooms WITH bathroom)
-                    // State 2: Negative (show only rooms WITHOUT bathroom)
-                    return (bathroomPillState === 1) ? hasBathroom : !hasBathroom;
-                } catch (e) {
-                    console.error("Error in bathroom filter:", e);
-                    return true; // In case of error, show the row
-                }
-            }
-        );
-        
-        // Add favorites filter
-        if ($('#favorites-pill').hasClass('active')) {
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    try {
-                        // Only apply to rooms-table
-                        if (settings.nTable.id !== 'rooms-table') {
-                            return true;
-                        }
-                        
-                        const rowData = rt.row(dataIndex).data();
-                        if (!rowData) return true; // Safety check
-                        
-                        return rowData.favorite === true;
-                    } catch (e) {
-                        console.error("Error in favorites filter:", e);
-                        return true; // In case of error, show the row
-                    }
-                }
-            );
-        }
-        
-        // Add a client-side filter for college if a value is selected
-        if (selectedCollege) {
-            console.log("Adding client-side filter for college:", selectedCollege);
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    try {
-                        if (settings.nTable.id !== 'rooms-table') {
-                            return true;
-                        }
-                        
-                        const rowData = rt.row(dataIndex).data();
-                        if (!rowData) return true;
-                        
-                        // Check if the room's college matches the selected college
-                        const roomCollege = rowData.res_college || '';
-                        
-                        // Handle special case for "Upperclass"
-                        if (selectedCollege === "Upperclass") {
-                            return roomCollege.toLowerCase().includes("upperclass");
-                        }
-                        
-                        return roomCollege === selectedCollege;
-                    } catch (e) {
-                        console.error("Error in college filter:", e);
-                        return true;
-                    }
-                }
-            );
-        }
-        
-        // Redraw table with filters applied
-        if (rt) {
-            try {
-                rt.draw();
-                
-                // Update UI to show how many rooms are visible
-                const visibleRows = rt.rows({filter: 'applied'}).count();
-                const totalRows = rt.rows().count();
-                
-                // Show a small toast notification with filter results
-                if (visibleRows < totalRows) {
-                    // Create or update the filter count notification
-                    if ($('#filter-count-toast').length === 0) {
-                        $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1050; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
-                            .appendTo('body');
-                    }
-                    
-                    $('#filter-count-toast').text(`Showing ${visibleRows} of ${totalRows} rooms`)
-                        .fadeIn(200)
-                        .delay(3000)
-                        .fadeOut(500);
-                }
-                
-                // Debug - check which filters are applied
-                console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
-                console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
-                
-            } catch (e) {
-                console.error("Error redrawing table:", e);
-            }
-        }
+        // Call the new function instead
+        applyAllFilters();
     }
 
     // Add the custom search function after the table is initialized
