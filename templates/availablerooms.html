@@ -2095,11 +2095,6 @@
                 // Clear building if it doesn't belong to the college
                 // console.log(`Building ${filterState.building} doesn't belong to ${college}, clearing building filter`);
                 filterState.building = "";
-                
-                // Show notification
-                if (typeof notyf !== 'undefined') {
-                    notyf.info(`Building filter cleared as it's not in ${college}`);
-                }
             }
         }
         
