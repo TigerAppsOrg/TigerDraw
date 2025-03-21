@@ -780,6 +780,18 @@
         padding: 8px 16px !important;
         border-radius: 6px !important;
         font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .add-room-btn {
+        background-color: #3a3d9e !important;
+        padding: 6px 12px !important;
+        font-size: 0.85em !important;
+    }
+    
+    .review-btn:hover, .add-room-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
     }
     
     .review-badge {
@@ -817,30 +829,7 @@
         width: 0;
     }
     
-    /* Add room checkmark button */
-    .add-room-checkbox {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-        background-color: #eeeeff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 0;
-        margin-left: 6px;
-    }
-    
-    .add-room-checkbox svg {
-        width: 20px;
-        height: 20px;
-        fill: #474bc9;
-    }
-    
-    .add-room-checkbox:hover {
-        background-color: #e0e0ff;
-    }
+    /* Removed checkmark button */
     
     /* Fix table cell widths for new layout with responsive breakpoints */
     #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; } /* Location */
@@ -1501,10 +1490,8 @@
                                           '<input type="checkbox" class="heart-checkbox star" name="star"' + 
                                           (data.favorite ? ' checked="true"' : '') + '></label>';
                         
-                        // Add room checkmark button
-                        const addRoomHtml = '<button type="button" class="add-room-checkbox" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap" title="Add to group">' +
-                                           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' +
-                                           '</button>';
+                        // No longer using the checkmark button
+                        const addRoomHtml = '';
                         
                         // Generate the star rating HTML with rating number
                         const rating = data.average_rating || 0;
@@ -1644,7 +1631,10 @@
                     targets: -1,
                     className: 'text-center', 
                     render: function (data, type, row) {
-                        return '<button type="button" class="btn review-btn" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>';
+                        return '<div class="d-flex flex-column align-items-center">' +
+                               '<button type="button" class="btn review-btn mb-2" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>' +
+                               '<button type="button" class="btn add-room-btn" style="font-size: 0.9em;" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add to Group</button>' +
+                               '</div>';
                     }
                 }
             ],
