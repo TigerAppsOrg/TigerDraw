@@ -1422,7 +1422,7 @@
         }
         building = building ? encodeURIComponent(building) : "";
 
-        console.log("Sending request with college:", college, "occupancy:", occupancy, "building:", building);
+        // console.log("Sending request with college:", college, "occupancy:", occupancy, "building:", building);
         let url = '/queryrooms?college=' + college + "&occupancy=" + occupancy + "&year=" + year + "&building=" + building
 
         if (request != null) {
@@ -1701,8 +1701,8 @@
                 allBuildingsData[college].sort();
             }
             
-            console.log("Building data by college:", allBuildingsData);
-            console.log("Building to college mapping:", buildingToCollegeMap);
+            // console.log("Building data by college:", allBuildingsData);
+            // console.log("Building to college mapping:", buildingToCollegeMap);
             
             // Update building dropdown (the select element)
             $('#building').empty();
@@ -1712,7 +1712,7 @@
                 $("#building").append($("<option>").val(building).html(building));
             });
             
-            console.log("Populated ALL buildings dropdown with:", buildings);
+            // console.log("Populated ALL buildings dropdown with:", buildings);
             
             // Update the UI dropdown as well
             updateBuildingDropdownItems();
@@ -1927,7 +1927,7 @@
         
         // Add search handler that uses our custom search function with debouncing
         $('#search').on('keyup', function() {
-            console.log("Searching for:", this.value);
+            // console.log("Searching for:", this.value);
             // Use debounced version to avoid too many redraws
             debouncedSearch();
         });
@@ -2023,7 +2023,7 @@
     // Create the debounced version of rt.draw for search
     const debouncedSearch = debounce(function() {
         if (rt) {
-            console.log("Running debounced search");
+            // console.log("Running debounced search");
             // First ensure our custom search extension is active
             addCustomSearchFunction();
             // Then draw the table
@@ -2083,7 +2083,7 @@
     
     // Update college filter
     function updateCollegeFilter(college) {
-        console.log("Updating college filter to:", college);
+        // console.log("Updating college filter to:", college);
         
         // Update state
         filterState.college = college;
@@ -2093,7 +2093,7 @@
             // Check if current building belongs to selected college
             if (!buildingBelongsToCollege(filterState.building, college)) {
                 // Clear building if it doesn't belong to the college
-                console.log(`Building ${filterState.building} doesn't belong to ${college}, clearing building filter`);
+                // console.log(`Building ${filterState.building} doesn't belong to ${college}, clearing building filter`);
                 filterState.building = "";
                 
                 // Show notification
@@ -2113,7 +2113,7 @@
     
     // Update building filter
     function updateBuildingFilter(building) {
-        console.log("Updating building filter to:", building);
+        // console.log("Updating building filter to:", building);
         
         // Update state
         // this is to ensure that the building is always treated as a string
@@ -2126,7 +2126,7 @@
             const college = filterState.buildingToCollege[building];
             if (college && filterState.college !== college) {
                 // Update college if building belongs to a different college
-                console.log(`Building ${building} belongs to ${college}, updating college filter`);
+                // console.log(`Building ${building} belongs to ${college}, updating college filter`);
                 filterState.college = college;
                 
                 // Show notification
@@ -2148,7 +2148,7 @@
     
     // Update occupancy filter
     function updateOccupancyFilter(occupancy) {
-        console.log("Updating occupancy filter to:", occupancy);
+        // console.log("Updating occupancy filter to:", occupancy);
         
         // Update state
         filterState.occupancy = occupancy;
@@ -2162,7 +2162,7 @@
     
     // Update size filter
     function updateSizeFilter(size) {
-        console.log("Updating size filter to:", size);
+        // console.log("Updating size filter to:", size);
         
         // Update state
         filterState.size = size;
@@ -2176,7 +2176,7 @@
     
     // Update AC filter state
     function updateACFilter(state) {
-        console.log("Updating AC filter to state:", state);
+        // console.log("Updating AC filter to state:", state);
         
         // Update state
         filterState.acState = state;
@@ -2190,7 +2190,7 @@
     
     // Update bathroom filter state
     function updateBathroomFilter(state) {
-        console.log("Updating bathroom filter to state:", state);
+        // console.log("Updating bathroom filter to state:", state);
         
         // Update state
         filterState.bathroomState = state;
@@ -2204,7 +2204,7 @@
     
     // Update favorites filter
     function updateFavoritesFilter(active) {
-        console.log("Updating favorites filter to:", active);
+        // console.log("Updating favorites filter to:", active);
         
         // Update state
         filterState.favorites = active;
@@ -2398,7 +2398,7 @@
         // Skip redraw if nothing has changed
         if (JSON.stringify(lastFilterState) === JSON.stringify(currentState) &&
             $.fn.dataTable.ext.search.length > 0) {
-            console.log("Filter state unchanged, skipping redraw");
+            // console.log("Filter state unchanged, skipping redraw");
             return;
         }
         
@@ -2469,8 +2469,8 @@
             }
             
             // Debug - check which filters are applied
-            console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
-            console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
+            // console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
+            // console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
         }
     }
     
@@ -2791,7 +2791,7 @@
             filterState.buildingsByCollege[college].sort();
         }
         
-        console.log("Processed room data:", filterState.buildingsByCollege);
+        // console.log("Processed room data:", filterState.buildingsByCollege);
     }
     // Toggle dropdown visibility - revert to original implementation
     function toggleDropdown(dropdownElement) {
@@ -3207,7 +3207,7 @@
             }
         }
         
-        console.log("Building-to-college mapping updated with", Object.keys(window.buildingToCollegeMap).length, "buildings");
+        // console.log("Building-to-college mapping updated with", Object.keys(window.buildingToCollegeMap).length, "buildings");
         return window.buildingToCollegeMap;
     }
     
@@ -3343,7 +3343,7 @@
         
         // Show loading indicator
         setTimeout(function() {
-            console.log("Fetching reviews for", building_name, room_no);
+            // console.log("Fetching reviews for", building_name, room_no);
             
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
@@ -3357,7 +3357,7 @@
                         // Use the global initializeCharCounter function if available
                         if (typeof initializeCharCounter === 'function') {
                             initializeCharCounter();
-                            console.log("Character counter initialized after loading reviews");
+                            // console.log("Character counter initialized after loading reviews");
                         }
                         
                         // Make sure the review form is properly set up
@@ -3430,7 +3430,7 @@
         
         // Show loading indicator
         setTimeout(function() {
-            console.log("Fetching reviews (with error context) for", building_name, room_no);
+            // console.log("Fetching reviews (with error context) for", building_name, room_no);
             
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
@@ -3444,7 +3444,7 @@
                         // Use the global initializeCharCounter function if available
                         if (typeof initializeCharCounter === 'function') {
                             initializeCharCounter();
-                            console.log("Character counter initialized after loading reviews");
+                            // console.log("Character counter initialized after loading reviews");
                         }
                         
                         // Make sure the review form is properly set up
