@@ -473,7 +473,7 @@
     }
     
     .room-location {
-        min-height: 90px;
+        min-height: 75px;
     }
     
     .room-building-number {
@@ -521,6 +521,17 @@
         padding-left: 10px;
         min-width: 120px;
         text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    .heart-container {
+        margin-bottom: 5px;
+    }
+    
+    .heart-container .favorite-heart {
+        margin: 0;
     }
     
     .room-details {
@@ -568,8 +579,8 @@
     }
     
     .table-amenity-icon {
-        width: 48px;
-        height: 48px;
+        width: 36px;
+        height: 36px;
     }
     
     .table-icon-img {
@@ -1458,9 +1469,11 @@
                                '<div class="room-details">' +
                                '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
-                               '<div class="room-actions">' + favoriteHtml + addRoomHtml + '</div>' +
                                '</div>' +
-                               '<div class="room-stars">' + ratingHtml + '</div>' +
+                               '<div class="room-stars">' + 
+                               '<div class="heart-container text-center mb-2">' + favoriteHtml + '</div>' +
+                               ratingHtml + 
+                               '</div>' +
                                '</div></div>';
                     }
                 },
@@ -3463,4 +3476,3 @@
     }
 
 </script>
-    
