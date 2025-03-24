@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <!-- Bootstrap Icons for AC and Bathroom icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
     <!-- Link Notyf CSS Library -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
@@ -60,6 +61,213 @@
         border: 1px solid #dee2e6;
     }
 
+    .search-bar-wrapper {
+        transition: all 0.3s ease;
+        border-radius: 10px !important;
+        border: 1px solid #e0e0e0 !important;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        background-color: #fff;
+    }
+
+    .search-bar-wrapper:focus-within {
+        box-shadow: 0 0 0 2px rgba(120, 132, 241, 0.25);
+    }
+
+    #search {
+        border: none;
+        height: 54px;
+        padding-left: 20px;
+        font-size: 16px;
+        box-shadow: none !important;
+        flex: 1;
+    }
+    
+    #search-specifics-btn {
+        transition: all 0.3s ease;
+        border: none;
+        background-color: #f8f9fa;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        color: #6c757d;
+        white-space: nowrap;
+        border-left: 1px solid #e0e0e0;
+        font-size: 16px;
+        min-width: 180px;
+        text-align: center;
+    }
+
+    #search-specifics-btn:hover {
+        background-color: #e9ecef !important;
+        color: #495057;
+    }
+
+    .search-container {
+        max-width: 1000px; 
+        margin: 0 auto;
+    }
+
+    .search-filters {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 10px !important;
+        border: 1px solid #e8e8e8;
+        background-color: #f9f9f9;
+        margin-top: 8px;
+        padding: 12px 20px;
+        display: none;
+    }
+    
+    .search-filters label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: #333;
+    }
+    
+    .search-filters .form-control {
+        border-radius: 8px;
+        height: 38px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+    
+    .amenities-heading {
+        font-weight: 500;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .toggle-wrapper {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        padding: 4px 0;
+        min-width: 200px;
+    }
+    
+    .toggle-label {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+        cursor: pointer;
+        user-select: none;
+        font-size: 15px;
+        flex: 1;
+    }
+    
+    .toggle-label span {
+        margin-left: 2px;
+    }
+    
+    .icon-container {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .icon-container img, 
+    .icon-container i {
+        width: 24px;
+        height: 24px;
+        color: #7884F1;
+    }
+    
+    .custom-switch {
+        padding-left: 0;
+        position: relative;
+        width: 54px;
+        height: 18px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    
+    .custom-switch .custom-control-label {
+        padding-left: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .custom-switch .custom-control-input {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .custom-switch .custom-control-label::before {
+        position: absolute;
+        width: 54px;
+        height: 18px;
+        border-radius: 9px;
+        background-color: #e0e0e0;
+        border: none;
+        left: 0;
+        top: 0;
+        transition: background-color 0.15s ease-in-out;
+        box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #7884F1;
+        border-color: #7884F1;
+    }
+    
+    .custom-switch .custom-control-label::after {
+        position: absolute;
+        top: 2.5px !important;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.15s ease-in-out;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(36px);
+        background-color: #fff;
+    }
+    
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
+    }
+    
+    /* Room table icons */
+    .amenity-icon {
+        line-height: 0;
+    }
+    
+    .table-amenity-icon {
+        width: 30px;
+        height: 30px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .table-amenity-icon.disabled::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23dc3545' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'%3E%3C/line%3E%3C/svg%3E");
+        background-size: contain;
+    }
+    
+    .table-icon-img {
+        width: 28px;
+        height: 28px;
+    }
+
     .rooms-table {
         font-size: 0.9em;
         min-width: 800px;
@@ -72,10 +280,11 @@
     }
 
     .rooms-table thead tr {
-        background-color: #7884F1;
-        color: #FFFFFF;
+        background-color: white;
+        color: #333333;
         text-align: left;
         font-weight: bold;
+        border-bottom: 2px solid #e0e0e0;
     }
 
     .rooms-table th,
@@ -94,22 +303,20 @@
 
     .star {
         visibility: hidden;
+        font-size: 1.5em;
+        cursor: pointer;
         display: inline-block;
     }
 
     .star:before {
         content: "\2661";
-        display: inline-block;
         visibility: visible;
-        height: 20px;
-        width: 20px;
-        padding-bottom: 10px;
+        position: absolute;
+        color: #F15156;
     }
 
     .star:checked:before {
         content: "\2665";
-        display: inline-block;
-        padding-bottom: 10px;
         color: #F15156;
     }
 
@@ -248,6 +455,628 @@
             opacity: 100%;
         }
     }
+    
+    .room-occupancy {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .room-amenities {
+        padding: 12px 0;
+    }
+    
+    .room-location {
+        min-height: 75px;
+    }
+    
+    .room-building-number {
+        font-size: 1.4em;
+        font-weight: 700;
+        margin-bottom: 4px;
+        display: block;
+    }
+    
+    .room-college {
+        font-size: 0.95em;
+        color: #666;
+        margin-bottom: 6px;
+        display: block;
+    }
+    
+    .room-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 6px;
+    }
+    
+    .room-rating {
+        margin-bottom: 0;
+        color: #f0ad4e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .star-icon {
+        color: #f0ad4e;
+        font-size: 1.5em;
+        margin-right: 2px;
+    }
+    
+    .rating-number {
+        margin-left: 5px;
+        font-weight: 600;
+        font-size: 1.2em;
+    }
+    
+    .room-stars {
+        margin-left: auto;
+        padding-left: 10px;
+        min-width: 120px;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .heart-container {
+        margin-bottom: 5px;
+    }
+    
+    .heart-container .favorite-heart {
+        margin: 0;
+    }
+    
+    .room-details {
+        flex: 1;
+    }
+    
+    .room-location-wrapper {
+        width: 100%;
+    }
+    
+    .occupancy-icons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        min-height: 32px;
+    }
+    
+    .person-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 6px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    
+    .room-size {
+        display: block;
+        font-size: 0.95em;
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 500;
+        color: #474bc9;
+    }
+    
+    .amenity-icons {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .amenity-icon {
+        margin-right: 16px;
+    }
+    
+    .table-amenity-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .table-icon-img {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .distances {
+        font-size: 0.95em;
+        color: #444;
+        flex: 1;
+    }
+    
+    .distance-item {
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        font-size: 0.85em;
+    }
+    
+    .distance-item i {
+        font-size: 0.9em;
+        margin-right: 2px;
+        width: 14px;
+        text-align: center;
+    }
+    
+    .distance-label {
+        font-weight: 500;
+        width: auto;
+        display: inline-block;
+        font-size: 0.95em;
+        margin-right: 4px;
+    }
+    
+    .distance-value {
+        font-weight: 600;
+        color: #474bc9;
+        font-size: 0.95em;
+        white-space: nowrap;
+    }
+    
+    .amenities-divider {
+        border-left: 1px solid #e0e0e0;
+        margin: 0 px;
+        align-self: stretch;
+        position: relative;
+        left: -10px;
+    }
+    
+    .distances-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+        grid-gap: 2px 6px;
+    }
+    
+    @media (max-width: 1500px) {
+        .hide-xl {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 1300px) {
+        .hide-lg {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 1100px) {
+        .hide-md {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 900px) {
+        .hide-sm {
+            display: none !important;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .amenities-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .amenities-section {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .amenity-icons {
+            justify-content: center;
+        }
+        
+        .amenity-icon {
+            margin: 0 10px;
+        }
+        
+        .table-amenity-icon, .table-icon-img {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .amenities-divider {
+            display: none;
+        }
+        
+        .distances-section {
+            width: 100%;
+        }
+        
+        .distances-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .distance-item:nth-child(n+5) {
+            display: none !important;
+        }
+        
+        .distance-item {
+            margin-bottom: 1px;
+        }
+        
+        .distance-label {
+            font-size: 0.75em;
+        }
+        
+        .distance-value {
+            font-size: 0.75em;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .distances-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+        
+        .distance-item:nth-child(n+3) {
+            display: none !important;
+        }
+        
+        .table-amenity-icon, .table-icon-img {
+            width: 32px;
+            height: 32px;
+        }
+    }
+    
+    .amenities-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        flex-wrap: nowrap;
+        gap: 1em;
+    }
+    
+    .amenities-section {
+        display: flex;
+        flex-direction: column;
+        min-width: 110px;
+        flex-shrink: 0;
+    }
+    
+    .distances-section {
+        flex: 1;
+        overflow: hidden;
+    }
+    
+    .section-heading {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+    
+    .rooms-table td {
+        vertical-align: middle !important;
+        padding: 12px 15px;
+    }
+    
+    .review-btn, .add-room-btn {
+        background-color: #474bc9 !important;
+        color: white !important;
+        border: none !important;
+        padding: 8px 16px !important;
+        border-radius: 6px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .add-room-btn {
+        background-color: #3a3d9e !important;
+        padding: 6px 12px !important;
+        font-size: 0.85em !important;
+    }
+    
+    .review-btn:hover, .add-room-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .review-badge {
+        background-color: white !important;
+        color: #474bc9 !important;
+        font-weight: 700 !important;
+        margin-left: 6px !important;
+    }
+    
+    #rooms-table td {
+        vertical-align: middle !important;
+    }
+    
+    #rooms-table tr {
+        min-height: 80px;
+    }
+    
+    .favorite-heart {
+        position: relative;
+        font-size: 1.5em;
+        color: #F15156;
+        margin-right: 12px;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .heart-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+    
+    #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; }
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; }
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; }
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
+    
+    @media (max-width: 1200px) {
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
+    }
+    
+    @media (max-width: 992px) {
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; }
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; }
+    }
+    
+    @media (max-width: 767px) {
+        #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 30%; }
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
+        
+        #rooms-table td {
+            padding: 15px 8px;
+        }
+    }
+    
+    #rooms-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    #rooms-table th {
+        background-color: white;
+        color: #333333;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 0.5px;
+        padding: 12px 16px;
+        border-bottom: 2px solid #e0e0e0;
+        text-align: center;
+    }
+    
+    #rooms-table tr:nth-child(even) {
+        background-color: rgba(236, 237, 255, 0.4);
+    }
+    
+    #rooms-table tr:hover {
+        background-color: rgba(236, 237, 255, 0.7);
+    }
+    
+    .filter-pill {
+        display: flex;
+        align-items: center;
+        padding: 6px 16px;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #495057;
+        white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        user-select: none;
+    }
+    
+    .filter-pill:hover {
+        background-color: #e9ecef;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+    
+    .filter-pill:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .filter-pill.active {
+        background-color: rgba(120, 132, 241, 0.1);
+        border-color: #7884F1;
+        color: #7884F1;
+        box-shadow: 0 1px 3px rgba(120, 132, 241, 0.2);
+    }
+    
+    .filter-pill.positive {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-color: #28a745;
+        color: #28a745;
+        box-shadow: 0 1px 3px rgba(40, 167, 69, 0.2);
+    }
+    
+    .filter-pill.negative {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+        color: #dc3545;
+        box-shadow: 0 1px 3px rgba(220, 53, 69, 0.2);
+    }
+    
+    .dropdown-pill {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .pill-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        min-width: 180px;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+        animation: dropdownFadeIn 0.2s ease;
+        opacity: 0;
+        transform: translateY(-10px);
+        animation-fill-mode: forwards;
+        margin-top: 5px;
+        z-index: 2;
+    }
+    
+    .filter-pills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25em;
+        width: 100%;
+        padding: 8px 0;
+        position: relative;
+        z-index: 1;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+    }
+    
+    @keyframes dropdownFadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .dropdown-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        border-bottom: 1px solid #f5f5f5;
+        position: relative;
+    }
+    
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        padding-left: 20px;
+    }
+    
+    .dropdown-item.selected {
+        background-color: rgba(120, 132, 241, 0.1);
+        color: #7884F1;
+        font-weight: 500;
+    }
+    
+    .dropdown-item.selected::before {
+        content: '✓';
+        position: absolute;
+        right: 16px;
+        color: #7884F1;
+    }
+    
+    .pill-icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+    }
+    
+    .search-filters {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 10px !important;
+        border: 1px solid #e8e8e8;
+        background-color: #f9f9f9;
+        margin-top: 8px;
+        padding: 4px 12px;
+        display: none;
+    }
+    
+    .custom-switch {
+        padding-left: 0;
+        position: relative;
+        width: 54px;
+        height: 18px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+    
+    .custom-switch .custom-control-label {
+        padding-left: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .custom-switch .custom-control-input {
+        position: absolute;
+        opacity: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .custom-switch .custom-control-label::before {
+        position: absolute;
+        width: 54px;
+        height: 18px;
+        border-radius: 9px;
+        background-color: #e0e0e0;
+        border: none;
+        left: 0;
+        top: 0;
+        transition: background-color 0.15s ease-in-out;
+        box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #7884F1;
+        border-color: #7884F1;
+    }
+    
+    .custom-switch .custom-control-label::after {
+        position: absolute;
+        top: 2.5px !important;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.15s ease-in-out;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(36px);
+        background-color: #fff;
+    }
+    
+    .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
+    }
 </style>
 
 <body data-username={{ username }}>
@@ -263,35 +1092,6 @@
 
 {% include 'updates_modal.html' %}
 
-
-<!--{#-->
-<!--<div style="padding:10px; background: #474bc9; text-align: center;">#}-->
-<!--       <h5 style="font-weight:500; color: white; margin: 0;">Visit <a
-            style="color: white; text-decoration: underline; font-weight: bold;"
-            target="_blank"
-            href="https://rooms.tigerapps.org/">rooms.tigerapps.org</a> to view room reviews and
-          search/sort through the 2022-2023 rooms list!</h5>
-      <br>
-      <h5 style="font-weight:500; color: white; margin: 0;">Floor plans for NCW, NCE, and all other
-          buildings can be accessed <a style="color: white; text-decoration: underline;"
-            target="_blank"
-            href="https://sp2016.princeton.edu/uservices/housing/floorplans/undergraduate/default.aspx">HERE</a>.
-      </h5>
-      <br> -->
-<!--    {# <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have-->
-<!--        to#}-->
-<!--        {# wait at most 3 minutes for the site to fully load.</h3>#}-->
-
-
-<!--    {#-->
-<!--</div>-->
-<!--#}-->
-
-<!-- <div style="padding:10px; background: #474bc9; text-align: center;">
-    <h3 style=" font-weight:500; color: white; margin-bottom: 0px">Due to high amount of user traffic, you may have to wait at most 3 minutes for the site to fully load.</h3>
-</div> -->
-
-
 <div class="container" style="margin-top: 25px;">
     <div class="row">
         <div class="col text-center">
@@ -306,6 +1106,7 @@
     <h2 style="font-weight:700;">Rooms</h2>
     <p class="text-center mx-2">Browse <b>{{ total_reviews }}</b> reviews (and counting!) across <b>{{ total_rooms }}</b> rooms.</p>
     <p class="text-center mx-2">Select a Residential College to get started. Please find your room and <b>leave an honest review</b> for future inhabitants!</p>
+    <p class="text-center mx-2 text-muted small"><i>Tip: Click on column headers to sort rooms by location, rating, occupancy, or amenities</i></p>
     <!-- <p class="text-center mx-2 font-italic">Note: Data comes from the 2017 and 2019 draws. Check the official rooms list for up-to-date information.</p> -->
     <div class="announcement-banner alert alert-info text-center mb-0" role="alert">
         <strong>Do you have a room draw PDF?</strong>
@@ -313,75 +1114,129 @@
         to see what rooms are still available.
       </div>
 </div>
-<div class="form-inline" style="padding-left: 75px; padding-right: 75px; padding-top:25px">
-    <div class="col-auto my-1 pl-0">
-        <label class="college">College</label>
-        <select class="form-control" name="college" id="college">
-            <option disabled selected value></option>
-            <option value="Butler College">Butler</option>
-            <option value="Forbes College">Forbes</option>
-            <option value="Mathey College">Mathey</option>
-            <option value="New College West">New College West</option>
-            <option value="No Res College Associated">No Res College Associated</option>
-            <option value="Rockefeller College">Rocky</option>
-            <option value="Whitman College">Whitman</option>
-            <option value="Upperclass">Upperclassman</option>
-            <option value="Yeh College">Yeh</option>
-        </select>
 
-    </div>
-    <div class="col-auto my-1">
-        <label class="building">Building</label>
-        <select class="form-control" name="building" id="building">
-            <option value="">All</option>
-        </select>
-    </div>
-    <div class="col-auto my-1">
-        <label class="college">Occupancy</label>
-        <select class="form-control" name="occupancy" id="occupancy"></select>
-    </div>
-    <div class="col-auto my-1">
-        <label class="search">Search</label>
-        <input class="form-control" type="text" name="search" id="search" placeholder="e.g. edwards 104"></input>
-    </div>
-</div>
-</div>
-</div>
-</div>
-<div>
-    <div style="margin-top:20px; padding-left: 75px; padding-right: 75px; padding-bottom: 100px;">
-        <div class="table-responsive">
-            <table id="rooms-table" class="table table-striped table-bordered">
-                <!--       <table id="rooms-table" class="display">
-         -->
-                <thead>
-                <tr>
-                    <th>Favorite</th>
-                    <th>College</th>
-                    <th>Building</th>
-                    <th>Room No.</th>
-                    <th>Occupancy</th>
-                    <th>Sq. Footage</th>
-                    <th style="min-width: 84px;">Rating</th>
-                    <th>Reviews</th>
-                    <th>Add Room to Group</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr>
-                    <th>Favorite</th>
-                    <th>College</th>
-                    <th>Building</th>
-                    <th>Room No.</th>
-                    <th>Occupancy</th>
-                    <th>Sq. Footage</th>
-                    <th style="min-width: 84px;">Rating</th>
-                    <th>Reviews</th>
-                    <th>Add Room to Group</th>
-                </tr>
-                </tfoot>
-            </table>
+<!--  Search Bar  -->
+<div class="container mt-4">
+    <div class="search-container">
+        <div class="search-bar-wrapper d-flex">
+            <input type="text" id="search" class="form-control" placeholder="Search for a room!">
+            <button id="search-specifics-btn" class="btn">
+                Search by specifics
+            </button>
         </div>
+        
+        <!-- Expandable filters section with pill-style design -->
+        <div id="search-filters" class="search-filters row">
+            <div class="filter-pills-container">
+                <!-- Favorites filter pill -->
+                <div class="filter-pill" id="favorites-pill">
+                    <i class="bi bi-heart-fill mr-1"></i> Favorites
+                </div>
+                
+                <!-- College filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="college-pill">
+                    <span>College</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown college-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="Butler College">Butler</div>
+                        <div class="dropdown-item" data-value="Forbes College">Forbes</div>
+                        <div class="dropdown-item" data-value="Mathey College">Mathey</div>
+                        <div class="dropdown-item" data-value="New College West">New College West</div>
+                        <div class="dropdown-item" data-value="Rockefeller College">Rocky</div>
+                        <div class="dropdown-item" data-value="Whitman College">Whitman</div>
+                        <div class="dropdown-item" data-value="Upperclass">Upperclassman</div>
+                        <div class="dropdown-item" data-value="Yeh College">Yeh</div>
+                    </div>
+                </div>
+                
+                <!-- Building filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="building-pill">
+                    <span>Building</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown building-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <!-- Building options will be populated dynamically -->
+                    </div>
+                </div>
+                
+                <!-- People/Occupancy filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="people-pill">
+                    <span>People</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown occupancy-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="1">1</div>
+                        <div class="dropdown-item" data-value="2">2</div>
+                        <div class="dropdown-item" data-value="3">3</div>
+                        <div class="dropdown-item" data-value="4">4</div>
+                        <div class="dropdown-item" data-value="5">5</div>
+                        <div class="dropdown-item" data-value="6">6</div>
+                    </div>
+                </div>
+                
+                <!-- Size filter pill with dropdown -->
+                <div class="filter-pill dropdown-pill" id="size-pill">
+                    <span>Size</span>
+                    <i class="bi bi-chevron-down ml-1"></i>
+                    <div class="pill-dropdown size-dropdown">
+                        <div class="dropdown-item" data-value="">All</div>
+                        <div class="dropdown-item" data-value="small">Small (&lt;300 sq ft)</div>
+                        <div class="dropdown-item" data-value="medium">Medium (300-450 sq ft)</div>
+                        <div class="dropdown-item" data-value="large">Large (&gt;450 sq ft)</div>
+                    </div>
+                </div>
+                
+                <!-- AC filter toggle pill -->
+                <div class="filter-pill toggle-pill" id="ac-pill" data-state="0">
+                    <img src="{{ url_for('static', filename='assets/img/ac-icon.svg') }}" alt="AC" class="pill-icon" 
+                         onerror="this.onerror=null; this.outerHTML='<i class=\'bi bi-fan pill-icon\'></i>';">
+                    <span>A/C</span>
+                </div>
+                
+                <!-- Private Bathroom filter toggle pill -->
+                <div class="filter-pill toggle-pill" id="bathroom-pill" data-state="0">
+                    <img src="{{ url_for('static', filename='assets/img/bathroom-icon.svg') }}" alt="Bathroom" class="pill-icon"
+                         onerror="this.onerror=null; this.outerHTML='<i class=\'bi bi-water pill-icon\'></i>';">
+                    <span>Private Bathroom</span>
+                </div>
+            </div>
+            
+            <!-- Hidden form elements to maintain compatibility with existing code -->
+            <div class="d-none">
+                <select id="college" name="college"></select>
+                <select id="building" name="building"></select>
+                <select id="occupancy" name="occupancy"></select>
+                <select id="size" name="size"></select>
+                <input type="checkbox" id="ac-toggle">
+                <input type="checkbox" id="bathroom-toggle">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:20px; padding-left: 75px; padding-right: 75px; padding-bottom: 100px;">
+    <div class="table-responsive">
+        <table id="rooms-table" class="table table-striped table-bordered">
+            <!--       <table id="rooms-table" class="display">
+         -->
+            <thead>
+            <tr>
+                <th>Location & Rating</th>
+                <th>Occupancy</th>
+                <th>Amenities & Walking Distances</th>
+                <th>Reviews</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>Location & Rating</th>
+                <th>Occupancy</th>
+                <th>Amenities & Walking Distances</th>
+                <th>Reviews</th>
+            </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 </body>
@@ -400,32 +1255,119 @@
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 <script>
+    const notyf = new Notyf({
+        duration: 5000,
+        position: {
+            x: 'right',
+            y: 'top',
+        },
+        types: [
+            {
+                type: 'success',
+                backgroundColor: '#4e73df',
+                icon: false
+            },
+            {
+                type: 'error',
+                backgroundColor: '#dc3545',
+                icon: false
+            }
+        ]
+    });
+    
+    window.notyf = notyf;
+    
     let text_max;
-
     var rt;
     var gt;
     let request = null;
     let controller = null;
 
-    function getResults(e) {
-        $.fn.dataTable.ext.errMode = 'throw';
-        let college = $('#college').val();
-        college = encodeURIComponent(college);
-        let occupancy = $('#occupancy').val();
-        occupancy = encodeURIComponent(occupancy);
-        let year = $('#year').val();
-        year = encodeURIComponent(year);
-        let building = $('#building').val();
-        if (e.data.change === true) {
-            building = ""
-            // occupancy = ""
+    $.fn.dataTable.ext.search.push(
+      function(settings, searchData, index, rowData, counter) {
+        if (settings.nTable.id !== 'rooms-table') {
+          return true;
         }
-        building = encodeURIComponent(building);
+        
+        const searchValue = $('#search').val().toLowerCase().trim();
+        if (!searchValue) {
+          return true;
+        }
+        
+        // Safety check
+        if (!rowData) return true;
+        
+        // Check building, college, and room number for matches
+        const building = (rowData.building || '').toLowerCase();
+        const college = (rowData.res_college || '').toLowerCase();
+        const roomNo = (rowData.room_no || '').toLowerCase();
+        
+        // Direct match check
+        if (building.includes(searchValue) || 
+            college.includes(searchValue) || 
+            roomNo.includes(searchValue) ||
+            (building + ' ' + roomNo).includes(searchValue)) {
+          return true;
+        }
+        
+        // Handle Forbes/Maine alias
+        if ((searchValue.includes('forbes') && building === 'maine') ||
+            (searchValue.includes('maine') && college.includes('forbes'))) {
+          return true;
+        }
+        
+        // Handle partial matches for building names (for better UX)
+        if (searchValue.length >= 3) {
+          const buildingWords = building.split(' ');
+          const searchWords = searchValue.split(' ');
+          
+          for (let i = 0; i < searchWords.length; i++) {
+            const searchWord = searchWords[i];
+            if (searchWord.length >= 3) {
+              for (let j = 0; j < buildingWords.length; j++) {
+                if (buildingWords[j].includes(searchWord) || searchWord.includes(buildingWords[j])) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
+        
+        return false;
+      }
+    );
 
+    function getResults(e) {
+        $.fn.dataTable.ext.errMode = function(settings, helpPage, message) {
+            console.error("DataTables error:", message);
+        };
+        
+        let college = $('#college').val();
+        college = college ? encodeURIComponent(college) : "";
+        
+        let occupancy = $('#occupancy').val();
+        occupancy = occupancy ? encodeURIComponent(occupancy) : "";
+        
+        let year = $('#year').val();
+        year = year ? encodeURIComponent(year) : "";
+        
+        let building = $('#building').val();
+        if (e && e.data && e.data.change === true) {
+            building = "";
+        }
+        building = building ? encodeURIComponent(building) : "";
+
+        // console.log("Sending request with college:", college, "occupancy:", occupancy, "building:", building);
         let url = '/queryrooms?college=' + college + "&occupancy=" + occupancy + "&year=" + year + "&building=" + building
 
-        if (request != null)
+        if (request != null) {
             request.abort();
+        }
+            
+        // Remove any previous search extensions to avoid duplication
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
 
         jQuery.extend(jQuery.fn.dataTableExt.oSort, {
             "formatted-num-pre": function (a) {
@@ -443,15 +1385,29 @@
         });
 
         // added button
+        // Custom rating sorter for DataTables
+        $.fn.dataTable.ext.order['dom-rating'] = function (settings, col) {
+            return this.api().column(col, {order:'index'}).nodes().map(function (td, i) {
+                const wrapper = $(td).find('.room-location-wrapper');
+                return parseFloat(wrapper.attr('data-rating')) || 0;
+            });
+        };
+        
         rt = $('#rooms-table').DataTable({
             destroy: true,
             searching: true,
             columnDefs: [
-                {targets: 1, type: "formatted-num"},
+                {
+                    targets: 0,
+                    type: "formatted-num",
+                    orderData: 0,
+                    orderSequence: ['asc', 'desc'],
+                    orderDataType: 'dom-rating'
+                },
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
-            "order": [[1, "asc"]],
+            "order": [[0, "desc"]],
             "pageLength": 20,
             "processing": true,
             "ajax": {
@@ -461,65 +1417,158 @@
             },
             "columns": [
                 {
-                    targets: 0,
-                    className: 'text-center',
-                    searchable: false,
-                    orderable: false,
-                    "data": "favorites",
-                    render: function (data, type, full, meta) {
-                        if (full.favorite === true) {
-                            return '<input type="checkbox" class="star" name="star" checked="true">';
-                        } else {
-                            return '<input type="checkbox" class="star" name="star">';
+                    data: null, 
+                    render: function(data, type, row) {
+                        // For sorting purposes
+                        if (type === 'sort') {
+                            return data.building + ' ' + data.room_no;
                         }
-                    },
-                },
-                {"data": "res_college"},
-                {"data": "building"},
-                {"data": "room_no"},
-                {"data": "occupancy"},
-                {"data": "sq_footage"},
-                {
-                    data: null, targets: -1, render: function (data, type, row) {
-                        const full_stars = Math.floor(data.average_rating)
-                        const has_half_star = (data.average_rating - full_stars) >= 0.5
-                        let empty_stars = 5 - full_stars
+                        
+                        // Create the fav heart
+                        let heartIcon = data.favorite ? '♥' : '♡';
+                        let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
+                                          '<input type="checkbox" class="heart-checkbox star" name="star"' + 
+                                          (data.favorite ? ' checked="true"' : '') + '></label>';
+                        
+                        const addRoomHtml = '';
+                        
+                        // Generate the star rating HTML with rating number
+                        const rating = data.average_rating || 0;
+                        const full_stars = Math.floor(rating);
+                        const has_half_star = (rating - full_stars) >= 0.5;
+                        let empty_stars = 5 - full_stars;
                         if (has_half_star) {
-                            empty_stars--
+                            empty_stars--;
                         }
-                        let html = ""
+                        
+                        let ratingHtml = '<div class="room-rating">';
                         for (let i = 0; i < full_stars; i++) {
-                            html += '<i class="bi bi-star-fill text-warning"></i>'
+                            ratingHtml += '<i class="bi bi-star-fill star-icon"></i>';
                         }
                         if (has_half_star) {
-                            html += '<i class="bi bi-star-half text-warning"></i>'
-                        }
-                        if (empty_stars == 5) {
-                            return html
+                            ratingHtml += '<i class="bi bi-star-half star-icon"></i>';
                         }
                         for (let i = 0; i < empty_stars; i++) {
-                            html += '<i class="bi bi-star text-warning"></i>'
+                            ratingHtml += '<i class="bi bi-star star-icon"></i>';
                         }
-                        return html
+                        
+                        if (rating > 0) {
+                            ratingHtml += '<span class="rating-number">' + rating.toFixed(1) + '</span>';
+                        }
+                        ratingHtml += '</div>';
+                        
+                        const ratingAttr = 'data-rating="' + (rating || 0) + '"';
+                        
+                        return '<div class="room-location-wrapper" ' + ratingAttr + '>' +
+                               '<div class="room-location d-flex align-items-center">' +
+                               '<div class="room-details">' +
+                               '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
+                               '<div class="room-college">' + data.res_college + '</div>' +
+                               '</div>' +
+                               '<div class="room-stars">' + 
+                               '<div class="heart-container text-center mb-2">' + favoriteHtml + '</div>' +
+                               ratingHtml + 
+                               '</div>' +
+                               '</div></div>';
                     }
                 },
                 {
-                    data: null, targets: -1, render: function (data, type, row) {
-                        return '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">' + "Reviews  " + '<span class="badge badge-light" style="color: #474bc9; margin-left: 3px;">' + data.number_of_reviews + '</span></button>'
+                    data: null,
+                    render: function(data, type, row) {
+                        let occupancyIcons = '';
+                        for (let i = 0; i < data.occupancy; i++) {
+                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 28px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
+                        }
+                        
+                        return '<div class="room-occupancy d-flex flex-column align-items-center">' +
+                               '<div class="occupancy-icons d-flex justify-content-center">' + occupancyIcons + '</div>' +
+                               '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</div>' +
+                               '</div>';
                     }
                 },
-                // {
-                //     "targets": -1,
-                //     "data": null,
-                //     className: 'text-center',
-                //     "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews()">See Reviews</button>'
-                // },
                 {
-                    "targets": -1,
-                    "data": null,
-                    className: 'text-center',
-                    "defaultContent": '<button type="button" style="background-color:#474bc9" class="btn btn-primary" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add Room</button>'
+                    data: null,
+                    render: function(data, type, row) {
+                        let acIcon = '';
+                        if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        } else {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        }
+                        
+                        let bathroomIcon = '';
+                        if (data.bathroom) {
+                            if (data.bathroom.trim().toLowerCase() === 'private') {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Private Bathroom" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            } else if (data.bathroom.trim().toLowerCase() === 'suite') {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="Suite Bathroom" style="opacity: 0.6;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.6;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            } else {
+                                bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                            }
+                        } else {
+                            bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        }
+                        
+                        // Collect all distances with shorter names
+                        const distances = [
+                            {name: 'U-Store', value: data.ustore, icon: '<i class="bi bi-shop"></i>'},
+                            {name: 'Wawa', value: data.wawa, icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 15" id="Local-Convenience-Store--Streamline-Rounded-Material" height="15" width="15"><desc>Local Convenience Store Streamline Icon: https://streamlinehq.com</desc><path fill="#000000" d="M13.125 6.898125V12.1875c0 0.25 -0.09375 0.46875 -0.28125 0.65625 -0.1875 0.1875 -0.40625 0.28125 -0.65625 0.28125H2.7968625000000005c-0.25 0 -0.46875 -0.09375 -0.65625 -0.28125 -0.1875 -0.1875 -0.28125 -0.40625 -0.28125 -0.65625V6.890625c-0.291665625 -0.25 -0.484375 -0.5572812500000001 -0.578125 -0.921875 -0.09375 -0.36459375000000005 -0.083334375 -0.72915625 0.03125 -1.09375l0.671875 -2.109375c0.083334375 -0.28125 0.22864687500000003 -0.5 0.4359375 -0.65625 0.20718750000000002 -0.15625 0.447290625 -0.234375 0.720325 -0.234375H11.78125c0.29384375 0 0.5495625 0.080728125 0.7671875 0.2421875 0.2176875 0.161459375 0.36821875 0.377603125 0.45156250000000003 0.6484375l0.6875 2.109375c0.1145625 0.36459375000000005 0.122375 0.72915625 0.0234375 1.09375 -0.09896875 0.36459375000000005 -0.29428125 0.674375 -0.5859375 0.9293750000000001ZM8.90625 6.40625c0.3020625 0 0.5572812500000001 -0.09896875 0.765625 -0.296875 0.20831249999999998 -0.19790625 0.29165625 -0.4375 0.25 -0.71875L9.53125 2.8125h-1.5625v2.578125c0 0.2734375 0.08853125 0.51103125 0.265625 0.7128125000000001 0.1770625 0.201875 0.40103125000000006 0.3028125 0.671875 0.3028125Zm-2.921875 0c0.29165625 0 0.5390625 -0.09896875 0.7421875 -0.296875 0.203125 -0.19790625 0.3046875 -0.4375 0.3046875 -0.71875V2.8125h-1.5625l-0.390625 2.578125c-0.041687499999999995 0.27084375 0.03125 0.5078125 0.21875 0.7109375 0.1875 0.203125 0.41665624999999995 0.3046875 0.6875 0.3046875Zm-2.84375 0c0.2458125 0 0.4609375 -0.0859375 0.6453125 -0.2578125 0.18437499999999998 -0.171875 0.29218750000000004 -0.3828125 0.3234375 -0.6328125L4.515625 2.8125H2.9531125000000005l-0.71875 2.28125c-0.10416562500000001 0.32290625000000006 -0.0625 0.62240625 0.125 0.8984375 0.1875 0.27603125 0.447915625 0.4140625 0.7812625 0.4140625Zm8.703125 0c0.3333125 0 0.5963437500000001 -0.13540625 0.7890625 -0.40625 0.1926875 -0.27084375 0.23696875 -0.57290625 0.1328125 -0.90625L12.046875 2.8125h-1.5625l0.40625 2.703125c0.03125 0.25 0.1375 0.4609375 0.31875 0.6328125 0.18125 0.171875 0.39268749999999997 0.2578125 0.6343749999999999 0.2578125ZM2.7968625000000005 12.1875H12.1875V7.328125c0.01040625 0.01040625 -0.0234375 0.015625 -0.1015625 0.015625H11.84375c-0.2604375 0 -0.5078125 -0.0546875 -0.7421875 -0.1640625 -0.234375 -0.109375 -0.46615625 -0.27865625 -0.6953125 -0.5078125 -0.1666875 0.20834375 -0.375 0.37240625 -0.625 0.4921875s-0.5257499999999999 0.1796875 -0.8271875 0.1796875c-0.313125 0 -0.5816875 -0.044281249999999994 -0.8056249999999999 -0.1328125 -0.22396875 -0.08853125 -0.44012500000000004 -0.23696875 -0.6484375 -0.4453125 -0.15625 0.1875 -0.3541875 0.33071875 -0.59375 0.4296875 -0.23959375000000002 0.09896875 -0.5104375 0.1484375 -0.8125 0.1484375 -0.32293750000000004 0 -0.609375 -0.05728125 -0.859375 -0.171875s-0.4635625 -0.28125 -0.640625 -0.5c-0.25 0.21875 -0.4948125 0.38540625 -0.734375 0.5 -0.23959375000000002 0.11459375000000001 -0.47918750000000004 0.171875 -0.71875 0.171875h-0.21095c-0.067709375 0 -0.111978125 -0.005218749999999999 -0.1328125 -0.015625V12.1875ZM5.265625 11.328125h1.25c0.0833125 0 0.15362499999999998 -0.0296875 0.2109375 -0.08906249999999999 0.05728125 -0.059375 0.0859375 -0.12865625 0.0859375 -0.2078125s-0.0296875 -0.1484375 -0.08906249999999999 -0.2078125c-0.059375 -0.059375 -0.12865625 -0.08906249999999999 -0.2078125 -0.08906249999999999H5.5625v-0.71875h0.95125c0.0845625 0 0.1555 -0.0296875 0.21281250000000002 -0.08906249999999999 0.05728125 -0.059375 0.0859375 -0.12865625 0.0859375 -0.2078125v-1.25c0 -0.08334375 -0.0296875 -0.15365625 -0.08906249999999999 -0.2109375 -0.059375 -0.05728125 -0.12865625 -0.0859375 -0.2078125 -0.0859375h-1.25c-0.08334375 0 -0.15365625 0.0296875 -0.2109375 0.08906249999999999 -0.0573125 0.059375 -0.0859375 0.12865625 -0.0859375 0.2078125s0.0296875 0.1484375 0.08906249999999999 0.2078125c0.059375 0.059375 0.12862500000000002 0.08906249999999999 0.2078125 0.08906249999999999h0.953125v0.65625h-0.95125c-0.08459375 0 -0.15553124999999998 0.0296875 -0.21281250000000002 0.08906249999999999 -0.0573125 0.059375 -0.0859375 0.12865625 -0.0859375 0.2078125v1.3068750000000002c0 0.08709375 0.0296875 0.15928125 0.08906249999999999 0.2165625 0.059375 0.05728125 0.12862500000000002 0.0859375 0.2078125 0.0859375Zm4.171875 -1.3125v1.015625c0 0.07915625000000001 0.0296875 0.1484375 0.08906249999999999 0.2078125 0.059375 0.059375 0.12862500000000002 0.08906249999999999 0.2078125 0.08906249999999999 0.07915625000000001 0 0.1484375 -0.0296875 0.2078125 -0.08906249999999999 0.059375 -0.059375 0.08906249999999999 -0.12865625 0.08906249999999999 -0.2078125v-2.55953125c0 -0.08531250000000001 -0.0296875 -0.156625 -0.08906249999999999 -0.21390625 -0.059375 -0.05728125 -0.12865625 -0.0859375 -0.2078125 -0.0859375 -0.07918750000000001 0 -0.1484375 0.0296875 -0.2078125 0.08906249999999999 -0.059375 0.059375 -0.08906249999999999 0.12865625 -0.08906249999999999 0.2078125v0.953125h-0.65625v-0.95125c0 -0.08459375 -0.0296875 -0.15553124999999998 -0.08906249999999999 -0.21281250000000002 -0.059375 -0.05728125 -0.12865625 -0.0859375 -0.2078125 -0.0859375 -0.07918750000000001 0 -0.1484375 0.0296875 -0.2078125 0.08906249999999999 -0.059375 0.059375 -0.08906249999999999 0.12865625 -0.08906249999999999 0.2078125v1.25c0 0.08334375 0.0296875 0.15365625 0.08906249999999999 0.2109375 0.059375 0.05728125 0.12862500000000002 0.0859375 0.2078125 0.0859375h0.953125Z" stroke-width="0.3125"></path></svg>'},
+                            {name: 'Nassau', value: data['Nassau Street'], icon: '<i class="bi bi-signpost-split"></i>'},
+                            {name: 'Jadwin', value: data['Jadwin Gym'], icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 15" id="Sports-Basketball--Streamline-Rounded-Material" height="15" width="15"><desc>Sports Basketball Streamline Icon: https://streamlinehq.com</desc><path fill="#000000" d="M2.203125 7.03125h2.140625c-0.07290625 -0.5 -0.21875 -0.97134375 -0.4375 -1.4140625 -0.21875 -0.44271875000000005 -0.48959375 -0.82553125 -0.8125 -1.1484375 -0.239584375 0.36459375000000005 -0.442709375 0.76040625 -0.609375 1.1875 -0.16666562499999998 0.42709375 -0.260415625 0.88540625 -0.28125 1.375Zm8.453125 0h2.140625c-0.020843749999999998 -0.48959375 -0.11459375000000001 -0.9479062500000001 -0.28125 -1.375 -0.16665625 -0.42709375 -0.36978125 -0.8229062500000001 -0.609375 -1.1875 -0.35415625 0.35415625 -0.6328125 0.7447812500000001 -0.8359375 1.171875 -0.203125 0.42709375 -0.34115624999999994 0.890625 -0.4140625 1.390625ZM3.09375 10.515625c0.35415625 -0.35415625 0.6328125 -0.7421875 0.8359375 -1.1640625 0.203125 -0.421875 0.34115624999999994 -0.8828125 0.4140625 -1.3828125H2.203125c0.020834375 0.48959375 0.114584375 0.9453125 0.28125 1.3671875 0.16666562499999998 0.421875 0.369790625 0.81509375 0.609375 1.1796875Zm8.8125 0c0.23959375000000002 -0.36459375000000005 0.44271875000000005 -0.7578125 0.609375 -1.1796875 0.16665625 -0.421875 0.26040625 -0.87759375 0.28125 -1.3671875H10.65625c0.07290625 0.5 0.2109375 0.9609375 0.4140625 1.3828125 0.203125 0.421875 0.48178125000000005 0.8099062499999999 0.8359375 1.1640625ZM5.296875 7.03125h1.734375V2.203125c-0.64584375 0.072915625 -1.24740625 0.239584375 -1.8046875 0.5 -0.5572812500000001 0.260415625 -1.05990625 0.609375 -1.5078125 1.046875 0.42709375 0.42709375 0.77603125 0.921875 1.046875 1.484375 0.27084375 0.5625 0.44790625 1.16146875 0.53125 1.796875Zm2.671875 0h1.734375c0.08334375 -0.6354062500000001 0.26303125 -1.234375 0.5390625 -1.796875 0.27603125 -0.5625 0.6275937500000001 -1.05728125 1.0546875 -1.484375 -0.44790625 -0.4375 -0.953125 -0.786459375 -1.515625 -1.046875 -0.5625 -0.260415625 -1.16665625 -0.427084375 -1.8125 -0.5V7.03125Zm-0.9375 5.765625V7.96875h-1.734375c-0.08334375 0.6354062500000001 -0.26040625 1.23178125 -0.53125 1.7890625 -0.27084375 0.5572812500000001 -0.6197812500000001 1.04946875 -1.046875 1.4765625 0.44790625 0.4375 0.9375 0.7890625 1.46875 1.0546875 0.53125 0.265625 1.14584375 0.43490625 1.84375 0.5078125Zm0.9375 0c0.69790625 -0.07290625 1.3150937500000002 -0.2421875 1.8515625 -0.5078125 0.5364687499999999 -0.265625 1.02865625 -0.6171875 1.4765625 -1.0546875 -0.42709375 -0.42709375 -0.7786562499999999 -0.91928125 -1.0546875 -1.4765625 -0.27603125 -0.5572812500000001 -0.45571874999999995 -1.15365625 -0.5390625 -1.7890625H7.96875v4.828125ZM7.5 13.75c-0.86459375 0 -1.67709375 -0.1640625 -2.4375 -0.4921875 -0.76040625 -0.328125 -1.421875 -0.7734375 -1.984375 -1.3359375 -0.5625 -0.5625 -1.0078125 -1.22396875 -1.3359375 -1.984375C1.4140625 9.177093750000001 1.25 8.364593750000001 1.25 7.5s0.1640625 -1.67709375 0.4921875 -2.4375c0.328125 -0.76040625 0.7734375 -1.421875 1.3359375 -1.984375 0.5625 -0.5625 1.22396875 -1.0078125 1.984375 -1.3359375C5.822906249999999 1.4140625 6.63540625 1.25 7.5 1.25s1.67709375 0.1640625 2.4375 0.4921875c0.76040625 0.328125 1.421875 0.7734375 1.984375 1.3359375 0.5625 0.5625 1.0078125 1.22396875 1.3359375 1.984375C13.5859375 5.822906249999999 13.75 6.63540625 13.75 7.5s-0.1640625 1.67709375 -0.4921875 2.4375c-0.328125 0.76040625 -0.7734375 1.421875 -1.3359375 1.984375 -0.5625 0.5625 -1.22396875 1.0078125 -1.984375 1.3359375C9.177093750000001 13.5859375 8.364593750000001 13.75 7.5 13.75Z" stroke-width="0.3125"></path></svg>'},
+                            {name: 'Frist', value: data.frist, icon: '<i class="bi bi-envelope"></i>'},
+                            {name: 'E-Quad', value: data.equad, icon: '<i class="bi bi-tools"></i>'},
+                            {name: 'Dillon', value: data.dillon, icon: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" id="Fitness-Center--Streamline-Rounded-Material" height="18" width="18"><desc>Fitness Center Streamline Icon: https://streamlinehq.com</desc><path fill="#000000" d="m5.025 5.812425 -2.26875375 2.26875c-0.11249999999999999 0.11249999999999999 -0.24375000000000002 0.16875 -0.39375000000000004 0.16875s-0.28125 -0.056249999999999994 -0.39375000000000004 -0.16875c-0.10000125000000001 -0.1000125 -0.1531275 -0.2281125 -0.159375 -0.38437499999999997 -0.00625125 -0.1562625 0.04062375 -0.290625 0.140625 -0.40312499999999996l0.675 -0.6937500000000001 -0.65625 -0.65625c-0.11249999999999999 -0.11249999999999999 -0.16875 -0.24375000000000002 -0.16875 -0.39375000000000004s0.056249999999999994 -0.28125 0.16875 -0.39375000000000004l1.2000000000000002 -1.2000000000000002 -0.39375000000000004 -0.39375000000000004c-0.11249999999999999 -0.11249999999999999 -0.16875 -0.24375000000000002 -0.16875 -0.39375000000000004s0.056249999999999994 -0.28125 0.16875 -0.39375000000000004c0.0999975 -0.0999975 0.22812375000000001 -0.15312375 0.38437499999999997 -0.159375 0.15624749999999998 -0.0062475000000000004 0.290625 0.040627500000000004 0.40312499999999996 0.140625L3.9749999999999996 3.1499250000000005l1.18125 -1.18125c0.11249999999999999 -0.11249999999999999 0.24375000000000002 -0.16875 0.39375000000000004 -0.16875s0.28125 0.056249999999999994 0.39375000000000004 0.16875l0.65625 0.65625 0.6937500000000001 -0.675c0.11249999999999999 -0.0999975 0.24375000000000002 -0.15000000000000002 0.39375000000000004 -0.15000000000000002s0.28125 0.056249999999999994 0.39375000000000004 0.16875c0.11249999999999999 0.11249999999999999 0.16875 0.24375000000000002 0.16875 0.39375000000000004s-0.056249999999999994 0.28125 -0.16875 0.39375000000000004l-2.26875 2.26875 7.1625000000000005 7.1625000000000005 2.26875 -2.26875c0.11249999999999999 -0.11249999999999999 0.24375000000000002 -0.16875 0.39375000000000004 -0.16875s0.28125 0.056249999999999994 0.39375000000000004 0.16875c0.1000125 0.1000125 0.15311249999999998 0.2281125 0.159375 0.38437499999999997 0.0062625 0.1562625 -0.040612499999999996 0.290625 -0.140625 0.40312499999999996l-0.675 0.6937500000000001 0.65625 0.65625c0.11249999999999999 0.11249999999999999 0.16875 0.24375000000000002 0.16875 0.39375000000000004s-0.056249999999999994 0.28125 -0.16875 0.39375000000000004l-1.21875 1.21875 0.39375000000000004 0.39375000000000004c0.11249999999999999 0.11249999999999999 0.16875 0.24375000000000002 0.16875 0.39375000000000004s-0.056249999999999994 0.28125 -0.16875 0.39375000000000004c-0.11249999999999999 0.11249999999999999 -0.24375000000000002 0.16875 -0.39375000000000004 0.16875s-0.28125 -0.056249999999999994 -0.39375000000000004 -0.16875l-0.39375000000000004 -0.39375000000000004 -1.18125 1.18125c-0.11249999999999999 0.11249999999999999 -0.24375000000000002 0.16875 -0.39375000000000004 0.16875s-0.28125 -0.056249999999999994 -0.39375000000000004 -0.16875l-0.65625 -0.65625 -0.6937500000000001 0.675c-0.11249999999999999 0.1000125 -0.24375000000000002 0.15000000000000002 -0.39375000000000004 0.15000000000000002s-0.28125 -0.056249999999999994 -0.39375000000000004 -0.16875c-0.11249999999999999 -0.11249999999999999 -0.16875 -0.24375000000000002 -0.16875 -0.39375000000000004s0.056249999999999994 -0.28125 0.16875 -0.39375000000000004l2.26875 -2.26875 -7.1625000000000005 -7.1625000000000005Z" stroke-width="0.375"></path></svg>'},
+                            {name: 'Street', value: data.street, icon: '<i class="bi bi-balloon"></i>'}
+                        ].filter(dist => dist.value !== undefined && dist.value !== null);
+                        
+                        distances.sort((a, b) => a.value - b.value);
+                        
+                        // Create the distance items HTML with responsive class markers
+                        let distanceHtml = '<div class="distances-grid">';
+                        
+                        distances.forEach((dist, index) => {
+                            let responsiveClass = '';
+                            if (index >= 7) {
+                                responsiveClass = 'hide-sm';
+                            } else if (index >= 6) {
+                                responsiveClass = 'hide-md';
+                            } else if (index >= 5) {
+                                responsiveClass = 'hide-lg';
+                            } else if (index >= 4) {
+                                responsiveClass = 'hide-xl';
+                            }
+                            
+                            distanceHtml += '<div class="distance-item ' + responsiveClass + '">' + 
+                                          dist.icon + ' <span class="distance-label">' + dist.name + '</span>' + 
+                                          '<span class="distance-value">' + dist.value + 'm</span>' + 
+                                          '</div>';
+                        });
+                        distanceHtml += '</div>';
+                        
+                        return '<div class="room-amenities">' +
+                               '<div class="amenities-container">' +
+                               '<div class="amenities-section">' +
+                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
+                               '</div>' +
+                               '<div class="amenities-divider"></div>' +
+                               '<div class="distances-section">' +
+                               distanceHtml +
+                               '</div>' +
+                               '</div>' +
+                               '</div>';
+                    }
                 },
+                {
+                    data: null, 
+                    targets: -1,
+                    className: 'text-center', 
+                    render: function (data, type, row) {
+                        return '<div class="d-flex flex-column align-items-center">' +
+                               '<button type="button" class="btn review-btn mb-2" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>' +
+                               '<button type="button" class="btn add-room-btn" style="font-size: 0.9em;" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add to Group</button>' +
+                               '</div>';
+                    }
+                }
             ],
         })
 
@@ -528,22 +1577,162 @@
         } else {
             rt.ajax.url(url).load()
         }
-
     }
 
-    // dynamic dropdown
-    function populateDropdowns(json) {
-        const buildings = []
-        // update building dropdown
-        $('#building').empty()
-        $("#building").append($("<option>").val("").html("All"));
-
-        json.data.forEach(function (obj) {
-            if (buildings.indexOf(obj.building) == -1) {
-                $("#building").append($("<option>").val(obj.building).html(obj.building));
-                buildings.push(obj.building)
+    // Store all buildings data for quicker filtering
+    let allBuildingsData = {};
+    
+    // Create a mapping from buildings to colleges for faster lookups
+    let buildingToCollegeMap = {};
+    
+    // Function to initialize the college-building relationship data
+    function initializeCollegeBuildingRelationship(json) {
+        const buildings = [];
+        
+        // Make sure we have data to work with
+        if (json && json.data && Array.isArray(json.data)) {
+            // Create a map of colleges to their buildings
+            allBuildingsData = {};
+            buildingToCollegeMap = {};
+            
+            json.data.forEach(function (obj) {
+                if (obj.building && obj.res_college) {
+                    // Initialize array for this college if needed
+                    if (!allBuildingsData[obj.res_college]) {
+                        allBuildingsData[obj.res_college] = [];
+                    }
+                    
+                    // Add building if not already in this college's list (case-insensitive check)
+                    const collegeBuildings = allBuildingsData[obj.res_college];
+                    const buildingExists = collegeBuildings.some(b =>
+                        b.toLowerCase() === obj.building.toLowerCase());
+                    
+                    if (!buildingExists) {
+                        allBuildingsData[obj.res_college].push(obj.building);
+                        
+                        // Also maintain the reverse mapping
+                        buildingToCollegeMap[obj.building] = obj.res_college;
+                    }
+                    
+                    // Add to overall buildings list if not already there
+                    if (buildings.indexOf(obj.building) === -1) {
+                        buildings.push(obj.building);
+                    }
+                }
+            });
+            
+            // Sort all building lists
+            buildings.sort();
+            for (let college in allBuildingsData) {
+                allBuildingsData[college].sort();
             }
-        });
+            
+            // console.log("Building data by college:", allBuildingsData);
+            // console.log("Building to college mapping:", buildingToCollegeMap);
+            
+            // Update building dropdown (the select element)
+            $('#building').empty();
+            $("#building").append($("<option>").val("").html("All"));
+            
+            buildings.forEach(function(building) {
+                $("#building").append($("<option>").val(building).html(building));
+            });
+            
+            // console.log("Populated ALL buildings dropdown with:", buildings);
+            
+            // Update the UI dropdown as well
+            updateBuildingDropdownItems();
+        } else {
+            console.warn("Unable to initialize college-building relationship - no data available");
+        }
+    }
+    
+    // New function to populate ALL buildings regardless of college
+    function populateAllBuildings(json) {
+        // Initialize the college-building relationship data
+        initializeCollegeBuildingRelationship(json);
+    }
+
+    // Optimized dropdown for college-specific buildings with better performance
+    function populateDropdowns(json) {
+        // Make sure we have data to work with
+        if (json && json.data && Array.isArray(json.data)) {
+            const collegeFilter = $('#college').val();
+            const buildings = new Set(); // Use Set for faster uniqueness checks
+            
+            // Only process if we have a reasonable amount of data
+            if (json.data.length > 0) {
+                // First pass: Update college-to-buildings mapping efficiently
+                for (let i = 0; i < json.data.length; i++) {
+                    const obj = json.data[i];
+                    if (obj.res_college && obj.building) {
+                        // Initialize college if needed
+                        if (!allBuildingsData[obj.res_college]) {
+                            allBuildingsData[obj.res_college] = [];
+                        }
+                        
+                        // Add to college's buildings if not already there (case-insensitive)
+                        const collegeBuildings = allBuildingsData[obj.res_college];
+                        const buildingExists = collegeBuildings.some(b =>
+                            b.toLowerCase() === obj.building.toLowerCase());
+                        
+                        if (!buildingExists) {
+                            allBuildingsData[obj.res_college].push(obj.building);
+                            
+                            // Also update the building-to-college mapping
+                            buildingToCollegeMap[obj.building] = obj.res_college;
+                        }
+                        
+                        // If no college filter or matches current filter, add to buildings Set
+                        if (!collegeFilter || obj.res_college === collegeFilter) {
+                            buildings.add(obj.building);
+                        }
+                    }
+                }
+                
+                // Sort all building lists (only once per college)
+                for (const college in allBuildingsData) {
+                    if (Array.isArray(allBuildingsData[college])) {
+                        allBuildingsData[college].sort();
+                    }
+                }
+                
+                // Convert Set to sorted Array
+                const buildingsArray = Array.from(buildings).sort();
+                
+                // Update select element with filtered buildings (batched DOM operations)
+                const buildingSelect = $('#building');
+                buildingSelect.empty();
+                
+                // Add "All" option
+                const fragment = document.createDocumentFragment();
+                const allOption = document.createElement('option');
+                allOption.value = "";
+                allOption.textContent = "All";
+                fragment.appendChild(allOption);
+                
+                // Add building options
+                for (let i = 0; i < buildingsArray.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = buildingsArray[i];
+                    option.textContent = buildingsArray[i];
+                    fragment.appendChild(option);
+                }
+                
+                // Append all options at once
+                buildingSelect[0].appendChild(fragment);
+                
+                // Reset building selection when college changes to avoid invalid combinations
+                if (collegeFilter !== lastFilterState.college) {
+                    buildingSelect.val("").attr('data-selected-value', "");
+                }
+                
+                // Update the UI dropdown
+                updateBuildingDropdownItems();
+            }
+        } else {
+            console.warn("Unable to populate college buildings dropdown - no data available");
+        }
     }
 
     function getGroups(room_id) {
@@ -561,7 +1750,6 @@
             searching: false,
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
-            // "order": [[1, "asc"]],
             "processing": true,
             "ajax": {
                 "type": "GET",
@@ -592,33 +1780,102 @@
             ],
         });
 
-        // if (e.data.change === true || typeof (e.data) === "function") {
-        //   gt.ajax.url(url).load(populateDropdowns)
-        // }
-        // else {
         gt.ajax.url(url).load()
-        // }
-
     }
 
     function setup() {
+        // First make sure we have our search function
+        addCustomSearchFunction();
+        
+        // Load all buildings for the initial display
+        $.ajax({
+            url: '/queryrooms?college=&occupancy=&year=&building=',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                // Populate buildings dropdown with ALL buildings
+                populateAllBuildings(json);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading initial buildings:", error);
+            }
+        });
+        
+        // Preload all rooms on initial load
+        getResults({data: {change: false}});
+        
+        // Setup filter change handlers
+        $('#college').on('change', {change: true}, getResults);
+        $('#occupancy').on('change', {}, getResults);
+        $('#year').on('change', {}, getResults);
+        $('#building').on('change', {}, getResults);
 
-        $('#college').on('change', {change: true}, getResults)
-        $('#occupancy').on('change', {}, getResults)
-        $('#year').on('change', {}, getResults)
-        $('#building').on('change', {}, getResults)
+        // Add change handlers for new filters
+        $('#size').on('change', function() {
+            // Apply size filter when changed
+            applyFilters();
+        });
 
-        $('#search').on('keyup', function () {
-            console.log(this.value, rt)
-            rt.search(this.value).draw();
-        })
+        $('#ac-toggle').on('change', function() {
+            // Apply AC filter when toggled
+            applyFilters();
+        });
+
+        $('#bathroom-toggle').on('change', function() {
+            // Apply bathroom filter when toggled
+            applyFilters();
+        });
+
+        // Ensure button text matches initial filter visibility
+        if ($('#search-filters').is(':visible')) {
+            $('#search-specifics-btn').text('Hide filters');
+        } else {
+            $('#search-specifics-btn').text('Search by specifics');
+        }
+
+        // Search specifics button toggle functionality
+        $('#search-specifics-btn').on('click', function() {
+            var $filtersDiv = $('#search-filters');
+            var $button = $(this);
+            
+            $filtersDiv.slideToggle(300, function() {
+                // This callback runs after the animation completes
+                if ($filtersDiv.is(':visible')) {
+                    $button.text('Hide filters');
+                } else {
+                    $button.text('Search by specifics');
+                }
+            });
+        });
+
+        // Set up search handler to directly redraw the table
+        $('#search').off('keyup');
+        
+        // Add search handler that uses our custom search function with debouncing
+        $('#search').on('keyup', function() {
+            // console.log("Searching for:", this.value);
+            // Use debounced version to avoid too many redraws
+            debouncedSearch();
+        });
+        
+        // Handle pill filter interactions
+        setupPillFilters();
 
         // on clicking stars, either favorite or unfavorite
-        $('#rooms-table').on('change', '.star', function () {
-            var data = rt.row($(this).parents('tr')).data();
-            changing_row = rt.row(this.closest('tr')).data()
+        $('#rooms-table').on('change', '.heart-checkbox', function () {
+            var data = rt.row($(this).closest('tr')).data();
+            var changing_row = data;
+            
+            // Update the heart icon appearance
+            if (this.checked) {
+                $(this).parent().text('♥');
+                $(this).appendTo($(this).parent());
+            } else {
+                $(this).parent().text('♡');
+                $(this).appendTo($(this).parent());
+            }
 
-            if (this.checked !== true) {
+            if (!this.checked) {
                 // send message to db to remove from favorites
                 $.ajax({
                     type: 'POST',
@@ -677,16 +1934,1272 @@
         });
 
     }
-
-    $('document').ready(getResults)
-    $('document').ready(setup)
-    $("#buildings").val("");
-    $("#year").val("");
-
-    $("#occupancy").append($("<option>").val("").html("All"));
-    for (var i = 1; i < 11; i++) {
-        $("#occupancy").append($("<option>").val(i).html(i));
+    
+    // Create a debounced function - delays executing a function until after wait milliseconds
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
     }
+    
+    // Create the debounced version of rt.draw for search
+    const debouncedSearch = debounce(function() {
+        if (rt) {
+            // console.log("Running debounced search");
+            // First ensure our custom search extension is active
+            addCustomSearchFunction();
+            // Then draw the table
+            rt.draw();
+        }
+    }, 300);
+    
+    // Simplified dropdown positioning function that keeps the dropdown attached to the pill
+    function positionDropdown(pillElement, dropdownElement) {
+        // Reset any previous style modifications
+        dropdownElement.attr('style', '');
+        
+        // Make sure the pill has relative positioning
+        pillElement.css('position', 'relative');
+        
+        // Position the dropdown directly below the pill
+        dropdownElement.css({
+            position: 'absolute',
+            top: '100%',  // Position directly below the pill
+            left: '0',
+            margin: '5px 0 0 0',
+            maxHeight: '300px',
+            zIndex: 9999
+        });
+        
+        // Hide other dropdowns
+        $('.pill-dropdown').not(dropdownElement).hide();
+    }
+    
+    // Central filter state object - single source of truth
+    const filterState = {
+        college: '',
+        building: '',
+        occupancy: '',
+        size: '',
+        acState: 0,  // 0: off, 1: required, 2: excluded
+        bathroomState: 0,
+        favorites: false,
+        
+        // Mapping data
+        buildingsByCollege: {},  // College -> [Buildings]
+        buildingToCollege: {}    // Building -> College
+    };
+    
+    // Track last filter state to prevent unnecessary redraws
+    let lastFilterState = {
+        college: '',
+        building: '',
+        occupancy: '',
+        size: '',
+        ac: 0,
+        bathroom: 0,
+        favorites: false
+    };
+    
+    // STATE MANAGEMENT FUNCTIONS
+    
+    // Update college filter
+    function updateCollegeFilter(college) {
+        // console.log("Updating college filter to:", college);
+        
+        // Update state
+        filterState.college = college;
+        
+        // Handle building constraints
+        if (college && filterState.building) {
+            // Check if current building belongs to selected college
+            if (!buildingBelongsToCollege(filterState.building, college)) {
+                // Clear building if it doesn't belong to the college
+                // console.log(`Building ${filterState.building} doesn't belong to ${college}, clearing building filter`);
+                filterState.building = "";
+            }
+        }
+        
+        // Update UI
+        updateCollegeUI();
+        updateBuildingUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update building filter
+    function updateBuildingFilter(building) {
+        // console.log("Updating building filter to:", building);
+        
+        // Update state
+        // this is to ensure that the building is always treated as a string
+        // (avoids issues with 1901, 1903, 1967, 1976)
+        filterState.building = building ? String(building) : '';
+
+        
+        // Handle college constraints
+        if (building) {
+            const college = filterState.buildingToCollege[building];
+            if (college && filterState.college !== college) {
+                // Update college if building belongs to a different college
+                // console.log(`Building ${building} belongs to ${college}, updating college filter`);
+                filterState.college = college;
+                
+                // Show notification
+                if (typeof notyf !== 'undefined') {
+                    notyf.success(`College filter updated to ${college}`);
+                }
+                
+                // Update college UI
+                updateCollegeUI();
+            }
+        }
+        
+        // Update UI
+        updateBuildingUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update occupancy filter
+    function updateOccupancyFilter(occupancy) {
+        // console.log("Updating occupancy filter to:", occupancy);
+        
+        // Update state
+        filterState.occupancy = occupancy;
+        
+        // Update UI
+        updateOccupancyUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update size filter
+    function updateSizeFilter(size) {
+        // console.log("Updating size filter to:", size);
+        
+        // Update state
+        filterState.size = size;
+        
+        // Update UI
+        updateSizeUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update AC filter state
+    function updateACFilter(state) {
+        // console.log("Updating AC filter to state:", state);
+        
+        // Update state
+        filterState.acState = state;
+        
+        // Update UI
+        updateACUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update bathroom filter state
+    function updateBathroomFilter(state) {
+        // console.log("Updating bathroom filter to state:", state);
+        
+        // Update state
+        filterState.bathroomState = state;
+        
+        // Update UI
+        updateBathroomUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update favorites filter
+    function updateFavoritesFilter(active) {
+        // console.log("Updating favorites filter to:", active);
+        
+        // Update state
+        filterState.favorites = active;
+        
+        // Update UI
+        updateFavoritesUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // UI UPDATE FUNCTIONS
+    
+    // Update college UI
+    function updateCollegeUI() {
+        // Update hidden form element
+        $('#college').val(filterState.college).attr('data-selected-value', filterState.college);
+        
+        // Update pill text
+        if (filterState.college) {
+            // Find the display text for the college
+            const collegeItem = $(`.college-dropdown .dropdown-item[data-value="${filterState.college}"]`);
+            if (collegeItem.length) {
+                $('#college-pill > span').text(collegeItem.text());
+            } else {
+                $('#college-pill > span').text(filterState.college);
+            }
+        } else {
+            $('#college-pill > span').text('College');
+        }
+        
+        // Update pill appearance
+        $('#college-pill').toggleClass('active', !!filterState.college);
+        
+        // Update dropdown selection
+        $('.college-dropdown .dropdown-item').removeClass('selected');
+        $(`.college-dropdown .dropdown-item[data-value="${filterState.college}"]`).addClass('selected');
+    }
+    
+    // Update building UI
+    function updateBuildingUI() {
+        // Update hidden form element
+        $('#building').val(filterState.building).attr('data-selected-value', filterState.building);
+        
+        // Update pill text
+        $('#building-pill > span').text(filterState.building || 'Building');
+        
+        // Update pill appearance
+        $('#building-pill').toggleClass('active', !!filterState.building);
+        
+        // Update dropdown options based on selected college
+        updateBuildingDropdownOptions();
+    }
+    
+    // Update occupancy UI
+    function updateOccupancyUI() {
+        // Update hidden form element
+        $('#occupancy').val(filterState.occupancy).attr('data-selected-value', filterState.occupancy);
+        
+        // Update pill text
+        $('#people-pill > span').text(filterState.occupancy || 'People');
+        
+        // Update pill appearance
+        $('#people-pill').toggleClass('active', !!filterState.occupancy);
+        
+        // Update dropdown selection
+        $('.occupancy-dropdown .dropdown-item').removeClass('selected');
+        $(`.occupancy-dropdown .dropdown-item[data-value="${filterState.occupancy}"]`).addClass('selected');
+    }
+    
+    // Update size UI
+    function updateSizeUI() {
+        // Update hidden form element
+        $('#size').val(filterState.size).attr('data-selected-value', filterState.size);
+        
+        // Update pill text
+        if (filterState.size) {
+            let sizeText = filterState.size.charAt(0).toUpperCase() + filterState.size.slice(1);
+            $('#size-pill > span').text(sizeText);
+        } else {
+            $('#size-pill > span').text('Size');
+        }
+        
+        // Update pill appearance
+        $('#size-pill').toggleClass('active', !!filterState.size);
+        
+        // Update dropdown selection
+        $('.size-dropdown .dropdown-item').removeClass('selected');
+        $(`.size-dropdown .dropdown-item[data-value="${filterState.size}"]`).addClass('selected');
+    }
+    
+    // Update AC UI
+    function updateACUI() {
+        // Update hidden form element
+        $('#ac-toggle').prop('checked', filterState.acState === 1);
+        
+        // Update pill appearance
+        const pillElement = $('#ac-pill');
+        pillElement.removeClass('active positive negative');
+        pillElement.attr('data-state', filterState.acState);
+        
+        if (filterState.acState === 1) {
+            pillElement.addClass('positive');
+        } else if (filterState.acState === 2) {
+            pillElement.addClass('negative');
+        }
+    }
+    
+    // Update bathroom UI
+    function updateBathroomUI() {
+        // Update hidden form element
+        $('#bathroom-toggle').prop('checked', filterState.bathroomState === 1);
+        
+        // Update pill appearance
+        const pillElement = $('#bathroom-pill');
+        pillElement.removeClass('active positive negative');
+        pillElement.attr('data-state', filterState.bathroomState);
+        
+        if (filterState.bathroomState === 1) {
+            pillElement.addClass('positive');
+        } else if (filterState.bathroomState === 2) {
+            pillElement.addClass('negative');
+        }
+    }
+    
+    // Update favorites UI
+    function updateFavoritesUI() {
+        // Update pill appearance
+        $('#favorites-pill').toggleClass('active', filterState.favorites);
+    }
+    
+    // Update building dropdown options
+    function updateBuildingDropdownOptions() {
+        const buildingDropdown = $('.building-dropdown');
+        buildingDropdown.empty();
+        
+        // Always add "All" option
+        const allSelected = !filterState.building ? ' selected' : '';
+        buildingDropdown.append(`<div class="dropdown-item${allSelected}" data-value="">All</div>`);
+        
+        // Add buildings based on selected college
+        let buildings = [];
+        
+        if (filterState.college && filterState.buildingsByCollege[filterState.college]) {
+            // If a college is selected, show only buildings from that college
+            buildings = filterState.buildingsByCollege[filterState.college];
+        } else {
+            // If no college selected, show all buildings
+            // Use Set for faster uniqueness checks
+            const uniqueBuildings = new Set();
+            
+            for (const college in filterState.buildingsByCollege) {
+                if (filterState.buildingsByCollege[college] && Array.isArray(filterState.buildingsByCollege[college])) {
+                    // Add all buildings directly to the Set (automatically handles duplicates)
+                    filterState.buildingsByCollege[college].forEach(building => uniqueBuildings.add(building));
+                }
+            }
+            
+            // Convert Set to Array
+            buildings = Array.from(uniqueBuildings);
+        }
+        
+        // Sort buildings alphabetically
+        buildings.sort();
+        
+        // Add building options to dropdown
+        buildings.forEach(building => {
+            const isSelected = building === filterState.building ? ' selected' : '';
+            buildingDropdown.append(`<div class="dropdown-item${isSelected}" data-value="${building}">${building}</div>`);
+        });
+        
+        // Attach event handlers to new dropdown items
+        attachBuildingDropdownHandlers(buildingDropdown);
+    }
+    
+    // FILTER APPLICATION FUNCTIONS
+    
+    // Apply all filters
+    function applyAllFilters() {
+        // Check if filter state has actually changed to avoid unnecessary redraws
+        const currentState = {
+            college: filterState.college,
+            building: filterState.building,
+            occupancy: filterState.occupancy,
+            size: filterState.size,
+            ac: filterState.acState,
+            bathroom: filterState.bathroomState,
+            favorites: filterState.favorites
+        };
+        
+        // Skip redraw if nothing has changed
+        if (JSON.stringify(lastFilterState) === JSON.stringify(currentState) &&
+            $.fn.dataTable.ext.search.length > 0) {
+            // console.log("Filter state unchanged, skipping redraw");
+            return;
+        }
+        
+        // Update last state
+        lastFilterState = {...currentState};
+        
+        // Clear existing filters
+        clearDataTableFilters();
+        
+        // Add search filter
+        addSearchFilter();
+        
+        // Add college filter
+        if (filterState.college) {
+            addCollegeFilter();
+        }
+        
+        // Add building filter
+        if (filterState.building) {
+            addBuildingFilter();
+        }
+        
+        // Add occupancy filter
+        if (filterState.occupancy) {
+            addOccupancyFilter();
+        }
+        
+        // Add size filter
+        if (filterState.size) {
+            addSizeFilter();
+        }
+        
+        // Add AC filter
+        if (filterState.acState > 0) {
+            addACFilter();
+        }
+        
+        // Add bathroom filter
+        if (filterState.bathroomState > 0) {
+            addBathroomFilter();
+        }
+        
+        // Add favorites filter
+        if (filterState.favorites) {
+            addFavoritesFilter();
+        }
+        
+        // Redraw table
+        if (rt) {
+            rt.draw();
+            
+            // Update UI to show how many rooms are visible
+            const visibleRows = rt.rows({filter: 'applied'}).count();
+            const totalRows = rt.rows().count();
+            
+            // Show a small toast notification with filter results
+            if (visibleRows < totalRows) {
+                // Create or update the filter count notification
+                if ($('#filter-count-toast').length === 0) {
+                    $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
+                        .appendTo('body');
+                }
+                
+                $('#filter-count-toast').text(`Showing ${visibleRows} of ${totalRows} rooms`)
+                    .fadeIn(200)
+                    .delay(3000)
+                    .fadeOut(500);
+            }
+            
+            // Debug - check which filters are applied
+            // console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
+            // console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
+        }
+    }
+    
+    // Clear DataTable filters
+    function clearDataTableFilters() {
+        // Remove any existing search extensions to avoid duplication
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
+    }
+    
+    // Add search filter
+    function addSearchFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, searchData, index, rowData, counter) {
+                // Only apply to rooms-table
+                if (settings.nTable.id !== 'rooms-table') {
+                    return true;
+                }
+                
+                const searchValue = $('#search').val().toLowerCase().trim();
+                if (!searchValue) {
+                    return true; // Show all when no search text
+                }
+                
+                // Safety check
+                if (!rowData) return true;
+                
+                // Check building, college, and room number for matches
+                const building = (rowData.building || '').toLowerCase();
+                const college = (rowData.res_college || '').toLowerCase();
+                const roomNo = (rowData.room_no || '').toLowerCase();
+                
+                // Full combined search string
+                const fullSearchString = building + ' ' + roomNo + ' ' + college;
+                
+                // Handle searching with multiple terms (split by space)
+                const searchTerms = searchValue.split(/\s+/).filter(term => term.length > 0);
+                
+                // If all search terms are found in the combined fields, show the row
+                let allTermsFound = true;
+                for (let i = 0; i < searchTerms.length; i++) {
+                    const term = searchTerms[i];
+                    
+                    // Check if this term is found in any field
+                    const termFound =
+                        building.includes(term) ||
+                        college.includes(term) ||
+                        roomNo.includes(term) ||
+                        fullSearchString.includes(term);
+                    
+                    // Special case for Forbes/Maine
+                    const isForbesMaine =
+                        (term.includes('forbes') && building === 'maine') ||
+                        (term.includes('maine') && college.includes('forbes'));
+                        
+                    if (!termFound && !isForbesMaine) {
+                        allTermsFound = false;
+                        break;
+                    }
+                }
+                
+                if (allTermsFound && searchTerms.length > 0) {
+                    return true;
+                }
+                
+                // Direct match check for backward compatibility
+                if (building.includes(searchValue) ||
+                    college.includes(searchValue) ||
+                    roomNo.includes(searchValue) ||
+                    fullSearchString.includes(searchValue)) {
+                    return true;
+                }
+                
+                // Handle Forbes/Maine alias
+                if ((searchValue.includes('forbes') && building === 'maine') ||
+                    (searchValue.includes('maine') && college.includes('forbes'))) {
+                    return true;
+                }
+                
+                return false;
+            }
+        );
+    }
+    
+    // Add college filter
+    function addCollegeFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's college matches the selected college
+                    const roomCollege = rowData.res_college || '';
+                    
+                    // Handle special case for "Upperclass"
+                    if (filterState.college === "Upperclass") {
+                        return roomCollege.toLowerCase().includes("upperclass");
+                    }
+                    
+                    return roomCollege === filterState.college;
+                } catch (e) {
+                    console.error("Error in college filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add building filter
+    function addBuildingFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's building matches the selected building
+                    const roomBuilding = rowData.building || '';
+                    
+                    // Case-insensitive comparison for building names
+                    return roomBuilding.toLowerCase() === filterState.building.toLowerCase();
+                } catch (e) {
+                    console.error("Error in building filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add occupancy filter
+    function addOccupancyFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    // Check if the room's occupancy matches the selected occupancy
+                    const roomOccupancy = parseInt(rowData.occupancy) || 0;
+                    const selectedOccupancy = parseInt(filterState.occupancy) || 0;
+                    
+                    return roomOccupancy === selectedOccupancy;
+                } catch (e) {
+                    console.error("Error in occupancy filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add size filter
+    function addSizeFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const footage = parseInt(rowData.sq_footage);
+                    
+                    if (isNaN(footage)) {
+                        return true; // If we can't parse the footage, just show it
+                    }
+                    
+                    if (filterState.size === 'small' && footage < 300) {
+                        return true;
+                    } else if (filterState.size === 'medium' && footage >= 300 && footage <= 450) {
+                        return true;
+                    } else if (filterState.size === 'large' && footage > 450) {
+                        return true;
+                    }
+                    
+                    return false;
+                } catch (e) {
+                    console.error("Error in size filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add AC filter
+    function addACFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const hasAC = rowData.ac && rowData.ac.trim().toLowerCase() === 'yes';
+                    
+                    // State 1: Positive (show only rooms WITH AC)
+                    // State 2: Negative (show only rooms WITHOUT AC)
+                    return (filterState.acState === 1) ? hasAC : !hasAC;
+                } catch (e) {
+                    console.error("Error in AC filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add bathroom filter
+    function addBathroomFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const hasBathroom = rowData.bathroom && rowData.bathroom.trim().toLowerCase() === 'private';
+                    
+                    // State 1: Positive (show only rooms WITH bathroom)
+                    // State 2: Negative (show only rooms WITHOUT bathroom)
+                    return (filterState.bathroomState === 1) ? hasBathroom : !hasBathroom;
+                } catch (e) {
+                    console.error("Error in bathroom filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // Add favorites filter
+    function addFavoritesFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    return rowData.favorite === true;
+                } catch (e) {
+                    console.error("Error in favorites filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
+    // HELPER FUNCTIONS
+    
+    // Check if a building belongs to a college
+    function buildingBelongsToCollege(building, college) {
+        if (!building || !college) return false;
+        
+        // Check if we have the college in our mapping
+        if (!filterState.buildingsByCollege[college]) return false;
+        // Check if the building is in the college's building list (case-insensitive)
+        return filterState.buildingsByCollege[college].some(b =>
+            b.toLowerCase() === building.toLowerCase());
+    }
+    
+    // Process room data to build mappings
+    function processRoomData(json) {
+        if (!json || !json.data || !Array.isArray(json.data)) {
+            return;
+        }
+        
+        // Reset mappings
+        filterState.buildingsByCollege = {};
+        filterState.buildingToCollege = {};
+        
+        // Process each room
+        json.data.forEach(function(room) {
+            if (room.building && room.res_college) {
+                // Initialize college array if needed
+                if (!filterState.buildingsByCollege[room.res_college]) {
+                    filterState.buildingsByCollege[room.res_college] = [];
+                }
+                
+                // Add building to college if not already there (case-insensitive check)
+                const collegeBuildings = filterState.buildingsByCollege[room.res_college];
+                const buildingExists = collegeBuildings.some(b =>
+                    b.toLowerCase() === room.building.toLowerCase());
+                
+                if (!buildingExists) {
+                    filterState.buildingsByCollege[room.res_college].push(room.building);
+                }
+                
+                // Map building to college
+                filterState.buildingToCollege[room.building] = room.res_college;
+            }
+        });
+        
+        // Sort building lists
+        for (const college in filterState.buildingsByCollege) {
+            filterState.buildingsByCollege[college].sort();
+        }
+        
+        // console.log("Processed room data:", filterState.buildingsByCollege);
+    }
+    // Toggle dropdown visibility - revert to original implementation
+    function toggleDropdown(dropdownElement) {
+        // Close other dropdowns first
+        $('.pill-dropdown').not(dropdownElement).slideUp(100);
+        
+        // Position dropdown before showing it
+        const pillElement = dropdownElement.closest('.dropdown-pill');
+        positionDropdown(pillElement, dropdownElement);
+        
+        // Toggle this dropdown
+        dropdownElement.slideToggle(150);
+    }
+    
+    // Hide all dropdowns
+    function hideAllDropdowns() {
+        $('.pill-dropdown').slideUp(100);
+        $('#portal-dropdown').remove();
+    }
+    
+    // EVENT HANDLERS
+    
+    // Attach event handlers to building dropdown items
+    function attachBuildingDropdownHandlers(buildingDropdown) {
+        buildingDropdown.find('.dropdown-item').on('click', function(e) {
+            e.stopPropagation();
+            const building = $(this).data('value');
+            updateBuildingFilter(building);
+            hideAllDropdowns();
+        });
+    }
+    
+    // Setup pill filter interactions
+    function setupPillFilters() {
+        // Initialize the hidden form elements with default values to show all rooms
+        $('#college').val('').attr('data-selected-value', '');
+        $('#building').val('').attr('data-selected-value', '');
+        $('#occupancy').val('').attr('data-selected-value', '');
+        $('#size').val('').attr('data-selected-value', '');
+        $('#ac-toggle').prop('checked', false);
+        $('#bathroom-toggle').prop('checked', false);
+        
+        // Set "All" as selected in all dropdowns
+        $('.pill-dropdown').each(function() {
+            $(this).find('.dropdown-item').removeClass('selected');
+            $(this).find('.dropdown-item[data-value=""]').addClass('selected');
+        });
+        
+        // Favorites pill
+        $('#favorites-pill').on('click', function() {
+            updateFavoritesFilter(!filterState.favorites);
+        });
+        
+        // Toggle state pills (AC and Bathroom)
+        $('.toggle-pill').on('click', function() {
+            const pillElement = $(this);
+            const currentState = parseInt(pillElement.attr('data-state'));
+            const nextState = (currentState + 1) % 3; // 0 -> 1 -> 2 -> 0
+            
+            if (pillElement.attr('id') === 'ac-pill') {
+                updateACFilter(nextState);
+            } else if (pillElement.attr('id') === 'bathroom-pill') {
+                updateBathroomFilter(nextState);
+            }
+        });
+        
+        // College pill click handler
+        $('#college-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // College dropdown item click handler
+        $('.college-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const college = $(this).data('value');
+            updateCollegeFilter(college);
+            hideAllDropdowns();
+        });
+        
+        // Building pill click handler
+        $('#building-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // People pill click handler
+        $('#people-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // People dropdown item click handler
+        $('.occupancy-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const occupancy = $(this).data('value');
+            updateOccupancyFilter(occupancy);
+            hideAllDropdowns();
+        });
+        
+        // Size pill click handler
+        $('#size-pill').on('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown($(this).find('.pill-dropdown'));
+        });
+        
+        // Size dropdown item click handler
+        $('.size-dropdown').on('click', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const size = $(this).data('value');
+            updateSizeFilter(size);
+            hideAllDropdowns();
+        });
+        
+        // Close dropdowns when clicking elsewhere
+        $(document).on('click', function(e) {
+            // Only if we clicked outside any pill
+            if (!$(e.target).closest('.dropdown-pill').length) {
+                hideAllDropdowns();
+            }
+        });
+        
+        // Add event listener for ESC key to close dropdowns
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideAllDropdowns();
+            }
+        });
+        
+        // Initialize filter state
+        initializeFilterState();
+    }
+    
+    // Initialize filter state
+    function initializeFilterState() {
+        // Load building data
+        $.ajax({
+            url: '/queryrooms?college=&occupancy=&year=&building=',
+            type: 'GET',
+            dataType: 'json',
+            success: function(json) {
+                // Process building data
+                processRoomData(json);
+                
+                // Initialize UI
+                updateCollegeUI();
+                updateBuildingUI();
+                updateOccupancyUI();
+                updateSizeUI();
+                updateACUI();
+                updateBathroomUI();
+                updateFavoritesUI();
+                
+                // Apply initial filters
+                applyAllFilters();
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading initial data:", error);
+            }
+        });
+    }
+    
+    // Update building dropdown items based on the selected college
+    function updateBuildingDropdownItems() {
+        const buildingDropdown = $('.building-dropdown');
+        const selectedCollege = $('#college').val() || '';
+        
+        // Cache selected value before emptying dropdown
+        const currentBuilding = $('#building').val();
+        let buildingStillValid = true;
+        
+        // Completely remove and rebuild the dropdown (faster than manipulating individual items)
+        buildingDropdown.empty();
+        
+        // Always add the "All" option
+        const allSelected = currentBuilding === '' ? ' selected' : '';
+        buildingDropdown.append(`<div class="dropdown-item${allSelected}" data-value="">All</div>`);
+        
+        // Determine which buildings to show (with optimized approach)
+        let buildingsToShow = [];
+        
+        if (selectedCollege && allBuildingsData[selectedCollege]) {
+            // If a college is selected, show only buildings for that college
+            // Shallow copy for better performance
+            buildingsToShow = allBuildingsData[selectedCollege].slice(0);
+            
+            // Check if current building is in this college's buildings (case-insensitive)
+            if (currentBuilding && !buildingsToShow.some(b =>
+                b.toLowerCase() === currentBuilding.toLowerCase())) {
+                buildingStillValid = false;
+            }
+        } else {
+            // If no college selected, show all buildings from all colleges (optimized)
+            // Use Set for faster uniqueness checks
+            const uniqueBuildings = new Set();
+            
+            for (const college in allBuildingsData) {
+                if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                    // Add all buildings directly to the Set (automatically handles duplicates)
+                    allBuildingsData[college].forEach(building => uniqueBuildings.add(building));
+                }
+            }
+            
+            // Convert Set to Array
+            buildingsToShow = Array.from(uniqueBuildings);
+        }
+        
+        // Sort buildings alphabetically only if buildings were found
+        if (buildingsToShow.length > 0) {
+            buildingsToShow.sort();
+        }
+        
+        // If building is no longer valid with current college selection, reset it
+        if (!buildingStillValid && currentBuilding) {
+            // Reset building filter
+            $('#building').val('').attr('data-selected-value', '');
+            $('#building-pill').removeClass('active');
+            $('#building-pill > span').text('Building'); // Update the pill text
+            
+            // Notify user
+            if (typeof notyf !== 'undefined' && selectedCollege) {
+                notyf.info(`Building filter cleared as selected building is not in ${selectedCollege}`);
+            }
+        }
+        
+        // Only generate HTML if we have buildings to show
+        if (buildingsToShow.length > 0) {
+            // Create all items at once as HTML string (faster than multiple DOM operations)
+            let html = '';
+            for (let i = 0; i < buildingsToShow.length; i++) {
+                const building = buildingsToShow[i];
+                const isSelected = building === currentBuilding && buildingStillValid ? ' selected' : '';
+                html += `<div class="dropdown-item${isSelected}" data-value="${building}">${building}</div>`;
+            }
+            
+            // Add all items at once (single DOM operation)
+            buildingDropdown.append(html);
+        }
+        
+        // Use event delegation for performance instead of binding to each item
+        buildingDropdown.off('click.buildingItem').on('click.buildingItem', '.dropdown-item', function(e) {
+            e.stopPropagation();
+            const value = $(this).data('value');
+            const pillElement = $(this).closest('.dropdown-pill');
+            
+            // Batch DOM operations for better performance
+            // Update selection visually
+            buildingDropdown.find('.dropdown-item').removeClass('selected');
+            $(this).addClass('selected');
+            
+            // Update pill appearance
+            pillElement.toggleClass('active', value !== '');
+            
+            // Update building select and trigger change
+            $('#building').val(value).attr('data-selected-value', value);
+            
+            // Update the building pill text
+            if (value) {
+                $('#building-pill > span').text(value);
+                
+                // If a building is selected, update the college filter if needed
+                const buildingCollege = buildingToCollegeMap[value];
+                if (buildingCollege && selectedCollege !== buildingCollege) {
+                    // Update college filter to match the building's college
+                    $('#college').val(buildingCollege).attr('data-selected-value', buildingCollege);
+                    $('#college-pill').addClass('active');
+                    
+                    // Update college pill text
+                    const collegeItem = $(`.college-dropdown .dropdown-item[data-value="${buildingCollege}"]`);
+                    if (collegeItem.length) {
+                        $('#college-pill > span').text(collegeItem.text());
+                    }
+                    
+                    // Show notification
+                    if (typeof notyf !== 'undefined') {
+                        notyf.success(`College filter updated to ${buildingCollege}`);
+                    }
+                }
+            } else {
+                $('#building-pill > span').text('Building');
+            }
+            
+            // Hide dropdown immediately for better UX
+            buildingDropdown.hide();
+            $('#portal-dropdown').remove();
+            
+            // Trigger change event after a small delay to allow UI to update first
+            setTimeout(() => $('#building').trigger('change'), 0);
+        });
+        
+        // Make sure the correct item is selected to match the hidden form element
+        if (currentBuilding) {
+            const selectedItem = buildingDropdown.find(`.dropdown-item[data-value="${currentBuilding}"]`);
+            if (selectedItem.length) {
+                buildingDropdown.find('.dropdown-item').removeClass('selected');
+                selectedItem.addClass('selected');
+            }
+        }
+    }
+    
+    // Overriding the default occupancy selector (prevent options > 6)
+    $("#occupancy").on('change', function() {
+        const val = $(this).val();
+        if (val !== "" && parseInt(val) > 6) {
+            $(this).val(6).trigger('change');
+            console.warn('Occupancy limited to max 6 people');
+        }
+    });
+
+    // This function is now replaced by applyAllFilters() in the new filter system
+    function applyFilters() {
+        // Call the new function instead
+        applyAllFilters();
+    }
+
+    // Add the custom search function after the table is initialized
+    function addCustomSearchFunction() {
+        // Remove any existing search functions first
+        while ($.fn.dataTable.ext.search.length > 0) {
+            $.fn.dataTable.ext.search.pop();
+        }
+        
+        // Add our custom search function
+        $.fn.dataTable.ext.search.push(
+          function(settings, searchData, index, rowData, counter) {
+            // Only apply to rooms-table
+            if (settings.nTable.id !== 'rooms-table') {
+              return true;
+            }
+            
+            const searchValue = $('#search').val().toLowerCase().trim();
+            if (!searchValue) {
+              return true; // Show all when no search text
+            }
+            
+            // Safety check
+            if (!rowData) return true;
+            
+            // Check building, college, and room number for matches
+            const building = (rowData.building || '').toLowerCase();
+            const college = (rowData.res_college || '').toLowerCase();
+            const roomNo = (rowData.room_no || '').toLowerCase();
+            
+            // Full combined search string
+            const fullSearchString = building + ' ' + roomNo + ' ' + college;
+            
+            // Handle searching with multiple terms (split by space)
+            const searchTerms = searchValue.split(/\s+/).filter(term => term.length > 0);
+            
+            // If all search terms are found in the combined fields, show the row
+            let allTermsFound = true;
+            for (let i = 0; i < searchTerms.length; i++) {
+                const term = searchTerms[i];
+                
+                // Check if this term is found in any field
+                const termFound = 
+                    building.includes(term) || 
+                    college.includes(term) || 
+                    roomNo.includes(term) ||
+                    fullSearchString.includes(term);
+                
+                // Special case for Forbes/Maine
+                const isForbesMaine = 
+                    (term.includes('forbes') && building === 'maine') ||
+                    (term.includes('maine') && college.includes('forbes'));
+                    
+                if (!termFound && !isForbesMaine) {
+                    allTermsFound = false;
+                    break;
+                }
+            }
+            
+            if (allTermsFound && searchTerms.length > 0) {
+                return true;
+            }
+            
+            // Direct match check for backward compatibility
+            if (building.includes(searchValue) || 
+                college.includes(searchValue) || 
+                roomNo.includes(searchValue) ||
+                fullSearchString.includes(searchValue)) {
+              return true;
+            }
+            
+            // Handle Forbes/Maine alias
+            if ((searchValue.includes('forbes') && building === 'maine') ||
+                (searchValue.includes('maine') && college.includes('forbes'))) {
+              return true;
+            }
+            
+            return false;
+          }
+        );
+    }
+
+    // Initialize the debounced search handler
+    const debouncedSearchHandler = debounce(function() {
+        applyFilters();
+    }, 300);
+
+    // Wait for DOM to be fully loaded
+    // Helper function to maintain and update the building-to-college mapping
+    function updateBuildingToCollegeMapping() {
+        // Create a fresh mapping
+        window.buildingToCollegeMap = {};
+        
+        // Build the mapping
+        for (const college in allBuildingsData) {
+            if (allBuildingsData[college] && Array.isArray(allBuildingsData[college])) {
+                for (const building of allBuildingsData[college]) {
+                    window.buildingToCollegeMap[building] = college;
+                }
+            }
+        }
+        
+        // console.log("Building-to-college mapping updated with", Object.keys(window.buildingToCollegeMap).length, "buildings");
+        return window.buildingToCollegeMap;
+    }
+    
+    $(document).ready(function() {
+        // Set up event handlers
+        setup();
+        
+        // Initialize selects
+        $("#buildings").val("");
+        $("#year").val("");
+        
+        // Set default data attributes for tracking
+        $('#college').attr('data-selected-value', '');
+        $('#building').attr('data-selected-value', '');
+        $('#occupancy').attr('data-selected-value', '');
+        $('#size').attr('data-selected-value', '');
+        
+        // Initialize the building-to-college mapping for better performance
+        setTimeout(updateBuildingToCollegeMapping, 1000);
+        
+        // Reinitialize occupancy options with max of 6
+        $("#occupancy").empty();
+        $("#occupancy").append($("<option>").val("").html("All"));
+        for (var i = 1; i <= 6; i++) {
+            $("#occupancy").append($("<option>").val(i).html(i));
+        }
+        
+        // Add smooth animations for pill filters
+        $('.filter-pill').hover(
+            function() { $(this).css('transform', 'translateY(-2px)'); },
+            function() { $(this).css('transform', 'translateY(0)'); }
+        );
+        
+        // Make search more responsive by handling each keypress
+        $('#search').off('keyup').on('keyup', function() {
+            // This will trigger our custom search function that was added at the top
+            console.log("Search keyup: " + $(this).val());
+            if (rt) {
+                rt.draw(); // Redraw the table to apply the search filter
+            }
+        });
+        
+        // Use keydown for special keys like Enter
+        $('#search').on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (rt) {
+                    rt.draw(); // Apply immediately on Enter
+                }
+            }
+        });
+        
+        // Clear button for search field
+        if (!$('#search-clear-btn').length) {
+            $('<button id="search-clear-btn" type="button" class="btn position-absolute" style="display:none; right: 175px; top: 10px; z-index: 5; color: #999;">&times;</button>')
+                .insertAfter('#search')
+                .on('click', function() {
+                    $('#search').val('').focus();
+                    $(this).hide();
+                    // Use our search mechanism directly
+                    if (rt) {
+                        rt.draw();
+                    }
+                });
+            
+            // Show/hide clear button based on search content
+            $('#search').on('input', function() {
+                $('#search-clear-btn').toggle($(this).val().length > 0);
+            });
+        }
+    });
 
     async function fetchWithTimeout(resource, options = {}) {
         const {timeout = 10000} = options;
@@ -712,50 +3225,185 @@
 
     function getReviews(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        setTimeout(function () {
+        
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
+        setTimeout(function() {
+            // console.log("Fetching reviews for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Initialize character counter for the review textarea
+                    setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            // console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
 
     function getReviewsWithError(building_name, room_no, clicked_review_button) {
         $("#reviews-body").html("<div class=\"center\"><div class=\"loadingio-spinner-eclipse-sl0eruj4pj9\"><div class=\"ldio-nsjyfj8x68\"><div></div></div></div></div>");
+        
         if (clicked_review_button !== null) {
             window.review_button = clicked_review_button;
         }
+        
         window.curr_building_name = building_name;
         window.curr_room_no = room_no;
-        setTimeout(function () {
+        
+        // Ensure jQuery Confirm is available
+        if (typeof $.confirm !== 'function') {
+            console.log("Loading jQuery Confirm for reviews");
+            
+            // Load jQuery Confirm CSS if needed
+            if (!$('link[href*="jquery-confirm"]').length) {
+                $('head').append('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css">');
+            }
+            
+            // Load jQuery Confirm JS
+            $.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js")
+                .done(function() {
+                    console.log("jQuery Confirm loaded successfully");
+                })
+                .fail(function() {
+                    console.error("Failed to load jQuery Confirm");
+                });
+        }
+        
+        // Ensure Bootstrap icons are available
+        if (!$('link[href*="bootstrap-icons"]').length) {
+            $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">');
+        }
+        
+        // Ensure we have a global text_max value for character counting
+        if (typeof window.text_max === 'undefined') {
+            window.text_max = 5000;
+        }
+        
+        // Show loading indicator
+        setTimeout(function() {
+            // console.log("Fetching reviews (with error context) for", building_name, room_no);
+            
             fetchWithTimeout('/get_reviews?' +
                 '&building_name=' + building_name +
                 '&room_no=' + room_no)
-                .then(response => response.text()).then(data => {
-                $("#reviews-body").html(data);
-                $("#overall-rating").val(rating);
-                $("#written-review").val(review);
-                $('#count_message').html(review.length + ' / ' + text_max);
-            });
-        }, 1000);
+                .then(response => response.text())
+                .then(data => {
+                    $("#reviews-body").html(data);
+                    
+                    // Initialize character counter for the review textarea
+                    setTimeout(function() {
+                        // Use the global initializeCharCounter function if available
+                        if (typeof initializeCharCounter === 'function') {
+                            initializeCharCounter();
+                            // console.log("Character counter initialized after loading reviews");
+                        }
+                        
+                        // Make sure the review form is properly set up
+                        if ($('#submit-review-form').length) {
+                            // Attach event handlers
+                            $("#submit-review-form").off("submit").on("submit", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                            
+                            // Also attach to submit button click for more reliability
+                            $(".submit-button").off("click").on("click", function(e) {
+                                e.preventDefault();
+                                if (typeof submitReviewWithoutRefresh === 'function') {
+                                    submitReviewWithoutRefresh();
+                                }
+                                return false;
+                            });
+                        }
+                        
+                        // Display error message if applicable
+                        if (window.errorMessage) {
+                            if (window.notyf) {
+                                window.notyf.error(window.errorMessage);
+                                window.errorMessage = null;
+                            }
+                        }
+                    }, 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching reviews:", error);
+                    $("#reviews-body").html("<div class='alert alert-danger'>Error loading reviews. Please try again.</div>");
+                });
+        }, 300);
     }
-
-    const notyf = new Notyf({
-        duration: 10000,
-        dismissible: true,
-        position: {
-            x: 'right',
-            y: 'bottom',
-        },
-    });
-
 
     function submitReviewWithoutRefresh() {
         rating = $("#overall-rating").val()

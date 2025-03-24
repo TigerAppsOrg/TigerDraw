@@ -52,7 +52,19 @@ class Room(Base):
     sq_footage = Column(Integer)
     res_college = Column(String)
     taken = Column(Boolean)
-    # add all the new columns
+    elevator = Column(String)
+    bathroom = Column(String)
+    ac = Column(String)
+    floor = Column(Integer)
+    wawa = Column(Integer)
+    ustore = Column(Integer)
+    __table_args__ = {'quote': True}  # enables quoting for special column names
+    nassau_street = Column('Nassau Street', Integer)
+    jadwin_gym = Column('Jadwin Gym', Integer)
+    frist = Column(Integer)
+    street = Column(Integer)
+    equad = Column(Integer)
+    dillon = Column(Integer)
 
 
 # class ReviewCount(Base):
@@ -594,6 +606,18 @@ def getUserGroupsJSON(username):
                 "user_that_added": user_that_added,
                 "taken": room.taken,
                 "favorited": True if int(room.room_id) in room_ids else False,
+                "elevator": room.elevator,
+                "bathroom": room.bathroom,
+                "ac": room.ac,
+                "floor": room.floor,
+                "wawa": room.wawa,
+                "ustore": room.ustore,
+                "Nassau Street": room.nassau_street,
+                "Jadwin Gym": room.jadwin_gym,
+                "frist": room.frist,
+                "street": room.street,
+                "equad": room.equad,
+                "dillon": room.dillon
             }
             room_array.append(room_dict)
         group_dict["rooms"] = room_array
