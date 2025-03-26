@@ -1484,6 +1484,7 @@
                 },
                 {
                     data: null,
+                    orderable: false, // Disable sorting for this column
                     render: function(data, type, row) {
                         let acIcon = '';
                         if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
