@@ -823,26 +823,29 @@
     }
     
     #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; }
-    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 18%; }
-    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 45%; }
-    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
+    #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 12%; }
+    #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 12%; }
+    #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 39%; }
+    #rooms-table th:nth-child(5), #rooms-table td:nth-child(5) { width: 15%; }
     
     @media (max-width: 1200px) {
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 34%; }
     }
     
     @media (max-width: 992px) {
         #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 25%; }
-        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 20%; }
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 35%; }
-        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 20%; }
+        #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 15%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 25%; }
+        #rooms-table th:nth-child(5), #rooms-table td:nth-child(5) { width: 20%; }
     }
     
     @media (max-width: 767px) {
         #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 30%; }
         #rooms-table th:nth-child(2), #rooms-table td:nth-child(2) { width: 15%; }
-        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 40%; }
-        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 15%; }
+        #rooms-table th:nth-child(3), #rooms-table td:nth-child(3) { width: 15%; }
+        #rooms-table th:nth-child(4), #rooms-table td:nth-child(4) { width: 25%; }
+        #rooms-table th:nth-child(5), #rooms-table td:nth-child(5) { width: 15%; }
         
         #rooms-table td {
             padding: 15px 8px;
@@ -1228,6 +1231,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
+                <th>Room Size</th>
                 <th>Amenities & Walk Times</th>
                 <th>Reviews</th>
             </tr>
@@ -1236,6 +1240,7 @@
             <tr>
                 <th>Location & Rating</th>
                 <th>Occupancy</th>
+                <th>Room Size</th>
                 <th>Amenities & Walk Times</th>
                 <th>Reviews</th>
             </tr>
@@ -1396,6 +1401,18 @@
                 return parseFloat(wrapper.attr('data-rating')) || 0;
             });
         };
+
+        $.fn.dataTable.ext.order['dom-occupancy'] = function (settings, col) {
+            return this.api().column(col, {order:'index'}).nodes().map(function (td, i) {
+                return parseInt($(td).find('.occupancy-value').text()) || 0;
+            });
+        };
+
+        $.fn.dataTable.ext.order['dom-size'] = function (settings, col) {
+            return this.api().column(col, {order:'index'}).nodes().map(function (td, i) {
+                return parseInt($(td).find('.room-size-value').text()) || 0;
+            });
+        };
         
         rt = $('#rooms-table').DataTable({
             destroy: true,
@@ -1408,6 +1425,16 @@
                     orderSequence: ['asc', 'desc'],
                     orderDataType: 'dom-rating'
                 },
+                {
+                    targets: 1,
+                    type: "num",
+                    orderDataType: 'dom-occupancy'
+                },
+                {
+                    targets: 2,
+                    type: "num",
+                    orderDataType: 'dom-size'
+                }
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
@@ -1484,10 +1511,17 @@
                     render: function(data, type, row) {
                         return '<div class="room-occupancy d-flex flex-column align-items-center">' +
                                '<div class="occupancy-icons d-flex justify-content-center">' + 
-                               '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
+                               '<span class="occupancy-value" style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
                                '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
                                '</div>' +
-                               '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</div>' +
+                               '</div>';
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data, type, row) {
+                        return '<div class="room-size d-flex justify-content-center align-items-center">' +
+                               '<span class="room-size-value" style="font-size: 1.2em; font-weight: 500; color: #474bc9;"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</span>' +
                                '</div>';
                     }
                 },
