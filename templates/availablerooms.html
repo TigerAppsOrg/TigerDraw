@@ -1227,7 +1227,7 @@
             <thead>
             <tr>
                 <th>Location & Rating</th>
-                <th data-sort="sq_footage">Occupancy</th>
+                <th data-sort="sq_footage">Occupancy / Size</th>
                 <th>Amenities & Walk Times</th>
                 <th>Reviews</th>
             </tr>
@@ -1235,7 +1235,7 @@
             <tfoot>
             <tr>
                 <th>Location & Rating</th>
-                <th data-sort="sq_footage">Occupancy</th>
+                <th data-sort="sq_footage">Occupancy / Size</th>
                 <th>Amenities & Walk Times</th>
                 <th>Reviews</th>
             </tr>
@@ -1406,8 +1406,13 @@
                     type: "formatted-num",
                     orderData: 0,
                     orderSequence: ['asc', 'desc'],
-                    orderDataType: 'dom-rating'
+                    orderDataType: 'dom-rating' // Custom sorter for rating in column 0
                 },
+                {
+                    targets: 1, // Target the second column (Occupancy / Size)
+                    type: "num", // Ensure numeric sorting
+                    orderData: [1, 0] // Sort primarily by this column (index 1), then by column 0 as secondary
+                }
             ],
             "pagingType": "first_last_numbers",
             "bLengthChange": false,
@@ -1480,10 +1485,35 @@
                     }
                 },
                 {
-                    data: null,
+                    data: 'sq_footage', // Tell DataTables to use sq_footage for sorting this column
                     render: function(data, type, row) {
-                        return '<div class="room-occupancy d-flex flex-column align-items-center">' +
-                               '<div class="occupancy-icons d-flex justify-content-center">' +
+                        // For display, show both occupancy and size
+                        if (type === 'display') {
+                            return '<div class="room-occupancy d-flex flex-column align-items-center">' +
+                                   '<div class="occupancy-icons d-flex justify-content-center">' +
+                                   '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + row.occupancy + '</span>' + // Use row.occupancy for display
+                                   '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
+                                   '</div>' +
+                                   '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + row.sq_footage + ' sq.ft.</div>' + // Use row.sq_footage for display
+                                   '</div>';
+                        }
+                        // For sorting and filtering, return the raw sq_footage data
+                        return data;
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false, // Disable sorting for this column
+                    render: function(data, type, row) {
+                        let acIcon = '';
+                        if (data.ac && data.ac.trim().toLowerCase() === 'yes') {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="AC" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        } else {
+                            acIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/ac-icon.svg") }}" alt="No AC" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-fan\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        }
+
+                        let bathroomIcon = '';
+                        if (data.bathroom) {
                                '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
                                '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
                                '</div>' +
