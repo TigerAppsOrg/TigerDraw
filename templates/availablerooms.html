@@ -2052,8 +2052,16 @@
         // Update state
         filterState.college = college;
         
-        // Handle building constraints
-        if (college && filterState.building) {
+        // Clear building filter when college is set to "all"
+        if (!college) {
+            filterState.building = "";
+            // Update building UI to reflect the cleared state
+            $('#building').val('').attr('data-selected-value', '');
+            $('#building-pill').removeClass('active');
+            $('#building-pill > span').text('Building');
+        }
+        // Handle building constraints for specific colleges
+        else if (filterState.building) {
             // Check if current building belongs to selected college
             if (!buildingBelongsToCollege(filterState.building, college)) {
                 // Clear building if it doesn't belong to the college
