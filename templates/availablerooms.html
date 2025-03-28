@@ -1871,14 +1871,18 @@
         $('#rooms-table').on('change', '.heart-checkbox', function () {
             var data = rt.row($(this).closest('tr')).data();
             var changing_row = data;
+            var $label = $(this).parent();
+            var $checkbox = $(this);
             
             // Update the heart icon appearance
             if (this.checked) {
-                $(this).parent().text('♥');
-                $(this).appendTo($(this).parent());
+                // Instead of replacing text and re-appending, keep the checkbox and update the label text
+                $label.html('♥');
+                $label.append($checkbox);
             } else {
-                $(this).parent().text('♡');
-                $(this).appendTo($(this).parent());
+                // Instead of replacing text and re-appending, keep the checkbox and update the label text
+                $label.html('♡');
+                $label.append($checkbox);
             }
 
             if (!this.checked) {
@@ -1887,7 +1891,21 @@
                     type: 'POST',
                     url: "{{url_for('removeFromFravorites')}}",
                     contentType: 'application/json;charset=UTF-8',
-                    data: JSON.stringify(changing_row.room_id)
+                    data: JSON.stringify(changing_row.room_id),
+                    success: function(response) {
+                        // Update the DataTable's internal data
+                        changing_row.favorite = false;
+                        // Invalidate the DataTable row cache
+                        rt.row($checkbox.closest('tr')).invalidate();
+                        // Redraw the table to apply any filters
+                        rt.draw(false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // If there's an error, revert the UI change
+                        $label.html('♥');
+                        $checkbox.prop('checked', true);
+                        $label.append($checkbox);
+                    }
                 });
             } else {
                 // SEND MESSAGE TO DATABASE TO ADD TO FAVORITES
@@ -1895,7 +1913,21 @@
                     type: 'POST',
                     url: "{{url_for('addToFavorites')}}",
                     contentType: 'application/json;charset=UTF-8',
-                    data: JSON.stringify(changing_row.room_id)
+                    data: JSON.stringify(changing_row.room_id),
+                    success: function(response) {
+                        // Update the DataTable's internal data
+                        changing_row.favorite = true;
+                        // Invalidate the DataTable row cache
+                        rt.row($checkbox.closest('tr')).invalidate();
+                        // Redraw the table to apply any filters
+                        rt.draw(false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // If there's an error, revert the UI change
+                        $label.html('♡');
+                        $checkbox.prop('checked', false);
+                        $label.append($checkbox);
+                    }
                 });
             }
         });
