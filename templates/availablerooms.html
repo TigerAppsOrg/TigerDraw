@@ -1227,7 +1227,7 @@
             <thead>
             <tr>
                 <th>Location & Rating</th>
-                <th>Occupancy</th>
+                <th data-sort="sq_footage">Occupancy</th>
                 <th>Amenities & Walk Times</th>
                 <th>Reviews</th>
             </tr>
@@ -1483,7 +1483,7 @@
                     data: null,
                     render: function(data, type, row) {
                         return '<div class="room-occupancy d-flex flex-column align-items-center">' +
-                               '<div class="occupancy-icons d-flex justify-content-center">' + 
+                               '<div class="occupancy-icons d-flex justify-content-center">' +
                                '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
                                '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
                                '</div>' +
