@@ -485,10 +485,15 @@
     }
     
     .room-college {
-        font-size: 0.9em;
         color: #666;
-        margin-bottom: 4px;
-        display: block;
+        font-size: 0.9em;
+        margin-bottom: 2px;
+    }
+    
+    .room-floor {
+        color: #888;
+        font-size: 0.8em;
+        font-weight: 400;
     }
     
     .room-actions {
@@ -1498,6 +1503,7 @@
                                '<span class="room-num">' + data.room_no + '</span>' +
                                '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
+                               '<div class="room-floor">Floor ' + data.floor + '</div>' +
                                '</div>' +
                                '<div class="room-stars">' + 
                                '<div class="heart-container text-center mb-2">' + favoriteHtml + '</div>' +
