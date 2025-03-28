@@ -463,24 +463,31 @@
     }
     
     .room-amenities {
-        padding: 12px 0;
+        padding: 8px 0; 
     }
     
     .room-location {
-        min-height: 75px;
+        min-height: 65px;
     }
     
     .room-building-number {
-        font-size: 1.4em;
-        font-weight: 700;
-        margin-bottom: 4px;
+        font-size: 1.2em;
+        margin-bottom: 2px;
         display: block;
     }
     
+    .room-building-number .building-name {
+        font-weight: 700;
+    }
+    
+    .room-building-number .room-num {
+        font-weight: normal;
+    }
+    
     .room-college {
-        font-size: 0.95em;
+        font-size: 0.9em;
         color: #666;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         display: block;
     }
     
@@ -573,13 +580,13 @@
     }
     
     .table-amenity-icon {
-        width: 36px;
-        height: 36px;
+        width: 28px;  /* Reduced from 36px */
+        height: 28px;  /* Reduced from 36px */
     }
     
     .table-icon-img {
-        width: 42px;
-        height: 42px;
+        width: 32px;  /* Reduced from 42px */
+        height: 32px;  /* Reduced from 42px */
     }
     
     .distances {
@@ -589,10 +596,10 @@
     }
     
     .distance-item {
-        margin-bottom: 2px;
+        margin-bottom: 1px;
         display: flex;
         align-items: center;
-        font-size: 0.85em;
+        font-size: 0.82em;
     }
     
     .distance-item i {
@@ -606,14 +613,14 @@
         font-weight: 500;
         width: auto;
         display: inline-block;
-        font-size: 0.95em;
+        font-size: 0.9em;
         margin-right: 4px;
     }
     
     .distance-value {
         font-weight: 600;
         color: #474bc9;
-        font-size: 0.95em;
+        font-size: 0.9em;
         white-space: nowrap;
     }
     
@@ -731,7 +738,7 @@
         align-items: center;
         width: 100%;
         flex-wrap: nowrap;
-        gap: 1em;
+        gap: 0.75em;
     }
     
     .amenities-section {
@@ -759,7 +766,7 @@
     
     .rooms-table td {
         vertical-align: middle !important;
-        padding: 12px 15px;
+        padding: 10px 12px;
     }
     
     .review-btn, .add-room-btn {
@@ -866,9 +873,10 @@
         background-color: rgba(236, 237, 255, 0.4);
     }
     
-    #rooms-table tr:hover {
+    /* Removing hover effect since rows aren't clickable */
+    /* #rooms-table tr:hover {
         background-color: rgba(236, 237, 255, 0.7);
-    }
+    } */
     
     .filter-pill {
         display: flex;
@@ -1458,7 +1466,10 @@
                         return '<div class="room-location-wrapper" ' + ratingAttr + '>' +
                                '<div class="room-location d-flex align-items-center">' +
                                '<div class="room-details">' +
-                               '<div class="room-building-number">' + data.building + ' ' + data.room_no + '</div>' +
+                               '<div class="room-building-number">' + 
+                               '<span class="building-name">' + data.building + '</span> ' +
+                               '<span class="room-num">' + data.room_no + '</span>' +
+                               '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
                                '</div>' +
                                '<div class="room-stars">' + 
@@ -1471,13 +1482,11 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        let occupancyIcons = '';
-                        for (let i = 0; i < data.occupancy; i++) {
-                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 28px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
-                        }
-                        
                         return '<div class="room-occupancy d-flex flex-column align-items-center">' +
-                               '<div class="occupancy-icons d-flex justify-content-center">' + occupancyIcons + '</div>' +
+                               '<div class="occupancy-icons d-flex justify-content-center">' + 
+                               '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
+                               '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
+                               '</div>' +
                                '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</div>' +
                                '</div>';
                     }
