@@ -1471,13 +1471,11 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        let occupancyIcons = '';
-                        for (let i = 0; i < data.occupancy; i++) {
-                            occupancyIcons += '<img class="person-icon" src="{{ url_for("static", filename="assets/img/person-icon.svg") }}" alt="Person" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-person-fill\\\' style=\\\'font-size: 28px; color: #474bc9;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'">';
-                        }
-                        
                         return '<div class="room-occupancy d-flex flex-column align-items-center">' +
-                               '<div class="occupancy-icons d-flex justify-content-center">' + occupancyIcons + '</div>' +
+                               '<div class="occupancy-icons d-flex justify-content-center">' + 
+                               '<span style="font-size: 1.5em; font-weight: 500; color: #000000; margin-right: 4px;">' + data.occupancy + '</span>' +
+                               '<i class="bi bi-person-fill" style="font-size: 28px; color: #000000;"></i>' +
+                               '</div>' +
                                '<div class="room-size"><i class="bi bi-arrows-fullscreen"></i> ' + data.sq_footage + ' sq.ft.</div>' +
                                '</div>';
                     }
