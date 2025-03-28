@@ -282,7 +282,8 @@ def queryRooms():
                 "frist": room.Room.frist,
                 "street": room.Room.street,
                 "equad": room.Room.equad,
-                "dillon": room.Room.dillon
+                "dillon": room.Room.dillon,
+                "sq_footage": room.Room.sq_footage
             }
             roomsList.append(roomDict)
         else:
