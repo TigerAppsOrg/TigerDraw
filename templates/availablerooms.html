@@ -1234,6 +1234,11 @@
                          onerror="this.onerror=null; this.outerHTML='<i class=\'bi bi-water pill-icon\'></i>';">
                     <span>Private Bathroom</span>
                 </div>
+
+                <!-- Independent Room filter toggle pill -->
+                <div class="filter-pill toggle-pill" id="independent-pill" data-state="0">
+                    <span>Independent</span>
+                </div>
             </div>
             
             <!-- Hidden form elements to maintain compatibility with existing code -->
@@ -1244,6 +1249,7 @@
                 <select id="size" name="size"></select>
                 <input type="checkbox" id="ac-toggle">
                 <input type="checkbox" id="bathroom-toggle">
+                <input type="checkbox" id="independent-toggle">
             </div>
         </div>
     </div>
@@ -1580,6 +1586,13 @@
                         } else {
                             bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
+
+                        let independentIcon = '';
+                        if (data.independent_only) {
+                            independentIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/independent-icon.svg") }}" alt="Independent" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-house-door\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        } else {
+                            independentIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/independent-icon.svg") }}" alt="Not Independent" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-house-door\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
+                        }
                         
                         // Collect all distances with shorter names
                         const distances = [
@@ -1620,7 +1633,7 @@
                         return '<div class="room-amenities">' +
                                '<div class="amenities-container">' +
                                '<div class="amenities-section">' +
-                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
+                               '<div class="amenity-icons">' + acIcon + bathroomIcon + independentIcon + '</div>' +
                                '</div>' +
                                '<div class="amenities-divider"></div>' +
                                '<div class="distances-section">' +
@@ -2091,6 +2104,7 @@
         size: '',
         acState: 0,  // 0: off, 1: required, 2: excluded
         bathroomState: 0,
+        independentState: 0,  // 0: off, 1: required, 2: excluded
         favorites: false,
         
         // Mapping data
@@ -2106,6 +2120,7 @@
         size: '',
         ac: 0,
         bathroom: 0,
+        independent: 0,
         favorites: false
     };
     
@@ -2230,6 +2245,20 @@
         
         // Update UI
         updateBathroomUI();
+        
+        // Apply filters
+        applyAllFilters();
+    }
+    
+    // Update independent filter state
+    function updateIndependentFilter(state) {
+        // console.log("Updating independent filter to state:", state);
+        
+        // Update state
+        filterState.independentState = state;
+        
+        // Update UI
+        updateIndependentUI();
         
         // Apply filters
         applyAllFilters();
@@ -2363,6 +2392,23 @@
         }
     }
     
+    // Update independent UI
+    function updateIndependentUI() {
+        // Update hidden form element
+        $('#independent-toggle').prop('checked', filterState.independentState === 1);
+        
+        // Update pill appearance
+        const pillElement = $('#independent-pill');
+        pillElement.removeClass('active positive negative');
+        pillElement.attr('data-state', filterState.independentState);
+        
+        if (filterState.independentState === 1) {
+            pillElement.addClass('positive');
+        } else if (filterState.independentState === 2) {
+            pillElement.addClass('negative');
+        }
+    }
+    
     // Update favorites UI
     function updateFavoritesUI() {
         // Update pill appearance
@@ -2425,6 +2471,7 @@
             size: filterState.size,
             ac: filterState.acState,
             bathroom: filterState.bathroomState,
+            independent: filterState.independentState,
             favorites: filterState.favorites
         };
         
@@ -2473,6 +2520,11 @@
         if (filterState.bathroomState > 0) {
             addBathroomFilter();
         }
+
+        // Add independent filter
+        if (filterState.independentState > 0) {
+            addIndependentFilter();
+        }
         
         // Add favorites filter
         if (filterState.favorites) {
@@ -2480,31 +2532,7 @@
         }
         
         // Redraw table
-        if (rt) {
-            rt.draw();
-            
-            // Update UI to show how many rooms are visible
-            const visibleRows = rt.rows({filter: 'applied'}).count();
-            const totalRows = rt.rows().count();
-            
-            // Show a small toast notification with filter results
-            if (visibleRows < totalRows) {
-                // Create or update the filter count notification
-                if ($('#filter-count-toast').length === 0) {
-                    $('<div id="filter-count-toast" class="position-fixed" style="bottom: 20px; right: 20px; opacity: 0.9; padding: 8px 12px; border-radius: 6px; background-color: #474bc9; color: white; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"></div>')
-                        .appendTo('body');
-                }
-                
-                $('#filter-count-toast').text(`Showing ${visibleRows} of ${totalRows} rooms`)
-                    .fadeIn(200)
-                    .delay(3000)
-                    .fadeOut(500);
-            }
-            
-            // Debug - check which filters are applied
-            // console.log("Active filters:", $.fn.dataTable.ext.search.length - 1);
-            // console.log("Total rows:", totalRows, "Visible rows:", visibleRows);
-        }
+        rt.draw();
     }
     
     // Clear DataTable filters
@@ -2753,6 +2781,31 @@
         );
     }
     
+    // Add independent filter
+    function addIndependentFilter() {
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                try {
+                    if (settings.nTable.id !== 'rooms-table') {
+                        return true;
+                    }
+                    
+                    const rowData = rt.row(dataIndex).data();
+                    if (!rowData) return true;
+                    
+                    const isIndependent = rowData.independent_only === true;
+                    
+                    // State 1: Positive (show only independent rooms)
+                    // State 2: Negative (show only non-independent rooms)
+                    return (filterState.independentState === 1) ? isIndependent : !isIndependent;
+                } catch (e) {
+                    console.error("Error in independent filter:", e);
+                    return true;
+                }
+            }
+        );
+    }
+    
     // Add favorites filter
     function addFavoritesFilter() {
         $.fn.dataTable.ext.search.push(
@@ -2866,6 +2919,7 @@
         $('#size').val('').attr('data-selected-value', '');
         $('#ac-toggle').prop('checked', false);
         $('#bathroom-toggle').prop('checked', false);
+        $('#independent-toggle').prop('checked', false);
         
         // Set "All" as selected in all dropdowns
         $('.pill-dropdown').each(function() {
@@ -2878,7 +2932,7 @@
             updateFavoritesFilter(!filterState.favorites);
         });
         
-        // Toggle state pills (AC and Bathroom)
+        // Toggle state pills (AC, Bathroom, and Independent)
         $('.toggle-pill').on('click', function() {
             const pillElement = $(this);
             const currentState = parseInt(pillElement.attr('data-state'));
@@ -2888,6 +2942,8 @@
                 updateACFilter(nextState);
             } else if (pillElement.attr('id') === 'bathroom-pill') {
                 updateBathroomFilter(nextState);
+            } else if (pillElement.attr('id') === 'independent-pill') {
+                updateIndependentFilter(nextState);
             }
         });
         
@@ -2976,6 +3032,7 @@
                 updateSizeUI();
                 updateACUI();
                 updateBathroomUI();
+                updateIndependentUI();
                 updateFavoritesUI();
                 
                 // Apply initial filters
