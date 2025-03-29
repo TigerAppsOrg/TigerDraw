@@ -65,6 +65,7 @@ class Room(Base):
     street = Column(Integer)
     equad = Column(Integer)
     dillon = Column(Integer)
+    independent_only = Column(Boolean, default=False)
 
 
 # class ReviewCount(Base):
