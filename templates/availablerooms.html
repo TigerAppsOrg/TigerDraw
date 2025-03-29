@@ -472,12 +472,19 @@
     
     .room-building-number {
         font-size: 1.2em;
+        display: flex;
+        flex-direction: column;
         margin-bottom: 2px;
-        display: block;
     }
     
     .room-building-number .building-name {
         font-weight: 700;
+        margin-right: 4px;
+    }
+
+    .room-name-container {
+        display: flex;
+        align-items: baseline;
     }
     
     .room-building-number .room-num {
@@ -1091,6 +1098,15 @@
     .custom-switch .custom-control-input:focus ~ .custom-control-label::before {
         box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(120, 132, 241, 0.25);
     }
+
+    .independent-only-badge {
+        display: block;
+        font-size: 0.5em;
+        color: #4a4eed;
+        line-height: 1.4;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
 </style>
 
 <body data-username={{ username }}>
@@ -1499,8 +1515,11 @@
                                '<div class="room-location d-flex align-items-center">' +
                                '<div class="room-details">' +
                                '<div class="room-building-number">' + 
+                               (data.independent_only ? '<span class="independent-only-badge">INDEPENDENT ONLY</span>' : '') +
+                               '<div class="room-name-container">' +
                                '<span class="building-name">' + data.building + '</span> ' +
                                '<span class="room-num">' + data.room_no + '</span>' +
+                               '</div>' +
                                '</div>' +
                                '<div class="room-college">' + data.res_college + '</div>' +
                                '<div class="room-floor">Floor ' + data.floor + '</div>' +
