@@ -283,7 +283,8 @@ def queryRooms():
                 "street": room.Room.street,
                 "equad": room.Room.equad,
                 "dillon": room.Room.dillon,
-                "sq_footage": room.Room.sq_footage
+                "sq_footage": room.Room.sq_footage,
+                "independent_only": room.Room.independent_only
             }
             roomsList.append(roomDict)
         else:
@@ -309,7 +310,8 @@ def queryRooms():
                 "frist": room.Room.frist,
                 "street": room.Room.street,
                 "equad": room.Room.equad,
-                "dillon": room.Room.dillon
+                "dillon": room.Room.dillon,
+                "independent_only": room.Room.independent_only
             }
             roomsList.append(roomDict)
             i += 1
@@ -351,7 +353,8 @@ def queryFavorites():
             "frist": room.Room.frist,
             "street": room.Room.street,
             "equad": room.Room.equad,
-            "dillon": room.Room.dillon
+            "dillon": room.Room.dillon,
+            "independent_only": room.Room.independent_only
         }
         roomsList.append(roomDict)
     response = {
