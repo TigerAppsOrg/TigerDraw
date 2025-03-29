@@ -968,7 +968,7 @@
     .filter-pills-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.25em;
+        gap: 1em;
         width: 100%;
         padding: 8px 0;
         position: relative;
@@ -1587,13 +1587,7 @@
                             bathroomIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/bathroom-icon.svg") }}" alt="No Bathroom" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-water\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
                         }
 
-                        let independentIcon = '';
-                        if (data.independent_only) {
-                            independentIcon = '<div class="amenity-icon"><div class="table-amenity-icon"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/independent-icon.svg") }}" alt="Independent" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-house-door\\\' style=\\\'font-size: 42px; color: #7884F1;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
-                        } else {
-                            independentIcon = '<div class="amenity-icon"><div class="table-amenity-icon disabled"><img class="table-icon-img" src="{{ url_for("static", filename="assets/img/independent-icon.svg") }}" alt="Not Independent" style="opacity: 0.4;" onerror="this.onerror=null; this.parentNode.innerHTML=\'<i class=\\\'bi bi-house-door\\\' style=\\\'font-size: 42px; color: #7884F1; opacity: 0.4;\\\'></i>\'; this.src=\'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\'"></div></div>';
-                        }
-                        
+
                         // Collect all distances with shorter names
                         const distances = [
                             {name: 'U-Store', value: data.ustore, icon: '<i class="bi bi-shop"></i>'},
@@ -1633,7 +1627,7 @@
                         return '<div class="room-amenities">' +
                                '<div class="amenities-container">' +
                                '<div class="amenities-section">' +
-                               '<div class="amenity-icons">' + acIcon + bathroomIcon + independentIcon + '</div>' +
+                               '<div class="amenity-icons">' + acIcon + bathroomIcon + '</div>' +
                                '</div>' +
                                '<div class="amenities-divider"></div>' +
                                '<div class="distances-section">' +
