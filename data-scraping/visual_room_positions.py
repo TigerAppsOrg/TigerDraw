@@ -408,13 +408,13 @@ BUILDINGS["JONES"] = {
 
 # ===== BUYERS HALL (Rockefeller College) =====
 BUYERS_POLYGON = [
-    [40.34665, -74.65975], [40.34645, -74.65935], [40.34620, -74.65945],
-    [40.34640, -74.65990], [40.34665, -74.65975],
+    [40.3474667, -74.6609272], [40.3474856, -74.6609847],
+    [40.3476085, -74.6609173], [40.3475887, -74.6608497],
 ]
 BUYERS_ANCHORS = {
-    'top_left':    [40.34665, -74.65990],
-    'top_right':   [40.34620, -74.65935],
-    'bottom_left': [40.34645, -74.66000],
+    'top_left':    [40.347608, -74.6609850],
+    'top_right':   [40.347226, -74.6604200],
+    'bottom_left': [40.347500, -74.6610000],
 }
 BUILDINGS["BUYERS"] = {
     "polygon": BUYERS_POLYGON,
@@ -443,13 +443,13 @@ BUILDINGS["BUYERS"] = {
 
 # ===== HOLDER HALL (Rockefeller College) =====
 HOLDER_POLYGON = [
-    [40.34720, -74.65985], [40.34690, -74.65930], [40.34650, -74.65950],
-    [40.34680, -74.66010], [40.34720, -74.65985],
+    [40.348331, -74.6617356], [40.3483038, -74.6617218],
+    [40.3482296, -74.6616839], [40.3482362, -74.6616618],
 ]
 HOLDER_ANCHORS = {
-    'top_left':    [40.34720, -74.66010],
-    'top_right':   [40.34650, -74.65930],
-    'bottom_left': [40.34700, -74.66020],
+    'top_left':    [40.349034, -74.6619870],
+    'top_right':   [40.348230, -74.6610630],
+    'bottom_left': [40.348900, -74.6620000],
 }
 BUILDINGS["HOLDER"] = {
     "polygon": HOLDER_POLYGON,
@@ -503,13 +503,13 @@ BUILDINGS["HOLDER"] = {
 
 # ===== WITHERSPOON HALL (Rockefeller College) =====
 WITHERSPOON_POLYGON = [
-    [40.34710, -74.65875], [40.34680, -74.65830], [40.34640, -74.65850],
-    [40.34670, -74.65900], [40.34710, -74.65875],
+    [40.3474973, -74.6604075], [40.3473083, -74.6603200],
+    [40.3472760, -74.6598750], [40.3476130, -74.6600500],
 ]
 WITHERSPOON_ANCHORS = {
-    'top_left':    [40.34710, -74.65900],
-    'top_right':   [40.34640, -74.65830],
-    'bottom_left': [40.34695, -74.65910],
+    'top_left':    [40.347613, -74.6604080],
+    'top_right':   [40.347276, -74.6598750],
+    'bottom_left': [40.347500, -74.6604100],
 }
 BUILDINGS["WITHERSPOON"] = {
     "polygon": WITHERSPOON_POLYGON,
@@ -570,14 +570,14 @@ BUILDINGS["WITHERSPOON"] = {
 
 # ===== BLAIR HALL (Mathey College) =====
 BLAIR_POLYGON = [
-    [40.3475, -74.6615], [40.3473, -74.6610], [40.3470, -74.6608],
-    [40.3468, -74.6610], [40.3470, -74.6613], [40.3472, -74.6616],
-    [40.3475, -74.6615],
+    [40.3475185, -74.6620683], [40.3472547, -74.6618792],
+    [40.3474954, -74.6610654], [40.3476450, -74.6609170],
 ]
+# Blair runs NE-SW. Left in image = NE end, right = SW. Top = NW, bottom = SE.
 BLAIR_ANCHORS = {
-    'top_left':    [40.3475, -74.6616],
-    'top_right':   [40.3468, -74.6607],
-    'bottom_left': [40.3473, -74.6618],
+    'top_left':    [40.347645, -74.6620700],  # NW (left end, NW side)
+    'top_right':   [40.347255, -74.6609170],  # SE (right end)
+    'bottom_left': [40.347500, -74.6621500],  # SW side
 }
 BUILDINGS["BLAIR"] = {
     "polygon": BLAIR_POLYGON,
@@ -610,14 +610,14 @@ BUILDINGS["BLAIR"] = {
 
 # ===== EDWARDS HALL (Mathey College) =====
 EDWARDS_POLYGON = [
-    [40.3473, -74.6605], [40.3471, -74.6600], [40.3468, -74.6598],
-    [40.3466, -74.6600], [40.3468, -74.6604], [40.3471, -74.6606],
-    [40.3473, -74.6605],
+    [40.3473145, -74.6594377], [40.3472467, -74.6594045],
+    [40.3469540, -74.6591300], [40.3470540, -74.6594380],
 ]
+# Edwards runs roughly NE-SW. Image left=NE end, right=SW.
 EDWARDS_ANCHORS = {
-    'top_left':    [40.3473, -74.6606],
-    'top_right':   [40.3466, -74.6597],
-    'bottom_left': [40.3472, -74.6608],
+    'top_left':    [40.347354, -74.6594380],  # NW corner
+    'top_right':   [40.346954, -74.6591300],  # SE corner
+    'bottom_left': [40.347300, -74.6594380],  # SW side
 }
 BUILDINGS["EDWARDS"] = {
     "polygon": EDWARDS_POLYGON,
@@ -666,13 +666,13 @@ BUILDINGS["EDWARDS"] = {
 
 # ===== HAMILTON HALL (Mathey College) =====
 HAMILTON_POLYGON = [
-    [40.3471, -74.6598], [40.3470, -74.6594], [40.3467, -74.6593],
-    [40.3466, -74.6596], [40.3469, -74.6599], [40.3471, -74.6598],
+    [40.3482868, -74.6619323], [40.3482017, -74.6618900],
+    [40.3480130, -74.6624990], [40.3481620, -74.6621704],
 ]
 HAMILTON_ANCHORS = {
-    'top_left':    [40.3471, -74.6599],
-    'top_right':   [40.3466, -74.6592],
-    'bottom_left': [40.3470, -74.6600],
+    'top_left':    [40.348287, -74.6624990],  # NW
+    'top_right':   [40.348013, -74.6618900],  # SE
+    'bottom_left': [40.348200, -74.6625000],  # SW
 }
 BUILDINGS["HAMILTON"] = {
     "polygon": HAMILTON_POLYGON,
@@ -845,14 +845,14 @@ BUILDINGS["GROUSBECK"] = {
 # Long diagonal building running SW to NE. Image 2048x1326.
 # Rooms in 2 rows along corridor. Multiple entry sections (1xx, 2xx, 3xx, 4xx on same floor).
 JOLINE_POLYGON = [
-    [40.34725, -74.66105], [40.34710, -74.66120],
-    [40.34645, -74.66035], [40.34660, -74.66020],
-    [40.34725, -74.66105],
+    [40.3479901, -74.6615462], [40.3478172, -74.6621383],
+    [40.3475580, -74.6619428], [40.3475185, -74.6620683],
 ]
+# Joline runs NE-SW. Image left=SW end, right=NE end.
 JOLINE_ANCHORS = {
-    'top_left':    [40.34740, -74.66100],  # NE end (top-right geo)
-    'top_right':   [40.34650, -74.66010],  # SW end (bottom-left geo)
-    'bottom_left': [40.34720, -74.66120],  # NW side
+    'top_left':    [40.347900, -74.6623190],  # NW corner (left in image, N side)
+    'top_right':   [40.347518, -74.6615460],  # SE corner (right in image)
+    'bottom_left': [40.348077, -74.6621000],  # NE side
 }
 
 BUILDINGS["JOLINE"] = {
@@ -927,15 +927,14 @@ BUILDINGS["1981"] = {
 # Left wing runs SW-NE, right wing goes SE from apex.
 # Need GeoJSON polygon - approximate from OSM data
 BLOOMBERG_POLYGON = [
-    [40.3461, -74.6588], [40.3459, -74.6583], [40.3456, -74.6580],
-    [40.3454, -74.6578], [40.3452, -74.6579], [40.3450, -74.6581],
-    [40.3451, -74.6584], [40.3454, -74.6586], [40.3457, -74.6589],
-    [40.3461, -74.6588],
+    [40.3438129, -74.6553436], [40.3438236, -74.6553275],
+    [40.3436861, -74.6554674], [40.3429420, -74.6562260],
 ]
+# Bloomberg is boomerang-shaped. Image left = SW wing, right = SE wing.
 BLOOMBERG_ANCHORS = {
-    'top_left':    [40.3461, -74.6589],  # NW (left wing top)
-    'top_right':   [40.3453, -74.6577],  # SE (right wing end)
-    'bottom_left': [40.3458, -74.6591],  # SW
+    'top_left':    [40.343894, -74.6562260],  # NW (left wing, top in image)
+    'top_right':   [40.342942, -74.6553060],  # SE (right wing end)
+    'bottom_left': [40.343700, -74.6562260],  # SW
 }
 
 BUILDINGS["BLOOMBERG"] = {

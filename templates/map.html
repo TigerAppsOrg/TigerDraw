@@ -1111,8 +1111,8 @@
             "1915 Hall": "1915",
             "Gauss Hall": "GAUSS",
         };
-        // Handle Spelman
-        if (name && name.startsWith("Spelman Hall")) return "SPELMAN";
+        // Skip Spelman - 8 separate buildings share one DB name, can't map properly
+        if (name && name.startsWith("Spelman Hall")) return null;
         return map[name] || null;
     }
 
