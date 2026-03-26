@@ -575,6 +575,15 @@
         // Handle override confirmation with jQuery Confirm
         $.confirm({
           title: "You will override your old review with this new review.",
+          onClose: function () {
+            // Clean up any leftover backdrops
+            setTimeout(function () {
+              if (!$(".modal.show").length && !$(".jconfirm.jconfirm-open").length) {
+                $(".modal-backdrop").remove();
+                $("body").removeClass("modal-open").css("overflow", "");
+              }
+            }, 300);
+          },
           buttons: {
             confirm: {
               action: function () {
@@ -649,6 +658,12 @@
             // Close the modal if we're in the rooms page
             setTimeout(function () {
               $("#seeReviewsModal").modal("hide");
+
+              // Force-remove backdrop and body class in case modal("hide") didn't clean up
+              setTimeout(function () {
+                $(".modal-backdrop").remove();
+                $("body").removeClass("modal-open").css("overflow", "");
+              }, 500);
 
               // Reload reviews to show the new one
               const building = $('input[name="building-name"]').val();
