@@ -1011,6 +1011,13 @@
 <!-- Room Markers on Map -->
 <script>
     // ========== ROOM MARKERS LAYER ==========
+    // Load pre-computed room positions (from visual floor plan analysis)
+    var precomputedPositions = {};
+    fetch('/static/assets/js/room_positions.json')
+        .then(function(res) { return res.json(); })
+        .then(function(data) { precomputedPositions = data || {}; console.log('Loaded precomputed positions for', Object.keys(data).length, 'buildings'); })
+        .catch(function() { console.log('No precomputed room positions found'); });
+
     var roomMarkersGroup = L.layerGroup().addTo(mymap);
     var loadedBuildingMarkers = {}; // building -> { floor -> [markers] }
     var activeRoomFloor = null; // currently shown floor, or null = all
@@ -1205,16 +1212,28 @@
         var polygon = buildingPolygons[dbBuildingName.toUpperCase()];
         if (!polygon) return;
 
+        // Check for precomputed positions
+        var precomputed = precomputedPositions[dbBuildingName.toUpperCase()] || {};
+        var hasPrecomputed = Object.keys(precomputed).length > 0;
+
         var floorMarkers = {};
 
         Object.keys(roomsByFloor).forEach(function(floorKey) {
             var rooms = roomsByFloor[floorKey];
-            var positions = distributePointsInPolygon(polygon, rooms.length);
+            // Only use grid fallback for rooms without precomputed positions
+            var needsGrid = rooms.filter(function(r) { return !precomputed[r.room_no]; });
+            var gridPositions = distributePointsInPolygon(polygon, needsGrid.length);
+            var gridIdx = 0;
             floorMarkers[floorKey] = [];
 
             rooms.forEach(function(room, idx) {
-                if (idx >= positions.length) return;
-                var pos = positions[idx];
+                var pos;
+                if (precomputed[room.room_no]) {
+                    pos = precomputed[room.room_no]; // [lat, lng]
+                } else {
+                    if (gridIdx >= gridPositions.length) return;
+                    pos = gridPositions[gridIdx++];
+                }
                 var rankColor = room.draw_rank ? getColor(room.draw_rank) : '#999';
 
                 var occLabel = room.occupancy === '1' || room.occupancy === 1 ? 'Single' :
