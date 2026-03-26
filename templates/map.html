@@ -303,30 +303,31 @@
     }
     .floor-plan-preview {
         flex-shrink: 0;
-        max-height: 220px;
-        overflow: hidden;
+        height: 300px;
         background: #f5f5f5;
         border-bottom: 1px solid #eee;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
         position: relative;
     }
-    .floor-plan-preview img {
-        max-width: 100%;
-        max-height: 220px;
-        object-fit: contain;
+    .floor-plan-preview iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
     }
-    .floor-plan-preview .expand-hint {
+    .floor-plan-preview .expand-btn {
         position: absolute;
-        bottom: 8px;
+        top: 8px;
         right: 8px;
         background: rgba(0,0,0,0.6);
         color: #fff;
         font-size: 0.75rem;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 4px;
+        cursor: pointer;
+        z-index: 2;
+        border: none;
+    }
+    .floor-plan-preview .expand-btn:hover {
+        background: rgba(0,0,0,0.8);
     }
     .room-list {
         flex: 1;
@@ -455,9 +456,9 @@
             <button class="panel-close" onclick="closeBuildingPanel()">&times;</button>
         </div>
         <div class="floor-tabs" id="panelFloorTabs"></div>
-        <div class="floor-plan-preview" id="panelFloorPlan" style="display:none;" onclick="expandFloorPlan()">
-            <img id="panelFloorPlanImg" src="" alt="Floor Plan" referrerpolicy="no-referrer" />
-            <span class="expand-hint"><i class="bi bi-arrows-fullscreen"></i> Click to expand</span>
+        <div class="floor-plan-preview" id="panelFloorPlan" style="display:none;">
+            <iframe id="panelFloorPlanFrame" src=""></iframe>
+            <button class="expand-btn" onclick="expandFloorPlan()"><i class="bi bi-box-arrow-up-right"></i> Open full</button>
         </div>
         <div class="room-list-header" id="panelRoomCount">Rooms</div>
         <div class="room-list" id="panelRoomList">
@@ -1587,10 +1588,11 @@
         var fpKey = displayToFloorPlanKey(displayName);
         var fpData = floorPlans[fpKey];
         var previewDiv = document.getElementById('panelFloorPlan');
-        var previewImg = document.getElementById('panelFloorPlanImg');
+        var frame = document.getElementById('panelFloorPlanFrame');
 
         if (!fpData) {
             previewDiv.style.display = 'none';
+            frame.src = '';
             return;
         }
 
@@ -1599,27 +1601,31 @@
         var pdfUrl = null;
 
         if (Array.isArray(fpData)) {
-            // Simple building — check if this floor label exists
             if (fpData.indexOf(floorLabel) !== -1 || fpData.indexOf(floorKey) !== -1) {
                 var matchLabel = fpData.indexOf(floorLabel) !== -1 ? floorLabel : floorKey;
                 pdfUrl = '/static/pdfs/' + fpKey + '/' + matchLabel + '.pdf';
             }
+        } else if (typeof fpData === 'object') {
+            // Complex buildings with sub-wings (forbes, wendell, baker)
+            // Show the first available wing
+            var wings = Object.keys(fpData);
+            for (var w = 0; w < wings.length; w++) {
+                var wingFloors = fpData[wings[w]];
+                if (wingFloors.indexOf(floorLabel) !== -1 || wingFloors.indexOf(floorKey) !== -1) {
+                    var wMatchLabel = wingFloors.indexOf(floorLabel) !== -1 ? floorLabel : floorKey;
+                    pdfUrl = '/static/pdfs/' + fpKey + '/' + wings[w] + '/' + wMatchLabel + '.pdf';
+                    break;
+                }
+            }
         }
-        // For complex buildings (forbes, wendell, baker), skip the preview for now
-        // since they have sub-wings
 
         if (pdfUrl) {
-            // We can't easily preview PDFs, but we can link to them
-            previewDiv.style.display = 'flex';
+            previewDiv.style.display = 'block';
             previewDiv.setAttribute('data-pdf-url', pdfUrl);
-            previewImg.src = '';
-            previewImg.alt = 'Floor ' + floorLabel + ' Plan (click to open PDF)';
-            previewDiv.innerHTML = '<div style="text-align:center;padding:16px;color:#666;">' +
-                '<i class="bi bi-file-earmark-pdf" style="font-size:2rem;color:#e77500;"></i>' +
-                '<p style="margin:6px 0 0;font-size:0.85rem;">Floor ' + escapeHtml(floorLabel) + ' Plan</p>' +
-                '<span class="expand-hint"><i class="bi bi-box-arrow-up-right"></i> Click to open</span></div>';
+            frame.src = pdfUrl;
         } else {
             previewDiv.style.display = 'none';
+            frame.src = '';
         }
     }
 
