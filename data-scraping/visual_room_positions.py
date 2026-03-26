@@ -37,9 +37,9 @@ HARIRI_DRAW_BOUNDS = (50, 300, 2850, 1200)  # x, y, w, h in 3400x2200 image
 # top_right of drawing = N corner of NE end ≈ vertex 9
 # bottom_left of drawing = S corner of SW end ≈ vertex 4
 HARIRI_ANCHORS = {
-    'top_left':    [40.3427100, -74.6547800],  # NW end of main wing
-    'top_right':   [40.3429069, -74.6540032],  # NE end (northernmost point)
-    'bottom_left': [40.3425400, -74.6546500],  # SW end, south side
+    'top_left':    [40.3426759, -74.6547837],  # SW end, NW side (OBB)
+    'top_right':   [40.3429413, -74.6539816],  # NE end, NW side (OBB)
+    'bottom_left': [40.3425270, -74.6547345],  # SW end, SE side (OBB)
 }
 
 BUILDINGS["HARIRI"] = {
@@ -130,9 +130,9 @@ MANNION_DRAW_BOUNDS = (50, 300, 2700, 1300)  # approximate for 3400x2200
 # Image 2048x1326. Building runs from upper-right to lower-left in image.
 # top_left of drawing ≈ NE end, bottom_right ≈ SW end
 ADDY_ANCHORS = {
-    'top_left':    [40.3425833, -74.6550000],  # N end (top of image)
-    'top_right':   [40.3426246, -74.6554500],  # NW (right in image = west geo)
-    'bottom_left': [40.3423100, -74.6549300],  # S end
+    'top_left':    [40.3425620, -74.6548790],  # NE corner (OBB)
+    'top_right':   [40.3426872, -74.6557076],  # NW corner (OBB)
+    'bottom_left': [40.3422757, -74.6549223],  # SE corner (OBB)
 }
 ADDY_DRAW_BOUNDS = (100, 100, 1500, 900)  # approximate for 2048x1326
 
@@ -188,9 +188,9 @@ BUILDINGS["ADDY"] = {
 # the main body horizontal (left=west, right=east), wing going down (south).
 # Looking at polygon: the building is roughly axis-aligned but slightly tilted.
 MANNION_ANCHORS = {
-    'top_left':    [40.3416781, -74.6542500],  # NW corner
-    'top_right':   [40.3416558, -74.6533825],  # NE corner
-    'bottom_left': [40.3414308, -74.6543114],  # SW corner
+    'top_left':    [40.3416461, -74.6543446],  # NW (OBB)
+    'top_right':   [40.3417339, -74.6533695],  # NE (OBB)
+    'bottom_left': [40.3414206, -74.6543243],  # SW (OBB)
 }
 
 BUILDINGS["MANNION"] = {
@@ -275,9 +275,9 @@ JONES_POLYGON = [
     [40.3416393, -74.6554748],
 ]
 KANJI_ANCHORS = {
-    'top_left':    [40.3422500, -74.6548800],
-    'top_right':   [40.3423600, -74.6554500],
-    'bottom_left': [40.3419800, -74.6549300],
+    'top_left':    [40.3421439, -74.6556019],  # NW (OBB)
+    'top_right':   [40.3423798, -74.6549002],  # NE (OBB)
+    'bottom_left': [40.3418658, -74.6555085],  # SW (OBB)
 }
 BUILDINGS["KANJI"] = {
     "polygon": KANJI_POLYGON,
@@ -338,9 +338,9 @@ BUILDINGS["KANJI"] = {
 # ===== JONES HALL (New College West) =====
 # Angular building with horizontal wing + vertical stem. Image 2048x1326.
 JONES_ANCHORS = {
-    'top_left':    [40.3417400, -74.6547500],
-    'top_right':   [40.3416400, -74.6554700],
-    'bottom_left': [40.3413600, -74.6548400],
+    'top_left':    [40.3418144, -74.6554822],  # NW (OBB)
+    'top_right':   [40.3417383, -74.6546640],  # NE (OBB)
+    'bottom_left': [40.3414089, -74.6555199],  # SW (OBB)
 }
 BUILDINGS["JONES"] = {
     "polygon": JONES_POLYGON,
@@ -412,9 +412,9 @@ BUYERS_POLYGON = [
     [40.3476085, -74.6609173], [40.3475887, -74.6608497],
 ]
 BUYERS_ANCHORS = {
-    'top_left':    [40.347608, -74.6609850],
-    'top_right':   [40.347226, -74.6604200],
-    'bottom_left': [40.347500, -74.6610000],
+    'top_left':    [40.3474328, -74.6610450],  # NW (OBB)
+    'top_right':   [40.3476597, -74.6608971],  # NE (OBB)
+    'bottom_left': [40.3470843, -74.6605103],  # SW (OBB)
 }
 BUILDINGS["BUYERS"] = {
     "polygon": BUYERS_POLYGON,
@@ -447,9 +447,9 @@ HOLDER_POLYGON = [
     [40.3482296, -74.6616839], [40.3482362, -74.6616618],
 ]
 HOLDER_ANCHORS = {
-    'top_left':    [40.349034, -74.6619870],
-    'top_right':   [40.348230, -74.6610630],
-    'bottom_left': [40.348900, -74.6620000],
+    'top_left':    [40.3491671, -74.6619493],  # NW (OBB)
+    'top_right':   [40.3489713, -74.6609348],  # NE (OBB)
+    'bottom_left': [40.3482923, -74.6621181],  # SW (OBB)
 }
 BUILDINGS["HOLDER"] = {
     "polygon": HOLDER_POLYGON,
@@ -507,9 +507,9 @@ WITHERSPOON_POLYGON = [
     [40.3472760, -74.6598750], [40.3476130, -74.6600500],
 ]
 WITHERSPOON_ANCHORS = {
-    'top_left':    [40.347613, -74.6604080],
-    'top_right':   [40.347276, -74.6598750],
-    'bottom_left': [40.347500, -74.6604100],
+    'top_left':    [40.3474989, -74.6604241],  # NW (OBB)
+    'top_right':   [40.3476818, -74.6599710],  # NE (OBB)
+    'bottom_left': [40.3472200, -74.6603115],  # SW (OBB)
 }
 BUILDINGS["WITHERSPOON"] = {
     "polygon": WITHERSPOON_POLYGON,
@@ -575,9 +575,9 @@ BLAIR_POLYGON = [
 ]
 # Blair runs NE-SW. Left in image = NE end, right = SW. Top = NW, bottom = SE.
 BLAIR_ANCHORS = {
-    'top_left':    [40.347645, -74.6620700],  # NW (left end, NW side)
-    'top_right':   [40.347255, -74.6609170],  # SE (right end)
-    'bottom_left': [40.347500, -74.6621500],  # SW side
+    'top_left':    [40.3475422, -74.6621091],  # NW (OBB)
+    'top_right':   [40.3476949, -74.6609080],  # NE (OBB)
+    'bottom_left': [40.3472204, -74.6620682],  # SW (OBB)
 }
 BUILDINGS["BLAIR"] = {
     "polygon": BLAIR_POLYGON,
@@ -615,9 +615,9 @@ EDWARDS_POLYGON = [
 ]
 # Edwards runs roughly NE-SW. Image left=NE end, right=SW.
 EDWARDS_ANCHORS = {
-    'top_left':    [40.347354, -74.6594380],  # NW corner
-    'top_right':   [40.346954, -74.6591300],  # SE corner
-    'bottom_left': [40.347300, -74.6594380],  # SW side
+    'top_left':    [40.3472870, -74.6594982],  # NW (OBB)
+    'top_right':   [40.3474046, -74.6593211],  # NE (OBB)
+    'bottom_left': [40.3469022, -74.6592424],  # SW (OBB)
 }
 BUILDINGS["EDWARDS"] = {
     "polygon": EDWARDS_POLYGON,
@@ -670,9 +670,9 @@ HAMILTON_POLYGON = [
     [40.3480130, -74.6624990], [40.3481620, -74.6621704],
 ]
 HAMILTON_ANCHORS = {
-    'top_left':    [40.348287, -74.6624990],  # NW
-    'top_right':   [40.348013, -74.6618900],  # SE
-    'bottom_left': [40.348200, -74.6625000],  # SW
+    'top_left':    [40.3483293, -74.6619161],  # NW (OBB)
+    'top_right':   [40.3481894, -74.6618662],  # NE (OBB)
+    'bottom_left': [40.3481141, -74.6625197],  # SW (OBB)
 }
 BUILDINGS["HAMILTON"] = {
     "polygon": HAMILTON_POLYGON,
@@ -694,9 +694,9 @@ BUILDINGS["HAMILTON"] = {
 # ===== FU HALL (Yeh College) =====
 # T-shaped building. Image 3400x2200.
 FU_ANCHORS = {
-    'top_left':    [40.3426800, -74.6544200],
-    'top_right':   [40.3424000, -74.6537500],
-    'bottom_left': [40.3421100, -74.6545200],
+    'top_left':    [40.3425354, -74.6547580],  # NW (OBB)
+    'top_right':   [40.3428553, -74.6538968],  # NE (OBB)
+    'bottom_left': [40.3420791, -74.6545885],  # SW (OBB)
 }
 BUILDINGS["FU"] = {
     "polygon": FU_POLYGON,
@@ -762,9 +762,9 @@ BUILDINGS["FU"] = {
 
 # ===== GROUSBECK HALL (Yeh College) =====
 GROUSBECK_ANCHORS = {
-    'top_left':    [40.3420200, -74.6535000],
-    'top_right':   [40.3422400, -74.6543200],
-    'bottom_left': [40.3416300, -74.6541000],
+    'top_left':    [40.3422625, -74.6544786],  # NW (OBB)
+    'top_right':   [40.3421839, -74.6534433],  # NE (OBB)
+    'bottom_left': [40.3416515, -74.6545250],  # SW (OBB)
 }
 BUILDINGS["GROUSBECK"] = {
     "polygon": GROUSBECK_POLYGON,
@@ -850,9 +850,9 @@ JOLINE_POLYGON = [
 ]
 # Joline runs NE-SW. Image left=SW end, right=NE end.
 JOLINE_ANCHORS = {
-    'top_left':    [40.347900, -74.6623190],  # NW corner (left in image, N side)
-    'top_right':   [40.347518, -74.6615460],  # SE corner (right in image)
-    'bottom_left': [40.348077, -74.6621000],  # NE side
+    'top_left':    [40.3474523, -74.6621169],  # SW end, NW side (OBB)
+    'top_right':   [40.3478681, -74.6623408],  # NE end, NW side (OBB)
+    'bottom_left': [40.3478201, -74.6614337],  # SW end, SE side (OBB)
 }
 
 BUILDINGS["JOLINE"] = {
@@ -900,9 +900,9 @@ _1981_POLYGON = [
     [40.3436915, -74.6575385],
 ]
 _1981_ANCHORS = {
-    'top_left':    [40.3438500, -74.6576000],  # NW corner
-    'top_right':   [40.3437700, -74.6570000],  # NE corner
-    'bottom_left': [40.3434900, -74.6574500],  # SW corner
+    'top_left':    [40.3438771, -74.6576104],  # NW (OBB)
+    'top_right':   [40.3438245, -74.6569696],  # NE (OBB)
+    'bottom_left': [40.3435013, -74.6576412],  # SW (OBB)
 }
 
 BUILDINGS["1981"] = {
@@ -932,9 +932,9 @@ BLOOMBERG_POLYGON = [
 ]
 # Bloomberg is boomerang-shaped. Image left = SW wing, right = SE wing.
 BLOOMBERG_ANCHORS = {
-    'top_left':    [40.343894, -74.6562260],  # NW (left wing, top in image)
-    'top_right':   [40.342942, -74.6553060],  # SE (right wing end)
-    'bottom_left': [40.343700, -74.6562260],  # SW
+    'top_left':    [40.3441355, -74.6556211],  # NW (OBB)
+    'top_right':   [40.3437450, -74.6551926],  # NE (OBB)
+    'bottom_left': [40.3432673, -74.6564124],  # SW (OBB)
 }
 
 BUILDINGS["BLOOMBERG"] = {
@@ -1016,9 +1016,9 @@ WILF_POLYGON = [
     [40.3445399, -74.6551970], [40.3444908, -74.6552935],
 ]
 WILF_ANCHORS = {
-    'top_left':    [40.3445500, -74.6553000],  # NW
-    'top_right':   [40.3445500, -74.6550000],  # NE
-    'bottom_left': [40.3442500, -74.6551500],  # SW
+    'top_left':    [40.3444791, -74.6553152],  # NW (OBB)
+    'top_right':   [40.3445879, -74.6551943],  # NE (OBB)
+    'bottom_left': [40.3442177, -74.6550800],  # SW (OBB)
 }
 
 BUILDINGS["WILF"] = {
