@@ -40,7 +40,7 @@ import collections
 from updateavailable import checkRooms, changeRoomPdf
 from api_access import check_is_undergrad
 from collections import defaultdict
-from display import db_session, Reviews, Room
+from display import db_session, Reviews, Room, RoomImage, getRoomImages
 import time
 import config
 
@@ -102,6 +102,16 @@ def get_reviews():
     )
     response = make_response(html)
     return response
+
+
+@app.route("/room_images", methods=["GET"])
+def room_images():
+    building = request.args.get("building", "")
+    room_no = request.args.get("room_no", "")
+    if not building or not room_no:
+        return jsonify({"error": "building and room_no required"}), 400
+    images = getRoomImages(building, room_no)
+    return jsonify(images)
 
 
 @app.route("/")
@@ -207,6 +217,16 @@ def queryRooms():
             seen.add(room.Room.room_id)
     data.sort(key=lambda x: rankmap[x.Room.room_id])
 
+    # Pre-fetch which rooms have 360 images (both ACTUAL and EXAMPLE)
+    rooms_with_360 = set()
+    try:
+        img_rows = db_session.query(
+            func.lower(RoomImage.building), func.lower(RoomImage.room_no)
+        ).filter(RoomImage.image_type == "360").distinct().all()
+        rooms_with_360 = {(r[0], r[1]) for r in img_rows}
+    except Exception:
+        pass  # table might not exist yet
+
     roomsList = []
     i = 1
 
@@ -259,6 +279,8 @@ def queryRooms():
         #         .scalar()
         #     ) / review_count
 
+        has_360 = (room.Room.building.lower(), room.Room.room_no.lower()) in rooms_with_360
+
         if room.DrawTime is None:
             roomDict = {
                 "res_college": room.Room.res_college,
@@ -284,7 +306,8 @@ def queryRooms():
                 "equad": room.Room.equad,
                 "dillon": room.Room.dillon,
                 "sq_footage": room.Room.sq_footage,
-                "independent_only": room.Room.independent_only
+                "independent_only": room.Room.independent_only,
+                "has_360": has_360,
             }
             roomsList.append(roomDict)
         else:
@@ -311,7 +334,8 @@ def queryRooms():
                 "street": room.Room.street,
                 "equad": room.Room.equad,
                 "dillon": room.Room.dillon,
-                "independent_only": room.Room.independent_only
+                "independent_only": room.Room.independent_only,
+                "has_360": has_360,
             }
             roomsList.append(roomDict)
             i += 1

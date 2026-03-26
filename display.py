@@ -68,6 +68,28 @@ class Room(Base):
     independent_only = Column(Boolean, default=False)
 
 
+class RoomChange(Base):
+    __tablename__ = "room_changes"
+    id = Column(Integer, primary_key=True)
+    building = Column(String)
+    room_no = Column(String)
+    field = Column(String)
+    old_value = Column(String)
+    new_value = Column(String)
+    changed_at = Column(DateTime(timezone=True), default=func.now())
+
+
+class RoomImage(Base):
+    __tablename__ = "room_images"
+    id = Column(Integer, primary_key=True)
+    building = Column(String)
+    room_no = Column(String)
+    image_type = Column(String)   # 'floor_plan', 'room_plan', '360', 'thumbnail'
+    url = Column(String)
+    media_type = Column(String)   # 'ACTUAL' or 'EXAMPLE'
+    is_360 = Column(Boolean, default=False)
+
+
 # class ReviewCount(Base):
 #     __tablename__ = "review_count"
 #     building_name = Column(String)
@@ -249,6 +271,31 @@ def allRooms(
     return rooms
 
 
+def getRoomImages(building, room_no):
+    images = db_session.query(RoomImage).filter(
+        func.lower(RoomImage.building) == building.lower(),
+        func.lower(RoomImage.room_no) == room_no.lower()
+    ).all()
+
+    result = {
+        "floor_plan": None,
+        "room_plan": None,
+        "thumbnail": None,
+        "views_360": []
+    }
+    for img in images:
+        if img.image_type == "floor_plan":
+            result["floor_plan"] = img.url
+        elif img.image_type == "room_plan":
+            result["room_plan"] = img.url
+        elif img.image_type == "Thumbnail":
+            result["thumbnail"] = img.url
+        elif img.image_type == "360":
+            result["views_360"].append({
+                "url": img.url,
+                "mediaType": img.media_type
+            })
+    return result
 
 
 def getFavoriteRooms(username):
