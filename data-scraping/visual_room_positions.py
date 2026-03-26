@@ -931,11 +931,20 @@ BLOOMBERG_POLYGON = [
     [40.3436861, -74.6554674], [40.3429420, -74.6562260],
 ]
 # Bloomberg is boomerang-shaped. Image left = SW wing, right = SE wing.
-BLOOMBERG_ANCHORS = {
-    'top_left':    [40.3441355, -74.6556211],  # NW (OBB)
-    'top_right':   [40.3437450, -74.6551926],  # NE (OBB)
-    'bottom_left': [40.3432673, -74.6564124],  # SW (OBB)
+# Bloomberg is V-shaped — split into left and right wings with separate anchors.
+# Apex (bend) is at pixel x ≈ 775 in the floor plan.
+BLOOMBERG_SPLIT_X = 775
+BLOOMBERG_ANCHORS_LEFT = {
+    'top_left':    [40.3437500, -74.6559000],
+    'top_right':   [40.3438937, -74.6554390],  # Apex
+    'bottom_left': [40.3434082, -74.6562262],  # W end
 }
+BLOOMBERG_ANCHORS_RIGHT = {
+    'top_left':    [40.3438937, -74.6554390],  # Apex
+    'top_right':   [40.3438064, -74.6553061],  # NE end
+    'bottom_left': [40.3429421, -74.6559526],  # S end
+}
+BLOOMBERG_ANCHORS = None  # handled specially
 
 BUILDINGS["BLOOMBERG"] = {
     "polygon": BLOOMBERG_POLYGON,
@@ -1100,7 +1109,21 @@ def generate_positions():
 
         for floor_key, rooms in data["floors"].items():
             for room_no, (px, py) in rooms.items():
-                lat, lng = pixel_to_geo(px, py, draw_bounds, polygon, anchors)
+                # Special handling for Bloomberg's V-shape
+                if building_name == "BLOOMBERG":
+                    split_x = BLOOMBERG_SPLIT_X
+                    if px < split_x:
+                        # Left wing — remap x to 0-1 within left half
+                        left_bounds = (draw_bounds[0], draw_bounds[1],
+                                       split_x - draw_bounds[0], draw_bounds[3])
+                        lat, lng = pixel_to_geo(px, py, left_bounds, polygon, BLOOMBERG_ANCHORS_LEFT)
+                    else:
+                        # Right wing — remap x to 0-1 within right half
+                        right_bounds = (split_x, draw_bounds[1],
+                                        draw_bounds[0] + draw_bounds[2] - split_x, draw_bounds[3])
+                        lat, lng = pixel_to_geo(px, py, right_bounds, polygon, BLOOMBERG_ANCHORS_RIGHT)
+                else:
+                    lat, lng = pixel_to_geo(px, py, draw_bounds, polygon, anchors)
                 building_rooms[room_no] = [lat, lng]
 
         if building_rooms:
