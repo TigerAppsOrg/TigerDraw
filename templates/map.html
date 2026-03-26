@@ -543,8 +543,8 @@
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="https://mapbox.com">Mapbox</a>'
     var mbUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    var base = L.tileLayer(mbUrl, { id: 'mapbox/streets-v11', attribution: mbAttr })
-    var mymap = L.map('mapid', { layers: base }).setView([40.3459, -74.658], 17);
+    var base = L.tileLayer(mbUrl, { id: 'mapbox/streets-v11', attribution: mbAttr, maxNativeZoom: 19, maxZoom: 22 })
+    var mymap = L.map('mapid', { layers: base, maxZoom: 22 }).setView([40.3459, -74.658], 17);
 
 
 
@@ -1005,6 +1005,390 @@
     mymap.addLayer(ncw);
     mymap.addLayer(yeh);
     mymap.addLayer(upperclass);
+</script>
+
+<!-- Room Markers on Map -->
+<script>
+    // ========== ROOM MARKERS LAYER ==========
+    var roomMarkersGroup = L.layerGroup().addTo(mymap);
+    var loadedBuildingMarkers = {}; // building -> { floor -> [markers] }
+    var activeRoomFloor = null; // currently shown floor, or null = all
+    var roomMarkerZoomThreshold = 19;
+
+    // Store all building polygon coords in [lat, lng] format for room placement
+    // Manual polygons from map.html (already in [lat, lng])
+    var buildingPolygons = {
+        "1981": _1981_coords,
+        "BAKER": baker_coords,
+        "HARGADON": hargadon_coords,
+        "LAURITZEN": lauritzen_coords,
+        "MURLEY": murley_coords,
+        "WENDELL": wendell_coords,
+        "YOSELOFF": yose_coords,
+        "1967": _1967_coords,
+        "1976": _1976_coords,
+        "BOGLE": bogle_coords,
+        "WILF": wilf_coords,
+        "ADDY": addy_coords,
+        "KANJI": kanji_coords,
+        "JONES": jones_coords,
+        "FELICIANO": feliciano_coords,
+        "HARIRI": hariri_coords,
+        "FU": fu_coords,
+        "GROUSBECK": grousbeck_coords,
+        "MANNION": mannion_coords,
+    };
+
+    // Extract polygons from GeoJSON for buildings not manually defined
+    // GeoJSON uses [lng, lat] so we need to flip
+    if (typeof buildingData !== 'undefined') {
+        buildingData.features.forEach(function(feature) {
+            var name = feature.properties.name;
+            if (!name) return;
+
+            // Map GeoJSON display name to DB building name
+            var dbName = geoJsonNameToDbName(name);
+            if (!dbName || buildingPolygons[dbName]) return; // skip if already manual
+
+            var coords = null;
+            if (feature.geometry.type === 'Polygon') {
+                coords = feature.geometry.coordinates[0];
+            } else if (feature.geometry.type === 'MultiPolygon') {
+                // Use the largest ring
+                var largest = null, largestLen = 0;
+                feature.geometry.coordinates.forEach(function(poly) {
+                    if (poly[0].length > largestLen) {
+                        largest = poly[0];
+                        largestLen = poly[0].length;
+                    }
+                });
+                coords = largest;
+            }
+            if (coords && coords.length > 2) {
+                // Flip from [lng, lat] to [lat, lng]
+                buildingPolygons[dbName] = coords.map(function(c) { return [c[1], c[0]]; });
+            }
+        });
+    }
+
+    function geoJsonNameToDbName(name) {
+        // Map GeoJSON building names to DB building names
+        var map = {
+            "Bloomberg Hall": "BLOOMBERG",
+            "Blair Hall": "BLAIR",
+            "Campbell Hall": "CAMPBELL",
+            "Edwards Hall": "EDWARDS",
+            "Hamilton Hall": "HAMILTON",
+            "Joline Hall": "JOLINE",
+            "Little Hall": "LITTLE",
+            "Buyers Hall": "BUYERS",
+            "Holder Hall": "HOLDER",
+            "Witherspoon Hall": "WITHERSPOON",
+            "Laughlin 1901 Hall": "LAUGHLIN",
+            "1903 Hall": "1903",
+            "Brown Hall": "BROWN",
+            "Cuyler Hall": "CUYLER",
+            "Dod Hall": "DOD",
+            "Foulke Hall": "FOULKE",
+            "Henry Hall": "HENRY",
+            "Lockhart Hall": "LOCKHART",
+            "Patton Hall": "PATTON",
+            "Pyne Hall": "PYNE",
+            "Scully Hall": "SCULLY",
+            "Wright Hall": "WRIGHT",
+            "Forbes": "FORBES",
+            "Fisher": "FISHER",
+            "Walker Hall": "WALKER",
+            "Feinberg Hall": "FEINBERG",
+            "1915 Hall": "1915",
+            "Gauss Hall": "GAUSS",
+        };
+        // Handle Spelman
+        if (name && name.startsWith("Spelman Hall")) return "SPELMAN";
+        return map[name] || null;
+    }
+
+    // Some GeoJSON buildings map to multiple DB buildings
+    var multiDbBuildings = {
+        "LAUGHLIN": ["LAUGHLIN", "1901"],  // Laughlin 1901 Hall in GeoJSON
+    };
+
+    // ===== Geometry helpers =====
+    function polygonBounds(coords) {
+        var minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+        coords.forEach(function(c) {
+            if (c[0] < minLat) minLat = c[0];
+            if (c[0] > maxLat) maxLat = c[0];
+            if (c[1] < minLng) minLng = c[1];
+            if (c[1] > maxLng) maxLng = c[1];
+        });
+        return { minLat: minLat, maxLat: maxLat, minLng: minLng, maxLng: maxLng };
+    }
+
+    function pointInPolygon(lat, lng, polygon) {
+        var inside = false;
+        for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            var xi = polygon[i][0], yi = polygon[i][1];
+            var xj = polygon[j][0], yj = polygon[j][1];
+            var intersect = ((yi > lng) !== (yj > lng)) &&
+                (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    function polygonCentroid(coords) {
+        var latSum = 0, lngSum = 0;
+        coords.forEach(function(c) { latSum += c[0]; lngSum += c[1]; });
+        return [latSum / coords.length, lngSum / coords.length];
+    }
+
+    // Distribute N points inside a polygon
+    function distributePointsInPolygon(polygon, n) {
+        if (n === 0) return [];
+        var bounds = polygonBounds(polygon);
+        var centroid = polygonCentroid(polygon);
+
+        // If only 1 point, return centroid
+        if (n === 1) return [centroid];
+
+        var points = [];
+        // Create a grid inside the bounding box, denser than needed
+        var latRange = bounds.maxLat - bounds.minLat;
+        var lngRange = bounds.maxLng - bounds.minLng;
+
+        // Estimate grid size needed — overshoot by 3x to have plenty of candidates
+        var gridSize = Math.ceil(Math.sqrt(n * 3));
+        var latStep = latRange / (gridSize + 1);
+        var lngStep = lngRange / (gridSize + 1);
+
+        var candidates = [];
+        for (var i = 1; i <= gridSize; i++) {
+            for (var j = 1; j <= gridSize; j++) {
+                var lat = bounds.minLat + i * latStep;
+                var lng = bounds.minLng + j * lngStep;
+                if (pointInPolygon(lat, lng, polygon)) {
+                    // Score by distance from centroid (prefer inner points)
+                    var dist = Math.sqrt(Math.pow(lat - centroid[0], 2) + Math.pow(lng - centroid[1], 2));
+                    candidates.push({ lat: lat, lng: lng, dist: dist });
+                }
+            }
+        }
+
+        // Sort candidates by distance from centroid
+        candidates.sort(function(a, b) { return a.dist - b.dist; });
+
+        // Select n evenly-spaced candidates
+        if (candidates.length <= n) {
+            points = candidates.map(function(c) { return [c.lat, c.lng]; });
+        } else {
+            var step = candidates.length / n;
+            for (var k = 0; k < n; k++) {
+                var idx = Math.floor(k * step);
+                points.push([candidates[idx].lat, candidates[idx].lng]);
+            }
+        }
+
+        // If we still don't have enough points, fill with jittered centroid
+        while (points.length < n) {
+            var jitterLat = centroid[0] + (Math.random() - 0.5) * latRange * 0.3;
+            var jitterLng = centroid[1] + (Math.random() - 0.5) * lngRange * 0.3;
+            points.push([jitterLat, jitterLng]);
+        }
+
+        return points;
+    }
+
+    // ===== Create room markers for a building =====
+    function createRoomMarkers(dbBuildingName, roomsByFloor) {
+        var polygon = buildingPolygons[dbBuildingName.toUpperCase()];
+        if (!polygon) return;
+
+        var floorMarkers = {};
+
+        Object.keys(roomsByFloor).forEach(function(floorKey) {
+            var rooms = roomsByFloor[floorKey];
+            var positions = distributePointsInPolygon(polygon, rooms.length);
+            floorMarkers[floorKey] = [];
+
+            rooms.forEach(function(room, idx) {
+                if (idx >= positions.length) return;
+                var pos = positions[idx];
+                var rankColor = room.draw_rank ? getColor(room.draw_rank) : '#999';
+
+                var occLabel = room.occupancy === '1' || room.occupancy === 1 ? 'Single' :
+                               room.occupancy === '2' || room.occupancy === 2 ? 'Double' :
+                               room.occupancy === '3' || room.occupancy === 3 ? 'Triple' :
+                               room.occupancy === '4' || room.occupancy === 4 ? 'Quad' :
+                               room.occupancy || '';
+
+                var marker = L.circleMarker(pos, {
+                    radius: 7,
+                    fillColor: rankColor,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.85,
+                });
+
+                var bldg = room._building || dbBuildingName;
+                marker.bindTooltip(
+                    '<b>' + bldg + ' ' + room.room_no + '</b><br>' +
+                    occLabel + (room.sq_footage ? ' · ' + room.sq_footage + ' sqft' : '') +
+                    (room.draw_rank ? '<br>Rank: ' + room.draw_rank : ''),
+                    { direction: 'top', offset: [0, -8] }
+                );
+
+                marker.on('click', function() {
+                    openRoomViewer(bldg, room.room_no);
+                });
+
+                floorMarkers[floorKey].push(marker);
+            });
+        });
+
+        loadedBuildingMarkers[dbBuildingName.toUpperCase()] = floorMarkers;
+    }
+
+    // ===== Show/hide room markers based on zoom and floor =====
+    function refreshRoomMarkers() {
+        roomMarkersGroup.clearLayers();
+        if (mymap.getZoom() < roomMarkerZoomThreshold) return;
+
+        var mapBounds = mymap.getBounds();
+
+        Object.keys(loadedBuildingMarkers).forEach(function(bldg) {
+            var floorMarkers = loadedBuildingMarkers[bldg];
+            Object.keys(floorMarkers).forEach(function(floorKey) {
+                if (activeRoomFloor !== null && floorKey !== activeRoomFloor) return;
+                floorMarkers[floorKey].forEach(function(marker) {
+                    if (mapBounds.contains(marker.getLatLng())) {
+                        roomMarkersGroup.addLayer(marker);
+                    }
+                });
+            });
+        });
+    }
+
+    // ===== Load room markers for visible buildings =====
+    var loadingBuildings = {};
+    function loadRoomMarkersForVisibleBuildings() {
+        if (mymap.getZoom() < roomMarkerZoomThreshold) {
+            roomMarkersGroup.clearLayers();
+            if (floorControl._container) floorControl._container.style.display = 'none';
+            return;
+        }
+
+        if (floorControl._container) floorControl._container.style.display = 'block';
+
+        var mapBounds = mymap.getBounds();
+
+        // Check which buildings have polygons visible in current viewport
+        Object.keys(buildingPolygons).forEach(function(bldgName) {
+            if (loadedBuildingMarkers[bldgName] || loadingBuildings[bldgName]) return;
+
+            var centroid = polygonCentroid(buildingPolygons[bldgName]);
+            if (!mapBounds.contains(L.latLng(centroid[0], centroid[1]))) return;
+
+            // Check if this polygon covers multiple DB buildings
+            var dbNames = multiDbBuildings[bldgName] || [bldgName];
+            loadingBuildings[bldgName] = true;
+
+            var promises = dbNames.map(function(name) {
+                return fetch('/api/building_rooms?building=' + encodeURIComponent(name))
+                    .then(function(res) { return res.json(); });
+            });
+
+            Promise.all(promises).then(function(results) {
+                var mergedFloors = {};
+                results.forEach(function(data) {
+                    if (data.floors) {
+                        Object.keys(data.floors).forEach(function(f) {
+                            if (!mergedFloors[f]) mergedFloors[f] = [];
+                            data.floors[f].forEach(function(r) { r._building = data.building; });
+                            mergedFloors[f] = mergedFloors[f].concat(data.floors[f]);
+                        });
+                    }
+                });
+                if (Object.keys(mergedFloors).length > 0) {
+                    createRoomMarkers(bldgName, mergedFloors);
+                    refreshRoomMarkers();
+                }
+                delete loadingBuildings[bldgName];
+            }).catch(function() { delete loadingBuildings[bldgName]; });
+        });
+
+        refreshRoomMarkers();
+    }
+
+    mymap.on('zoomend moveend', loadRoomMarkersForVisibleBuildings);
+
+    // ===== Floor selector control =====
+    var FloorControl = L.Control.extend({
+        options: { position: 'topright' },
+        onAdd: function(map) {
+            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            container.style.background = '#fff';
+            container.style.padding = '8px 12px';
+            container.style.borderRadius = '8px';
+            container.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+            container.style.display = 'none';
+            container.style.maxHeight = '300px';
+            container.style.overflowY = 'auto';
+            container.innerHTML = '<div style="font-weight:600;font-size:0.8rem;color:#888;margin-bottom:6px;">FLOOR</div>' +
+                '<div id="floorControlButtons"></div>';
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
+            return container;
+        }
+    });
+    var floorControl = new FloorControl();
+    floorControl.addTo(mymap);
+
+    function updateFloorControl() {
+        var allFloors = new Set();
+        Object.keys(loadedBuildingMarkers).forEach(function(bldg) {
+            Object.keys(loadedBuildingMarkers[bldg]).forEach(function(f) { allFloors.add(f); });
+        });
+
+        var sorted = Array.from(allFloors).sort(function(a, b) {
+            var aNum = parseInt(a), bNum = parseInt(b);
+            var aIsNum = !isNaN(aNum), bIsNum = !isNaN(bNum);
+            if (!aIsNum && !bIsNum) return a.localeCompare(b);
+            if (!aIsNum) return -1;
+            if (!bIsNum) return 1;
+            return aNum - bNum;
+        });
+
+        var html = '<button onclick="setRoomFloor(null)" style="display:block;width:100%;margin-bottom:3px;padding:3px 10px;border:1px solid ' +
+            (activeRoomFloor === null ? '#e77500' : '#ddd') + ';border-radius:12px;background:' +
+            (activeRoomFloor === null ? '#e77500' : '#fff') + ';color:' +
+            (activeRoomFloor === null ? '#fff' : '#555') + ';cursor:pointer;font-size:0.8rem;font-weight:500;">All</button>';
+
+        sorted.forEach(function(f) {
+            var label = f === '0' ? 'G' : f;
+            html += '<button onclick="setRoomFloor(\'' + f + '\')" style="display:block;width:100%;margin-bottom:3px;padding:3px 10px;border:1px solid ' +
+                (activeRoomFloor === f ? '#e77500' : '#ddd') + ';border-radius:12px;background:' +
+                (activeRoomFloor === f ? '#e77500' : '#fff') + ';color:' +
+                (activeRoomFloor === f ? '#fff' : '#555') + ';cursor:pointer;font-size:0.8rem;font-weight:500;">' + label + '</button>';
+        });
+
+        var btn = document.getElementById('floorControlButtons');
+        if (btn) btn.innerHTML = html;
+    }
+
+    function setRoomFloor(floor) {
+        activeRoomFloor = floor;
+        refreshRoomMarkers();
+        updateFloorControl();
+    }
+
+    // Update floor control when markers load
+    var origRefresh = refreshRoomMarkers;
+    refreshRoomMarkers = function() {
+        origRefresh();
+        updateFloorControl();
+    };
 </script>
 
 <!-- Building Panel Logic -->
