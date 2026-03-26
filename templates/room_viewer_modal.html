@@ -164,12 +164,16 @@ function openRoomViewer(building, roomNo) {
     document.getElementById('viewer360Loading').style.display = 'block';
     document.getElementById('viewer360None').style.display = 'none';
     document.getElementById('roomPlanImg').style.display = 'none';
-    document.getElementById('roomPlanNone').style.display = 'block';
     document.getElementById('floorPlanImg').style.display = 'none';
-    document.getElementById('floorPlanNone').style.display = 'block';
 
-    // Reset to 360 tab (Bootstrap 4)
-    $('#roomViewerTabs a[href="#pane-360"]').tab('show');
+    // Hide all optional tabs until we know what data exists
+    $('#tab-360').parent().hide();
+    $('#tab-roomplan').parent().hide();
+    $('#tab-floorplan').parent().hide();
+
+    // Reset placeholders
+    document.getElementById('roomPlanNone').style.display = 'block';
+    document.getElementById('floorPlanNone').style.display = 'block';
 
     // Show modal (Bootstrap 4)
     $('#roomViewerModal').modal('show');
@@ -180,14 +184,17 @@ function openRoomViewer(building, roomNo) {
         .then(function(data) {
             document.getElementById('viewer360Loading').style.display = 'none';
 
-            // 360 — prefer ACTUAL, fall back to EXAMPLE
+            var firstTab = null;
+
+            // 360 — only show tab if data exists
             if (data.views_360 && data.views_360.length > 0) {
+                $('#tab-360').parent().show();
+                if (!firstTab) firstTab = '#pane-360';
                 var view = data.views_360.find(function(v) { return v.mediaType === 'ACTUAL'; }) || data.views_360[0];
                 var frame = document.getElementById('viewer360Frame');
-                // Set wide FOV (zoomed out): pan=0, tilt=0, fov=120
                 var url360 = view.url;
                 if (url360.indexOf('#') === -1) {
-                    url360 += '#/0,0,120';
+                    url360 += '#node1,0,0,140';
                 }
                 frame.src = url360;
                 frame.style.display = 'block';
@@ -195,20 +202,29 @@ function openRoomViewer(building, roomNo) {
                 document.getElementById('viewer360None').style.display = 'block';
             }
 
-            // Room Plan
+            // Room Plan — only show tab if data exists
             if (data.room_plan) {
+                $('#tab-roomplan').parent().show();
+                if (!firstTab) firstTab = '#pane-roomplan';
                 var rpImg = document.getElementById('roomPlanImg');
                 rpImg.src = data.room_plan;
                 rpImg.style.display = 'block';
                 document.getElementById('roomPlanNone').style.display = 'none';
             }
 
-            // Floor Plan
+            // Floor Plan — only show tab if data exists
             if (data.floor_plan) {
+                $('#tab-floorplan').parent().show();
+                if (!firstTab) firstTab = '#pane-floorplan';
                 var fpImg = document.getElementById('floorPlanImg');
                 fpImg.src = data.floor_plan;
                 fpImg.style.display = 'block';
                 document.getElementById('floorPlanNone').style.display = 'none';
+            }
+
+            // Activate the first available tab
+            if (firstTab) {
+                $('#roomViewerTabs a[href="' + firstTab + '"]').tab('show');
             }
         })
         .catch(function(err) {
