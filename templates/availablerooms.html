@@ -1127,6 +1127,8 @@
 
 {% include 'see_reviews_modal.html' %}
 
+{% include 'room_viewer_modal.html' %}
+
 {% include 'updates_modal.html' %}
 
 <div class="container" style="margin-top: 25px;">
@@ -1642,7 +1644,14 @@
                     targets: -1,
                     className: 'text-center', 
                     render: function (data, type, row) {
+                        var viewBtn = '';
+                        if (data.has_360) {
+                            viewBtn = '<button type="button" class="btn btn-sm mb-2" style="background: linear-gradient(135deg, #e77500, #f59e42); color: white; font-size: 0.85em; border: none;" onclick="openRoomViewer(\'' + data.building + '\', \'' + data.room_no + '\')"><i class="bi bi-badge-vr-fill me-1"></i>View Room</button>';
+                        } else {
+                            viewBtn = '<button type="button" class="btn btn-sm btn-outline-secondary mb-2" style="font-size: 0.85em;" onclick="openRoomViewer(\'' + data.building + '\', \'' + data.room_no + '\')"><i class="bi bi-eye me-1"></i>View Room</button>';
+                        }
                         return '<div class="d-flex flex-column align-items-center">' +
+                               viewBtn +
                                '<button type="button" class="btn review-btn mb-2" data-toggle="modal" data-target="#seeReviewsModal" data-whatever="@getbootstrap" onclick="getReviews( \'' + data.building + '\', \'' + data.room_no + '\', this)">Reviews<span class="badge review-badge">' + data.number_of_reviews + '</span></button>' +
                                '<button type="button" class="btn add-room-btn" style="font-size: 0.9em;" data-toggle="modal" data-target="#addRoomModal" data-whatever="@getbootstrap">Add to Group</button>' +
                                '</div>';

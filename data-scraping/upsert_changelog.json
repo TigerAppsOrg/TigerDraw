@@ -1,0 +1,29 @@
+{
+  "updated": [
+    {
+      "building": "1903",
+      "room_no": "231",
+      "changes": [
+        {
+          "field": "sq_footage",
+          "old": "",
+          "new": "0"
+        }
+      ]
+    },
+    {
+      "building": "Mannion",
+      "room_no": "D515",
+      "changes": [
+        {
+          "field": "sq_footage",
+          "old": "",
+          "new": "0"
+        }
+      ]
+    }
+  ],
+  "inserted": [],
+  "deactivated": [],
+  "unchanged": 2941
+}
