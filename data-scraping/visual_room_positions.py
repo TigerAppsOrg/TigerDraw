@@ -31,10 +31,22 @@ HARIRI_POLYGON = [
 ]
 HARIRI_DRAW_BOUNDS = (50, 300, 2850, 1200)  # x, y, w, h in 3400x2200 image
 
+# Hariri anchor points: the floor plan is rotated ~20° from axis-aligned.
+# Building runs NE-SW. In image: left=SW, right=NE, top=NW side, bottom=SE side.
+# top_left of drawing = NW corner of SW end ≈ vertex 3 area
+# top_right of drawing = N corner of NE end ≈ vertex 9
+# bottom_left of drawing = S corner of SW end ≈ vertex 4
+HARIRI_ANCHORS = {
+    'top_left':    [40.3427100, -74.6547800],  # NW end of main wing
+    'top_right':   [40.3429069, -74.6540032],  # NE end (northernmost point)
+    'bottom_left': [40.3425400, -74.6546500],  # SW end, south side
+}
+
 BUILDINGS["HARIRI"] = {
     "polygon": HARIRI_POLYGON,
     "draw_bounds": HARIRI_DRAW_BOUNDS,
     "image_size": (3400, 2200),
+    "anchors": HARIRI_ANCHORS,
     "floors": {
         "3": {
             # Top row (north side) - left to right
@@ -114,10 +126,20 @@ MANNION_POLYGON = [
 ]
 MANNION_DRAW_BOUNDS = (50, 300, 2700, 1300)  # approximate for 3400x2200
 
+# Mannion runs roughly N-S with a wing going east. The floor plan has
+# the main body horizontal (left=west, right=east), wing going down (south).
+# Looking at polygon: the building is roughly axis-aligned but slightly tilted.
+MANNION_ANCHORS = {
+    'top_left':    [40.3416781, -74.6542500],  # NW corner
+    'top_right':   [40.3416558, -74.6533825],  # NE corner
+    'bottom_left': [40.3414308, -74.6543114],  # SW corner
+}
+
 BUILDINGS["MANNION"] = {
     "polygon": MANNION_POLYGON,
     "draw_bounds": MANNION_DRAW_BOUNDS,
     "image_size": (3400, 2200),
+    "anchors": MANNION_ANCHORS,
     "floors": {
         "1": {
             # Top row (north) - west to east
@@ -167,13 +189,18 @@ GROUSBECK_POLYGON = [
 ]
 
 
-def pixel_to_geo(px, py, draw_bounds, polygon):
-    """Convert pixel position to lat/lng.
+def pixel_to_geo(px, py, draw_bounds, polygon, anchors=None):
+    """Convert pixel position to lat/lng using affine transformation.
 
-    Maps the drawing area to the polygon's bounding box.
-    Assumes: image-left = min_lng, image-right = max_lng,
-             image-top = max_lat, image-bottom = min_lat
-    (standard geographic orientation with north up)
+    If anchors are provided, uses 3 geographic anchor points for the
+    transformation (handles rotated buildings):
+      anchors = {
+        'top_left': [lat, lng],     # geographic point at drawing top-left
+        'top_right': [lat, lng],    # geographic point at drawing top-right
+        'bottom_left': [lat, lng],  # geographic point at drawing bottom-left
+      }
+
+    Otherwise falls back to axis-aligned bounding box mapping.
     """
     dx, dy, dw, dh = draw_bounds
 
@@ -181,15 +208,23 @@ def pixel_to_geo(px, py, draw_bounds, polygon):
     norm_x = max(0, min(1, (px - dx) / dw)) if dw > 0 else 0.5
     norm_y = max(0, min(1, (py - dy) / dh)) if dh > 0 else 0.5
 
-    # Get polygon bounding box
-    lats = [c[0] for c in polygon]
-    lngs = [c[1] for c in polygon]
-    min_lat, max_lat = min(lats), max(lats)
-    min_lng, max_lng = min(lngs), max(lngs)
+    if anchors:
+        # Affine: P = top_left + norm_x * (top_right - top_left) + norm_y * (bottom_left - top_left)
+        tl = anchors['top_left']
+        tr = anchors['top_right']
+        bl = anchors['bottom_left']
 
-    # Standard mapping: x -> longitude, y (inverted) -> latitude
-    lat = max_lat - norm_y * (max_lat - min_lat)
-    lng = min_lng + norm_x * (max_lng - min_lng)
+        lat = tl[0] + norm_x * (tr[0] - tl[0]) + norm_y * (bl[0] - tl[0])
+        lng = tl[1] + norm_x * (tr[1] - tl[1]) + norm_y * (bl[1] - tl[1])
+    else:
+        # Fallback: axis-aligned bounding box
+        lats = [c[0] for c in polygon]
+        lngs = [c[1] for c in polygon]
+        min_lat, max_lat = min(lats), max(lats)
+        min_lng, max_lng = min(lngs), max(lngs)
+
+        lat = max_lat - norm_y * (max_lat - min_lat)
+        lng = min_lng + norm_x * (max_lng - min_lng)
 
     return round(lat, 7), round(lng, 7)
 
@@ -201,11 +236,12 @@ def generate_positions():
     for building_name, data in BUILDINGS.items():
         polygon = data["polygon"]
         draw_bounds = data["draw_bounds"]
+        anchors = data.get("anchors")
         building_rooms = {}
 
         for floor_key, rooms in data["floors"].items():
             for room_no, (px, py) in rooms.items():
-                lat, lng = pixel_to_geo(px, py, draw_bounds, polygon)
+                lat, lng = pixel_to_geo(px, py, draw_bounds, polygon, anchors)
                 building_rooms[room_no] = [lat, lng]
 
         if building_rooms:
