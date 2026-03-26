@@ -159,14 +159,19 @@ def building_rooms():
     except Exception:
         pass
 
+    # Normalize occupancy: convert text labels to numeric
+    occ_text_to_num = {"SINGLE": "1", "DOUBLE": "2", "TRIPLE": "3", "QUAD": "4", "QUINT": "5", "6-PERSON": "6"}
+
     # Group rooms by floor
     floors = defaultdict(list)
     for room in rooms:
         review_info = review_map.get(room.room_no, {"count": 0, "avg": None})
+        raw_occ = str(room.occupancy).upper() if room.occupancy else ""
+        normalized_occ = occ_text_to_num.get(raw_occ, raw_occ)
         room_dict = {
             "room_id": room.room_id,
             "room_no": room.room_no,
-            "occupancy": room.occupancy,
+            "occupancy": normalized_occ,
             "sq_footage": room.sq_footage,
             "floor": room.floor,
             "elevator": room.elevator,
@@ -321,7 +326,10 @@ def queryRooms():
             continue
 
         if occupancy:
-            if occupancy != str(room.Room.occupancy):
+            occ_text_to_num = {"SINGLE": "1", "DOUBLE": "2", "TRIPLE": "3", "QUAD": "4", "QUINT": "5", "6-PERSON": "6"}
+            room_occ = str(room.Room.occupancy).upper()
+            normalized_occ = occ_text_to_num.get(room_occ, room_occ)
+            if occupancy != normalized_occ:
                 i += 1
                 continue
         if building:
