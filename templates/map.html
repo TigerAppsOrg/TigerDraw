@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
         integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
     <link rel="icon" href="{{ url_for('static', filename='assets/img/finder.png') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Make sure you put this AFTER Leaflet's CSS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
@@ -227,6 +228,189 @@
         }
     }
 
+    /* Building Side Panel */
+    #buildingPanel {
+        position: fixed;
+        top: 0;
+        right: -420px;
+        width: 420px;
+        height: 100vh;
+        background: #fff;
+        box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+        z-index: 1000;
+        transition: right 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #buildingPanel.open {
+        right: 0;
+    }
+    #buildingPanel .panel-header {
+        background: linear-gradient(135deg, #e77500 0%, #f59e42 100%);
+        color: white;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+    #buildingPanel .panel-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    #buildingPanel .panel-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0 4px;
+    }
+    #buildingPanel .panel-close:hover {
+        opacity: 0.7;
+    }
+    .floor-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 10px 16px;
+        background: #f8f8f8;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0;
+    }
+    .floor-tab {
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 16px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #555;
+        transition: all 0.15s;
+    }
+    .floor-tab:hover {
+        border-color: #e77500;
+        color: #e77500;
+    }
+    .floor-tab.active {
+        background: #e77500;
+        color: #fff;
+        border-color: #e77500;
+    }
+    .floor-plan-preview {
+        flex-shrink: 0;
+        max-height: 220px;
+        overflow: hidden;
+        background: #f5f5f5;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+    }
+    .floor-plan-preview img {
+        max-width: 100%;
+        max-height: 220px;
+        object-fit: contain;
+    }
+    .floor-plan-preview .expand-hint {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+    .room-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+    }
+    .room-list-header {
+        padding: 10px 16px 6px;
+        font-size: 0.8rem;
+        color: #888;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .room-card {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background 0.15s;
+        gap: 12px;
+    }
+    .room-card:hover {
+        background: #fef6ed;
+    }
+    .room-rank-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+    .room-card-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .room-card-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #333;
+    }
+    .room-card-meta {
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 1px;
+    }
+    .room-card-badges {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+    }
+    .room-badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        background: #f0f0f0;
+        color: #666;
+    }
+    .room-badge-360 {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    .panel-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        color: #888;
+    }
+    .panel-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        color: #aaa;
+        text-align: center;
+        padding: 40px;
+    }
+
 </style>
 
 <body>
@@ -263,6 +447,30 @@
     <div id="mapid"></div>
     <div class="box" id="pdf-container"><iframe src="" width="650px" height="650px" style="display:none; position: absolute; left: 0;
     bottom: 0;"></iframe></div>
+
+    <!-- Building Rooms Side Panel -->
+    <div id="buildingPanel">
+        <div class="panel-header">
+            <h5><i class="bi bi-building mr-2"></i><span id="panelBuildingName">Building</span></h5>
+            <button class="panel-close" onclick="closeBuildingPanel()">&times;</button>
+        </div>
+        <div class="floor-tabs" id="panelFloorTabs"></div>
+        <div class="floor-plan-preview" id="panelFloorPlan" style="display:none;" onclick="expandFloorPlan()">
+            <img id="panelFloorPlanImg" src="" alt="Floor Plan" referrerpolicy="no-referrer" />
+            <span class="expand-hint"><i class="bi bi-arrows-fullscreen"></i> Click to expand</span>
+        </div>
+        <div class="room-list-header" id="panelRoomCount">Rooms</div>
+        <div class="room-list" id="panelRoomList">
+            <div class="panel-loading" id="panelLoading">
+                <div class="text-center">
+                    <div class="spinner-border text-warning mb-2" role="status"></div>
+                    <p>Loading rooms...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'room_viewer_modal.html' %}
 </body>
 <script>
     // Constant JSON used to map floors to pdfs
@@ -565,6 +773,12 @@
         mymap.fitBounds(e.target.getBounds());
     }
 
+    function onBuildingClick(e, name) {
+        if (e.originalEvent) e.originalEvent._buildingClick = true;
+        zoomToFeature(e);
+        openBuildingPanel(name);
+    }
+
     function onEachFeature(feature, layer) {
 
         if (dorms.includes(feature.properties.name)) {
@@ -572,7 +786,7 @@
                 layer.bindPopup(makePopupContent(feature.properties.name))
 
                 layer.on({
-                    click: zoomToFeature
+                    click: function(e) { onBuildingClick(e, feature.properties.name); }
                 });
                 // console.log(feature.properties.name)
                 layer.on({
@@ -733,7 +947,13 @@
         frag.on('mouseover', highlightFeature);
         frag.on('mouseout', resetHighlight);
         frag.setStyle({ color: getcolor(names[i]), weight: 3, opacity: 1, fillOpacity: 0.5 })
-        frag.bindPopup(makePopupContent(names[i]))
+        frag.bindPopup(makePopupContent(names[i]));
+        (function(bldgName) {
+            frag.on('click', function(e) {
+                if (e.originalEvent) e.originalEvent._buildingClick = true;
+                openBuildingPanel(bldgName);
+            });
+        })(names[i]);
         i += 1
     }
 
@@ -785,6 +1005,273 @@
     mymap.addLayer(ncw);
     mymap.addLayer(yeh);
     mymap.addLayer(upperclass);
+</script>
+
+<!-- Building Panel Logic -->
+<script>
+    // Cache for fetched building data
+    var buildingDataCache = {};
+    var currentPanelBuilding = null;
+    var currentPanelFloor = null;
+
+    // Map from display names to DB building names
+    var buildingNameMap = {
+        "1927-Clapp": ["1927", "CLAPP"],
+        "Laughlin 1901": ["LAUGHLIN", "1901"],
+        "Yoseloff Hall, 1967": ["YOSELOFF", "1967"],
+        "Bogle Hall, 1976 Hall, Wilf": ["BOGLE", "1976", "WILF"],
+        "Whitman College, Hargadon": ["1981", "BAKER", "LAURITZEN", "HARGADON", "MURLEY", "WENDELL"],
+    };
+
+    // Normalize a display name to a DB building name
+    function displayToDbName(name) {
+        // Handle known multi-building entries
+        if (buildingNameMap[name]) return buildingNameMap[name][0];
+
+        // Strip " Hall" suffix
+        var cleaned = name;
+        if (cleaned.includes("Spelman")) cleaned = "Spelman Hall";
+        if (cleaned.endsWith(" Hall")) cleaned = cleaned.slice(0, -5);
+        if (cleaned === "Dodge-Osborne") cleaned = "Dodge Osborn";
+
+        return cleaned.toUpperCase();
+    }
+
+    // Normalize display name to floorPlans key
+    function displayToFloorPlanKey(name) {
+        var cleaned = name;
+        if (cleaned.includes("Spelman")) cleaned = "Spelman";
+        if (cleaned.endsWith(" Hall")) cleaned = cleaned.slice(0, -5);
+        return cleaned.toLowerCase().replace(/\s+/g, '');
+    }
+
+    function openBuildingPanel(displayName) {
+        var panel = document.getElementById('buildingPanel');
+        var dbName = displayToDbName(displayName);
+        document.getElementById('panelBuildingName').textContent = displayName;
+        currentPanelBuilding = dbName;
+        currentPanelFloor = null;
+
+        // Show loading state
+        document.getElementById('panelRoomList').innerHTML =
+            '<div class="panel-loading"><div class="text-center"><div class="spinner-border text-warning mb-2" role="status"></div><p>Loading rooms...</p></div></div>';
+        document.getElementById('panelFloorTabs').innerHTML = '';
+        document.getElementById('panelFloorPlan').style.display = 'none';
+        document.getElementById('panelRoomCount').textContent = 'Rooms';
+
+        panel.classList.add('open');
+
+        // Handle multi-building entries by fetching all sub-buildings
+        var dbNames = buildingNameMap[displayName] || [dbName];
+
+        // Check cache
+        var cacheKey = dbNames.join(',');
+        if (buildingDataCache[cacheKey]) {
+            renderBuildingPanel(displayName, buildingDataCache[cacheKey]);
+            return;
+        }
+
+        // Fetch all sub-buildings in parallel
+        var promises = dbNames.map(function(name) {
+            return fetch('/api/building_rooms?building=' + encodeURIComponent(name))
+                .then(function(res) { return res.json(); });
+        });
+
+        Promise.all(promises).then(function(results) {
+            // Merge floors from all sub-buildings
+            var mergedFloors = {};
+            results.forEach(function(data) {
+                if (data.floors) {
+                    Object.keys(data.floors).forEach(function(floor) {
+                        if (!mergedFloors[floor]) mergedFloors[floor] = [];
+                        // Tag each room with its building name for display
+                        data.floors[floor].forEach(function(room) {
+                            if (!room._building) room._building = data.building;
+                        });
+                        mergedFloors[floor] = mergedFloors[floor].concat(data.floors[floor]);
+                    });
+                }
+            });
+
+            var merged = { building: displayName, floors: mergedFloors };
+            buildingDataCache[cacheKey] = merged;
+            renderBuildingPanel(displayName, merged);
+        }).catch(function(err) {
+            document.getElementById('panelRoomList').innerHTML =
+                '<div class="panel-empty"><p>Failed to load room data.</p></div>';
+        });
+    }
+
+    function renderBuildingPanel(displayName, data) {
+        var floors = data.floors;
+        var floorKeys = Object.keys(floors).sort(function(a, b) {
+            // Sort floors: numeric ascending, non-numeric (G, A) first
+            var aNum = parseInt(a), bNum = parseInt(b);
+            var aIsNum = !isNaN(aNum), bIsNum = !isNaN(bNum);
+            if (!aIsNum && !bIsNum) return a.localeCompare(b);
+            if (!aIsNum) return -1;
+            if (!bIsNum) return 1;
+            return aNum - bNum;
+        });
+
+        if (floorKeys.length === 0) {
+            document.getElementById('panelFloorTabs').innerHTML = '';
+            document.getElementById('panelRoomList').innerHTML =
+                '<div class="panel-empty"><p>No rooms found for this building.</p></div>';
+            document.getElementById('panelRoomCount').textContent = '0 rooms';
+            return;
+        }
+
+        // Render floor tabs
+        var tabsHtml = '';
+        floorKeys.forEach(function(floor) {
+            var label = floor;
+            if (floor === '0') label = 'G';
+            tabsHtml += '<div class="floor-tab" data-floor="' + floor + '" onclick="selectFloor(\'' + floor + '\')">' +
+                'Floor ' + label + ' <span style="font-size:0.75rem;color:#999;">(' + floors[floor].length + ')</span></div>';
+        });
+        document.getElementById('panelFloorTabs').innerHTML = tabsHtml;
+
+        // Select the first floor
+        selectFloor(floorKeys[0]);
+    }
+
+    function selectFloor(floorKey) {
+        currentPanelFloor = floorKey;
+
+        // Update active tab
+        document.querySelectorAll('.floor-tab').forEach(function(tab) {
+            tab.classList.toggle('active', tab.getAttribute('data-floor') === floorKey);
+        });
+
+        var cacheKey = currentPanelBuilding;
+        // Check for multi-building entries
+        var displayName = document.getElementById('panelBuildingName').textContent;
+        var dbNames = buildingNameMap[displayName];
+        if (dbNames) cacheKey = dbNames.join(',');
+
+        var data = buildingDataCache[cacheKey];
+        if (!data) return;
+
+        var rooms = data.floors[floorKey] || [];
+
+        // Update room count
+        document.getElementById('panelRoomCount').textContent = rooms.length + ' room' + (rooms.length !== 1 ? 's' : '') + ' on floor ' + (floorKey === '0' ? 'G' : floorKey);
+
+        // Try to show floor plan image for this floor
+        loadFloorPlanPreview(displayName, floorKey);
+
+        // Render room cards
+        if (rooms.length === 0) {
+            document.getElementById('panelRoomList').innerHTML =
+                '<div class="panel-empty"><p>No rooms on this floor.</p></div>';
+            return;
+        }
+
+        var html = '';
+        rooms.forEach(function(room) {
+            var rankColor = room.draw_rank ? getColor(room.draw_rank) : '#ccc';
+            var buildingLabel = room._building || currentPanelBuilding;
+            var occLabel = room.occupancy === '1' || room.occupancy === 1 ? 'Single' :
+                           room.occupancy === '2' || room.occupancy === 2 ? 'Double' :
+                           room.occupancy === '3' || room.occupancy === 3 ? 'Triple' :
+                           room.occupancy === '4' || room.occupancy === 4 ? 'Quad' : room.occupancy;
+            var metaParts = [];
+            if (occLabel) metaParts.push(occLabel);
+            if (room.sq_footage) metaParts.push(room.sq_footage + ' sqft');
+            if (room.draw_rank) metaParts.push('Rank: ' + room.draw_rank);
+
+            html += '<div class="room-card" onclick="openRoomFromPanel(\'' +
+                escapeAttr(buildingLabel) + '\', \'' + escapeAttr(room.room_no) + '\')">';
+            html += '<div class="room-rank-dot" style="background:' + rankColor + ';" title="Draw rank: ' + (room.draw_rank || 'N/A') + '"></div>';
+            html += '<div class="room-card-info">';
+            html += '<div class="room-card-title">' + escapeHtml(buildingLabel) + ' ' + escapeHtml(room.room_no) + '</div>';
+            html += '<div class="room-card-meta">' + escapeHtml(metaParts.join(' · ')) + '</div>';
+            html += '</div>';
+            html += '<div class="room-card-badges">';
+            if (room.ac === 'YES') html += '<span class="room-badge" title="Air Conditioning">AC</span>';
+            if (room.has_360) html += '<span class="room-badge room-badge-360" title="360° View">360°</span>';
+            if (room.num_reviews > 0) html += '<span class="room-badge" title="' + room.num_reviews + ' review(s)">★ ' + (room.avg_rating || '-') + '</span>';
+            html += '</div>';
+            html += '</div>';
+        });
+
+        document.getElementById('panelRoomList').innerHTML = html;
+    }
+
+    function loadFloorPlanPreview(displayName, floorKey) {
+        var fpKey = displayToFloorPlanKey(displayName);
+        var fpData = floorPlans[fpKey];
+        var previewDiv = document.getElementById('panelFloorPlan');
+        var previewImg = document.getElementById('panelFloorPlanImg');
+
+        if (!fpData) {
+            previewDiv.style.display = 'none';
+            return;
+        }
+
+        // Determine the PDF URL for this floor
+        var floorLabel = floorKey === '0' ? 'G' : floorKey;
+        var pdfUrl = null;
+
+        if (Array.isArray(fpData)) {
+            // Simple building — check if this floor label exists
+            if (fpData.indexOf(floorLabel) !== -1 || fpData.indexOf(floorKey) !== -1) {
+                var matchLabel = fpData.indexOf(floorLabel) !== -1 ? floorLabel : floorKey;
+                pdfUrl = '/static/pdfs/' + fpKey + '/' + matchLabel + '.pdf';
+            }
+        }
+        // For complex buildings (forbes, wendell, baker), skip the preview for now
+        // since they have sub-wings
+
+        if (pdfUrl) {
+            // We can't easily preview PDFs, but we can link to them
+            previewDiv.style.display = 'flex';
+            previewDiv.setAttribute('data-pdf-url', pdfUrl);
+            previewImg.src = '';
+            previewImg.alt = 'Floor ' + floorLabel + ' Plan (click to open PDF)';
+            previewDiv.innerHTML = '<div style="text-align:center;padding:16px;color:#666;">' +
+                '<i class="bi bi-file-earmark-pdf" style="font-size:2rem;color:#e77500;"></i>' +
+                '<p style="margin:6px 0 0;font-size:0.85rem;">Floor ' + escapeHtml(floorLabel) + ' Plan</p>' +
+                '<span class="expand-hint"><i class="bi bi-box-arrow-up-right"></i> Click to open</span></div>';
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    }
+
+    function expandFloorPlan() {
+        var previewDiv = document.getElementById('panelFloorPlan');
+        var pdfUrl = previewDiv.getAttribute('data-pdf-url');
+        if (pdfUrl) {
+            window.open(pdfUrl, '_blank');
+        }
+    }
+
+    function openRoomFromPanel(building, roomNo) {
+        openRoomViewer(building, roomNo);
+    }
+
+    function closeBuildingPanel() {
+        document.getElementById('buildingPanel').classList.remove('open');
+    }
+
+    // Close panel when clicking on the map
+    mymap.on('click', function(e) {
+        // Only close if click is not on a feature
+        if (!e.originalEvent._buildingClick) {
+            closeBuildingPanel();
+        }
+    });
+
+    // Helper: escape HTML entities
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escapeAttr(str) {
+        if (!str) return '';
+        return String(str).replace(/\\/g,'\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
 </script>
 
 </html>

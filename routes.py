@@ -40,7 +40,7 @@ import collections
 from updateavailable import checkRooms, changeRoomPdf
 from api_access import check_is_undergrad
 from collections import defaultdict
-from display import db_session, Reviews, Room, RoomImage, getRoomImages
+from display import db_session, Reviews, Room, RoomImage, DrawTime, getRoomImages
 import time
 import config
 
@@ -112,6 +112,80 @@ def room_images():
         return jsonify({"error": "building and room_no required"}), 400
     images = getRoomImages(building, room_no)
     return jsonify(images)
+
+
+@app.route("/api/building_rooms", methods=["GET"])
+def building_rooms():
+    building = request.args.get("building", "")
+    if not building:
+        return jsonify({"error": "building parameter required"}), 400
+
+    # Query all rooms for this building
+    rooms = db_session.query(Room).filter(
+        func.upper(Room.building) == building.upper()
+    ).all()
+
+    if not rooms:
+        return jsonify({"building": building, "floors": {}})
+
+    # Get draw times for these rooms (average across years)
+    room_ids = [r.room_id for r in rooms]
+    draw_times = db_session.query(
+        DrawTime.room_id,
+        func.avg(DrawTime.draw_time).label("avg_draw_time")
+    ).filter(DrawTime.room_id.in_(room_ids)).group_by(DrawTime.room_id).all()
+    draw_time_map = {dt.room_id: round(float(dt.avg_draw_time)) for dt in draw_times}
+
+    # Get review counts and average ratings
+    review_stats = db_session.query(
+        Reviews.room_number,
+        func.count(Reviews.id).label("num_reviews"),
+        func.avg(Reviews.rating).label("avg_rating")
+    ).filter(
+        func.upper(Reviews.building_name) == building.upper()
+    ).group_by(Reviews.room_number).all()
+    review_map = {rs.room_number: {"count": rs.num_reviews, "avg": round(float(rs.avg_rating), 1) if rs.avg_rating else None} for rs in review_stats}
+
+    # Check which rooms have 360 images
+    rooms_with_360 = set()
+    try:
+        img_rows = db_session.query(
+            func.lower(RoomImage.room_no)
+        ).filter(
+            func.upper(RoomImage.building) == building.upper(),
+            RoomImage.image_type == "360"
+        ).distinct().all()
+        rooms_with_360 = {r[0] for r in img_rows}
+    except Exception:
+        pass
+
+    # Group rooms by floor
+    floors = defaultdict(list)
+    for room in rooms:
+        review_info = review_map.get(room.room_no, {"count": 0, "avg": None})
+        room_dict = {
+            "room_id": room.room_id,
+            "room_no": room.room_no,
+            "occupancy": room.occupancy,
+            "sq_footage": room.sq_footage,
+            "floor": room.floor,
+            "elevator": room.elevator,
+            "bathroom": room.bathroom,
+            "ac": room.ac,
+            "draw_rank": draw_time_map.get(room.room_id),
+            "num_reviews": review_info["count"],
+            "avg_rating": review_info["avg"],
+            "has_360": room.room_no.lower() in rooms_with_360,
+            "res_college": room.res_college,
+        }
+        floor_key = str(room.floor) if room.floor is not None else "unknown"
+        floors[floor_key].append(room_dict)
+
+    # Sort rooms within each floor by room number
+    for floor_key in floors:
+        floors[floor_key].sort(key=lambda r: r["room_no"])
+
+    return jsonify({"building": building, "floors": dict(floors)})
 
 
 @app.route("/")
