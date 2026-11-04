@@ -826,12 +826,21 @@
         display: inline-block;
     }
 
-    .heart-checkbox {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
+    button.favorite-heart {
+        background: transparent;
+        border: 0;
+        padding: 0 6px;
+        line-height: 1.5;
+    }
+
+    button.favorite-heart:focus-visible {
+        outline: 2px solid #474bc9;
+        outline-offset: 2px;
+    }
+
+    button.favorite-heart:disabled {
+        cursor: wait;
+        opacity: 0.5;
     }
     
     #rooms-table th:nth-child(1), #rooms-table td:nth-child(1) { width: 22%; }
@@ -1324,6 +1333,7 @@
     
     let text_max;
     var rt;
+    const pendingFavoriteRooms = new Set();
     var gt;
     let request = null;
     let controller = null;
@@ -1493,9 +1503,13 @@
                         
                         // Create the fav heart
                         let heartIcon = data.favorite ? '♥' : '♡';
-                        let favoriteHtml = '<label class="favorite-heart">' + heartIcon + 
-                                          '<input type="checkbox" class="heart-checkbox star" name="star"' + 
-                                          (data.favorite ? ' checked="true"' : '') + '></label>';
+                        const pending = pendingFavoriteRooms.has(data.room_id);
+                        const roomLabel = $('<span>').text(data.building + ' ' + data.room_no).html().replace(/"/g, '&quot;');
+                        let favoriteHtml = '<button type="button" class="favorite-heart"' +
+                                           ' aria-label="Favorite ' + roomLabel + '"' +
+                                           ' aria-pressed="' + Boolean(data.favorite) + '"' +
+                                           ' aria-busy="' + pending + '"' + (pending ? ' disabled' : '') +
+                                           '><span aria-hidden="true">' + heartIcon + '</span></button>';
                         
                         const addRoomHtml = '';
                         
@@ -1949,73 +1963,49 @@
         // Handle pill filter interactions
         setupPillFilters();
 
-        // on clicking stars, either favorite or unfavorite
-        $('#rooms-table').on('change', '.heart-checkbox', function () {
-            var data = rt.row($(this).closest('tr')).data();
-            var changing_row = data;
-            var $label = $(this).parent();
-            var $checkbox = $(this);
-            
-            // Update the heart icon appearance
-            if (this.checked) {
-                // Instead of replacing text and re-appending, keep the checkbox and update the label text
-                $label.html('♥');
-                $label.append($checkbox);
-            } else {
-                // Instead of replacing text and re-appending, keep the checkbox and update the label text
-                $label.html('♡');
-                $label.append($checkbox);
+        // Keep the saved state until the server confirms the change. A room may
+        // be redrawn or filtered while its request is pending.
+        $('#rooms-table').on('click', '.favorite-heart', function () {
+            const data = rt.row($(this).closest('tr')).data();
+            if (!data || pendingFavoriteRooms.has(data.room_id)) return;
+
+            const roomId = data.room_id;
+            const favorite = !data.favorite;
+            pendingFavoriteRooms.add(roomId);
+            $(this).prop('disabled', true).attr('aria-busy', 'true');
+
+            function finish(saved, message) {
+                pendingFavoriteRooms.delete(roomId);
+                rt.rows(function (index, row) { return row.room_id === roomId; }).every(function () {
+                    if (saved) this.data().favorite = favorite;
+                    this.invalidate('data');
+                });
+                rt.draw(false);
+                if (message) notyf.error(message);
             }
 
-            if (!this.checked) {
-                // send message to db to remove from favorites
-                $.ajax({
-                    type: 'POST',
-                    url: "{{url_for('removeFromFravorites')}}",
-                    contentType: 'application/json;charset=UTF-8',
-                    data: JSON.stringify(changing_row.room_id),
-                    success: function(response) {
-                        // Update the DataTable's internal data
-                        changing_row.favorite = false;
-                        // Invalidate the DataTable row cache
-                        rt.row($checkbox.closest('tr')).invalidate();
-                        // Redraw the table to apply any filters
-                        rt.draw(false);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        // If there's an error, revert the UI change
-                        $label.html('♥');
-                        $checkbox.prop('checked', true);
-                        $label.append($checkbox);
+            $.ajax({
+                type: 'POST',
+                url: favorite ? "{{url_for('addToFavorites')}}" : "{{url_for('removeFromFravorites')}}",
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'text',
+                data: JSON.stringify(roomId),
+                success: function (response) {
+                    // An expired login can redirect AJAX to an HTML login page.
+                    if (response.trim() !== 'success') {
+                        finish(false, 'Could not save your favorite. Please refresh and sign in again.');
+                        return;
                     }
-                });
-            } else {
-                // SEND MESSAGE TO DATABASE TO ADD TO FAVORITES
-                $.ajax({
-                    type: 'POST',
-                    url: "{{url_for('addToFavorites')}}",
-                    contentType: 'application/json;charset=UTF-8',
-                    data: JSON.stringify(changing_row.room_id),
-                    success: function(response) {
-                        // Update the DataTable's internal data
-                        changing_row.favorite = true;
-                        // Invalidate the DataTable row cache
-                        rt.row($checkbox.closest('tr')).invalidate();
-                        // Redraw the table to apply any filters
-                        rt.draw(false);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        // If there's an error, revert the UI change
-                        $label.html('♡');
-                        $checkbox.prop('checked', false);
-                        $label.append($checkbox);
-                    }
-                });
-            }
+                    finish(true);
+                },
+                error: function () {
+                    finish(false, 'Could not save your favorite. Please try again.');
+                }
+            });
         });
 
         // set up listener for button to add room to group list
-        $('#rooms-table').on('click', 'button', function () {
+        $('#rooms-table').on('click', '.add-room-btn', function () {
             // get favorites and set up table
             var data = rt.row($(this).parents('tr')).data();
             $("#addRoomModal").attr('data-room-id', data['room_id']);
