@@ -1,6 +1,7 @@
 export type Source = {
   source: string;
   source_kind: "live" | "cache" | "static";
+  purpose?: "reference_asset" | "fallback";
   source_url?: string;
   retrieved_at?: string;
   revision?: string;
@@ -31,6 +32,7 @@ export type Room = RoomFields & {
 };
 export type Media = {
   url: string;
+  preview_url?: string;
   type: "floor_plan" | "room_plan" | "thumbnail" | "360";
   media_type: "ACTUAL" | "EXAMPLE" | "unknown";
   floor?: string;

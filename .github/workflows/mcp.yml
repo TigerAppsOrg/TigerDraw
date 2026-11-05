@@ -2,9 +2,9 @@ name: TigerDraw MCP
 
 on:
   push:
-    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", ".github/workflows/mcp.yml"]
+    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", "static/previews/**", ".github/workflows/mcp.yml"]
   pull_request:
-    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", ".github/workflows/mcp.yml"]
+    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", "static/previews/**", ".github/workflows/mcp.yml"]
 
 permissions:
   contents: read

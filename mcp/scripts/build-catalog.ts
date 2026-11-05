@@ -177,6 +177,15 @@ export async function buildCatalog(
     );
     if (matches.length === 1) matches[0].aliases.push(name);
   }
+  const previewManifestPath = "static/previews/floor-plans.json";
+  const previewManifestText = await readFile(
+    join(root, previewManifestPath),
+    "utf8",
+  );
+  const previewManifest = JSON.parse(previewManifestText) as Record<
+    string,
+    { url: string; sha256: string; preview_sha256: string }
+  >;
   const pdfPaths: string[] = [];
   for (const dir of (
     await readdir(join(root, "static/pdfs"), { withFileTypes: true })
@@ -192,8 +201,34 @@ export async function buildCatalog(
       .sort(compare)) {
       const path = `static/pdfs/${dir.name}/${filename}`;
       pdfPaths.push(path);
+      const preview = previewManifest[`/${path}`];
+      const digest = createHash("sha256")
+        .update(await readFile(join(root, path)))
+        .digest("hex");
+      if (!preview || preview.sha256 !== digest)
+        throw new Error(
+          `Missing or stale PDF preview for ${path}; run bun run previews:build.`,
+        );
+      const previewUrl = new URL(preview.url);
+      if (
+        previewUrl.origin !== "https://draw.tigerapps.org" ||
+        !previewUrl.pathname.startsWith("/static/previews/floor-plans/") ||
+        !previewUrl.pathname.endsWith(`-${digest.slice(0, 12)}.png`)
+      )
+        throw new Error(`Invalid preview URL for ${path}`);
+      const previewBytes = await readFile(
+        join(root, previewUrl.pathname.slice(1)),
+      );
+      if (
+        createHash("sha256").update(previewBytes).digest("hex") !==
+        preview.preview_sha256
+      )
+        throw new Error(
+          `Corrupt PDF preview for ${path}; run bun run previews:build.`,
+        );
       building.plans.push({
         url: `https://draw.tigerapps.org/${path}`,
+        preview_url: preview.url,
         floor: filename.replace(/\.pdf$/, "").toUpperCase(),
         type: "floor_plan",
         media_type: "unknown",
@@ -206,6 +241,7 @@ export async function buildCatalog(
   }
   const hash = createHash("sha256");
   content.forEach((c) => hash.update(c));
+  hash.update(previewManifestText);
   for (const path of pdfPaths.sort(compare)) {
     hash.update(path);
     hash.update(await readFile(join(root, path)));
@@ -213,7 +249,7 @@ export async function buildCatalog(
   return {
     revision: hash.digest("hex"),
     generated_at: new Date().toISOString(),
-    inputs: [...inputFiles, ...pdfPaths.sort(compare)],
+    inputs: [...inputFiles, previewManifestPath, ...pdfPaths.sort(compare)],
     buildings: [...buildings.values()]
       .sort((a, b) => compare(a.name, b.name))
       .map((b) => ({

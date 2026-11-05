@@ -13,7 +13,8 @@
     "fixtures:refresh": "bun scripts/refresh-fixtures.ts",
     "smoke:live": "bun scripts/smoke-live.ts",
     "test": "bun test tests/",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "previews:build": "python3 scripts/build-floor-plan-previews.py"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.0.0",

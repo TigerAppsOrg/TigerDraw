@@ -19,6 +19,14 @@ export function createApp(
     production?: boolean;
   } = {},
 ) {
+  // Only catalog-listed public PNG previews are served, never arbitrary files.
+  const previews = new Set(
+    service.catalog.buildings.flatMap((building) =>
+      building.plans.flatMap((plan) =>
+        plan.preview_url ? [new URL(plan.preview_url).pathname] : [],
+      ),
+    ),
+  );
   const token = options.token?.trim() ?? "";
   if (options.production && !token)
     throw new Error("MCP_ACCESS_TOKEN is required in production.");
@@ -28,6 +36,22 @@ export function createApp(
   return {
     async fetch(request: Request): Promise<Response> {
       const url = new URL(request.url);
+      if (previews.has(url.pathname)) {
+        if (!["GET", "HEAD"].includes(request.method))
+          return new Response("Method not allowed", { status: 405 });
+        const file = Bun.file(
+          new URL(`../../${url.pathname.slice(1)}`, import.meta.url),
+        );
+        if (!(await file.exists()))
+          return new Response("Preview unavailable", { status: 404 });
+        return new Response(request.method === "HEAD" ? null : file, {
+          headers: {
+            "content-type": "image/png",
+            "cache-control": "public, max-age=31536000, immutable",
+            "x-content-type-options": "nosniff",
+          },
+        });
+      }
       if (url.pathname === "/healthz" && request.method === "GET")
         return Response.json({
           status: "ok",

@@ -21,7 +21,7 @@ The endpoint is `http://127.0.0.1:3333/mcp`. `GET /healthz` reports catalog read
 without contacting production. Bun loads `.env` automatically; copy `.env.example`
 if overriding defaults. No database URI, AWS credentials, or production model key
 is needed. Catalog generation reads repository assets; the running service reads
-only the generated catalog and public API. Do not start the Flask app for tests.
+the generated catalog, TigerDraw-owned previews, and public API. Do not start the Flask app for tests.
 
 | Setting | Default | Purpose |
 | --- | --- | --- |
@@ -150,3 +150,37 @@ stopping `tigerdraw-mcp.service`.
 Instance/proxy access is needed for deployment. Cloudflare credentials are only
 needed for PI deployment or an actual Cloudflare routing change. No extra instance,
 domain, Postgres secret, or TigerJunction engine change is required.
+
+## Floor-plan previews
+
+TigerDraw owns PDF preview generation, the manifest, and generated PNGs under
+`static/previews/`. `get_floor_plan` returns each original `url` and its
+`preview_url`; `get_room_images` attaches the same metadata for recognized PDFs.
+PI consumes these fields without owning document assets or guessing preview URLs.
+
+After updating PDFs, install Poppler and regenerate:
+
+```bash
+bun run previews:build
+bun run catalog:build
+```
+
+The optional builder requires Python 3 and `pdftoppm` (Poppler). Commit updated
+PDFs, previews, the manifest, and the generated catalog together. Normal service
+startup and catalog builds need no renderer; the catalog build verifies source
+PDF and PNG hashes and rejects missing, stale, or modified previews. The builder
+validates PNG structure/CRCs, replaces previews atomically, and publishes the
+manifest only after every file succeeds. Use `bun run previews:build --force`
+to regenerate valid cached previews after changing renderer settings.
+
+Production preview URLs default to `https://draw.tigerapps.org/static/previews/`
+and are served by TigerDraw's existing static-file handling. Include `static/previews/`
+in the deployed release; no new production proxy route is needed. The MCP service
+also serves only catalog-listed preview PNGs publicly via GET/HEAD, with immutable
+caching. Auth remains required on `/mcp` in production.
+
+For local development, set `TIGERDRAW_ASSET_ORIGIN=http://127.0.0.1:3333` in
+MCP's ignored `.env`, then restart MCP. Preview URLs will use that origin; original
+PDF URLs remain unchanged. This requires neither a Flask process nor database
+credentials. Leave this override unset in production. Production startup rejects HTTP,
+localhost, local-domain, and IP-address preview origins.

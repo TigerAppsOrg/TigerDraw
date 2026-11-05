@@ -220,3 +220,54 @@ test("response budget removes whole entries, keeps valid JSON and truncation met
   expect(data.truncated).toBe(true);
   expect(data.sources).toHaveLength(1);
 });
+
+test("only catalog-listed public PNG previews are served outside MCP authentication", async () => {
+  const { app, catalog } = await fixtureApp();
+  try {
+    const plan = catalog.buildings
+      .flatMap((b) => b.plans)
+      .find((p) => p.preview_url)!;
+    const path = new URL(plan.preview_url!).pathname;
+    const response = await app.fetch(new Request(`http://localhost${path}`));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(response.headers.get("cache-control")).toContain("immutable");
+    expect(
+      Buffer.from(await response.arrayBuffer())
+        .subarray(0, 8)
+        .toString("hex"),
+    ).toBe("89504e470d0a1a0a");
+    expect(
+      (
+        await app.fetch(
+          new Request(`http://localhost${path}`, { method: "HEAD" }),
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await app.fetch(
+          new Request(`http://localhost${path}`, { method: "POST" }),
+        )
+      ).status,
+    ).toBe(405);
+    for (const path of [
+      "/static/previews/floor-plans.json",
+      "/static/previews/floor-plans/missing.png",
+      "/static/pdfs/blair/1.pdf",
+      "/.env",
+    ])
+      expect(
+        (await app.fetch(new Request(`http://localhost${path}`))).status,
+      ).toBe(404);
+    expect(
+      (
+        await app.fetch(
+          new Request("http://localhost/mcp", { method: "POST", body: "{}" }),
+        )
+      ).status,
+    ).toBe(401);
+  } finally {
+    await app.close();
+  }
+});

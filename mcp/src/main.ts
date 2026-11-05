@@ -1,24 +1,25 @@
+import { readConfig } from "./config";
 import { createApp } from "./app";
 import { loadCatalog } from "./data/catalog";
 import { ApiClient } from "./data/client";
 import { RoomService } from "./data/service";
 
-const port = Number(process.env.PORT ?? 3333);
-if (!Number.isInteger(port) || port < 1 || port > 65535)
-  throw new Error("PORT must be an integer between 1 and 65535.");
+const config = readConfig(process.env);
 const app = createApp(
   new RoomService(
     await loadCatalog(),
-    new ApiClient({ baseUrl: process.env.TIGERDRAW_API_BASE }),
+    new ApiClient({ baseUrl: config.apiBaseUrl }),
+    Date.now,
+    config.assetOrigin,
   ),
   {
-    token: process.env.MCP_ACCESS_TOKEN,
-    production: process.env.NODE_ENV === "production",
+    token: config.token,
+    production: config.production,
   },
 );
 const server = Bun.serve({
-  hostname: process.env.HOST ?? "127.0.0.1",
-  port,
+  hostname: config.host,
+  port: config.port,
   fetch: app.fetch,
   maxRequestBodySize: 64 * 1024,
   idleTimeout: 30,

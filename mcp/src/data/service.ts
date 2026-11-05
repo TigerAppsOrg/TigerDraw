@@ -1,3 +1,4 @@
+import { assetOrigin as validateAssetOrigin } from "../config";
 import { z } from "zod";
 import { ApiClient, buildingSchema, imagesSchema } from "./client";
 import { findBuilding, staticSource } from "./catalog";
@@ -38,28 +39,44 @@ export class RoomService {
     readonly catalog: Catalog,
     readonly api = new ApiClient(),
     private now = Date.now,
-  ) {}
+    assetOrigin = "https://draw.tigerapps.org",
+  ) {
+    this.assetOrigin = validateAssetOrigin(assetOrigin);
+  }
+  private assetOrigin: string;
+  private withPreviews(media: Media[], building: Building): Media[] {
+    return media.map((item) => {
+      const preview =
+        item.preview_url ??
+        building.plans.find((plan) => plan.url === item.url)?.preview_url;
+      return preview
+        ? {
+            ...item,
+            preview_url: new URL(new URL(preview).pathname, this.assetOrigin)
+              .href,
+          }
+        : item;
+    });
+  }
   private deadline() {
     return this.now() + 10000;
   }
   listBuildings() {
-    const buildings = this.catalog.buildings
-      .slice(0, 200)
-      .map((b) => ({
-        building: b.name,
-        aliases: b.aliases,
-        colleges: b.colleges,
-        static_room_count: new Set(b.rooms.map((r) => r.room_no)).size,
-        floor_plan_count: b.plans.length,
-        map_url: `${this.api.baseUrl}/map`,
-        has_room_coordinates: b.rooms.some((r) => r.coordinates),
-      }));
+    const buildings = this.catalog.buildings.slice(0, 200).map((b) => ({
+      building: b.name,
+      aliases: b.aliases,
+      colleges: b.colleges,
+      static_room_count: new Set(b.rooms.map((r) => r.room_no)).size,
+      floor_plan_count: b.plans.length,
+      map_url: `${this.api.baseUrl}/map`,
+      has_room_coordinates: b.rooms.some((r) => r.coordinates),
+    }));
     return {
       buildings,
       returned_count: buildings.length,
       truncated: this.catalog.buildings.length > buildings.length,
       partial: false,
-      sources: [staticSource(this.catalog)],
+      sources: [staticSource(this.catalog, "reference_asset")],
       warnings: [
         "Building inventory and college coverage come from the static catalog; room details are fetched live.",
       ],
@@ -305,7 +322,7 @@ export class RoomService {
             map: {
               coordinates,
               coordinate_order: "latitude,longitude",
-              source: staticSource(this.catalog),
+              source: staticSource(this.catalog, "reference_asset"),
               url: `${this.api.baseUrl}/map`,
             },
           }
@@ -367,7 +384,7 @@ export class RoomService {
           true,
         );
     }
-    const unique = dedupeMedia(media);
+    const unique = this.withPreviews(dedupeMedia(media), building);
     return {
       building: building.name,
       room_no: room.room_no,
@@ -398,7 +415,7 @@ export class RoomService {
     return {
       building: building.name,
       floor: input.floor ? key(input.floor) : null,
-      plans: plans.slice(0, 50),
+      plans: this.withPreviews(plans.slice(0, 50), building),
       available: plans.length > 0,
       available_floors: [...new Set(building.plans.map((p) => p.floor))].sort(
         (a, b) => compare(a ?? "", b ?? ""),
@@ -406,11 +423,9 @@ export class RoomService {
       returned_count: Math.min(plans.length, 50),
       truncated: plans.length > 50,
       partial: false,
-      sources: [staticSource(this.catalog)],
+      sources: [staticSource(this.catalog, "reference_asset")],
       warnings: plans.length
-        ? [
-            "Floor plans are static assets; their original update dates are unknown.",
-          ]
+        ? []
         : ["No floor plan is available for this selection."],
     };
   }

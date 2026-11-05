@@ -264,6 +264,13 @@ describe("room queries", () => {
     const plans = service.getFloorPlan({ building: "Blair", floor: "1" });
     expect(plans.plans.some((p) => p.url.endsWith("blair/1.pdf"))).toBe(true);
     expect(plans.sources[0].source_kind).toBe("static");
+    expect(plans.sources[0].purpose).toBe("reference_asset");
+    expect(plans.warnings).toEqual([]);
+    expect(
+      plans.plans.find((p) => p.url.endsWith("blair/1.pdf"))?.preview_url,
+    ).toMatch(
+      /^https:\/\/draw\.tigerapps\.org\/static\/previews\/floor-plans\/blair\/1-/,
+    );
     expect(() =>
       service.getFloorPlan({ building: "Blair", floor: "999" }),
     ).toThrow("Unknown floor");
@@ -472,4 +479,57 @@ describe("upstream client", () => {
       redirected.get("/api/building_rooms", {}, buildingSchema),
     ).rejects.toMatchObject({ code: "UPSTREAM_ERROR" });
   });
+});
+
+test("TigerDraw owns verified first-page previews and local asset origins are explicit", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { createHash } = await import("node:crypto");
+  const manifest = JSON.parse(
+    await readFile(
+      new URL("../../static/previews/floor-plans.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  expect(Object.keys(manifest).length).toBeGreaterThan(200);
+  for (const [path, entry] of Object.entries(manifest) as [
+    string,
+    { url: string; sha256: string; preview_sha256: string },
+  ][]) {
+    const source = await readFile(new URL(`../..${path}`, import.meta.url));
+    expect(createHash("sha256").update(source).digest("hex")).toBe(
+      entry.sha256,
+    );
+    const url = new URL(entry.url);
+    expect(url.origin).toBe("https://draw.tigerapps.org");
+    const png = await readFile(
+      new URL(`../..${url.pathname}`, import.meta.url),
+    );
+    expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+    expect(createHash("sha256").update(png).digest("hex")).toBe(
+      entry.preview_sha256,
+    );
+  }
+  const fixture = await fixtureService();
+  const service = new RoomService(
+    fixture.catalog,
+    fixture.api,
+    Date.now,
+    "http://127.0.0.1:3333",
+  );
+  const plan = service
+    .getFloorPlan({ building: "Blair", floor: "1" })
+    .plans.find((p) => p.url.endsWith("blair/1.pdf"))!;
+  expect(plan.url).toBe("https://draw.tigerapps.org/static/pdfs/blair/1.pdf");
+  expect(plan.preview_url).toStartWith(
+    "http://127.0.0.1:3333/static/previews/floor-plans/",
+  );
+  expect(
+    () =>
+      new RoomService(
+        fixture.catalog,
+        fixture.api,
+        Date.now,
+        "http://user:pass@example.org",
+      ),
+  ).toThrow("origin");
 });

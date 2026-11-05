@@ -19,11 +19,12 @@ export function findBuilding(catalog: Catalog, input: string): Building {
     );
   return matches[0];
 }
-export function staticSource(catalog: Catalog): Source {
+export function staticSource(catalog: Catalog, purpose: Source["purpose"] = "fallback"): Source {
   return {
     source: "TigerDraw/mcp/src/generated/catalog.json",
     source_url: "https://github.com/TigerAppsOrg/TigerDraw",
     source_kind: "static",
+    purpose,
     revision: catalog.revision,
   };
 }
