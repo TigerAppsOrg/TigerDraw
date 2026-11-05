@@ -1,5 +1,8 @@
 # TigerDraw
 
+The read-only PI connector runs as an independent companion service. See
+[MCP setup and tools](mcp/README.md).
+
 # Local Development
 Install dependencies:
 - `python -m venv venv`

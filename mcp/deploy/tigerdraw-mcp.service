@@ -1,0 +1,27 @@
+[Unit]
+Description=TigerDraw read-only MCP companion
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tigerdraw-mcp
+Group=tigerdraw-mcp
+WorkingDirectory=/home/ubuntu/apps/tigerdraw/mcp
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3333
+EnvironmentFile=/etc/tigerdraw-mcp.env
+# Install the tested Bun runtime at this path; do not depend on a user's shell.
+ExecStart=/usr/local/bin/bun src/main.ts
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

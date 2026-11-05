@@ -1,0 +1,31 @@
+name: TigerDraw MCP
+
+on:
+  push:
+    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", ".github/workflows/mcp.yml"]
+  pull_request:
+    paths: ["mcp/**", "RoomInfo_RoomViewer.csv", "data-scraping/*.json", "static/assets/js/**", "static/pdfs/**", ".github/workflows/mcp.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: mcp/package-lock.json
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.1"
+      - run: npm ci
+      - run: bun run catalog:build
+      - run: bun run typecheck
+      - run: bun test
