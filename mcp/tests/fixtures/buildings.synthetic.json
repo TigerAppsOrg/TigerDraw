@@ -1,0 +1,21 @@
+{
+  "Blair": {
+    "building": "Blair",
+    "floors": {
+      "0": [
+        { "room_id": 578, "room_no": "B41", "occupancy": "SINGLE", "sq_footage": 122, "floor": 0, "elevator": "YES", "bathroom": "NONE", "ac": "NO", "draw_rank": 20, "num_reviews": 0, "avg_rating": null, "has_360": false, "res_college": "Mathey College" },
+        { "room_id": 3388, "room_no": "b41", "occupancy": "1", "sq_footage": 140, "floor": "0", "elevator": "NO", "bathroom": "NONE", "ac": false, "draw_rank": 30, "num_reviews": 0, "avg_rating": null, "has_360": false, "res_college": "Mathey College" }
+      ],
+      "1": [
+        { "room_id": 580, "room_no": "B42", "occupancy": "2", "sq_footage": 200, "floor": "1", "elevator": "YES", "ac": "YES", "num_reviews": 0, "avg_rating": null, "res_college": "Mathey College" },
+        { "room_id": 581, "room_no": "B43", "occupancy": "DOUBLE", "sq_footage": 300, "floor": "1", "elevator": "YES", "ac": "NO", "num_reviews": 0, "avg_rating": null, "res_college": "Mathey College" },
+        { "room_id": 582, "room_no": "001", "occupancy": "1", "floor": "1", "num_reviews": 0, "avg_rating": null, "res_college": "Mathey College" }
+      ]
+    }
+  },
+  "Edwards": {
+    "building": "Edwards",
+    "floors": { "G": [{ "room_id": 700, "room_no": "G01", "occupancy": "2", "sq_footage": 220, "floor": "G", "elevator": "YES", "ac": null, "num_reviews": 0, "avg_rating": null, "res_college": "Mathey College" }] }
+  },
+  "Forbes": { "building": "Forbes", "floors": { "1": [{ "room_id": 800, "room_no": "101", "occupancy": "2", "floor": "1", "num_reviews": 0, "avg_rating": null, "res_college": "Forbes College" }] } }
+}
