@@ -5,3 +5,7 @@
 .flaskenv
 venv
 .venv
+.env.*
+!.env.example
+!.env.template
+*.log
