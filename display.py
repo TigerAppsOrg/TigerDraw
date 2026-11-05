@@ -365,29 +365,20 @@ def changeFavorite(room_id, username, remove):
 
     # Query for the user
     user = sqlalchemy_session.query(User).filter(User.username == username).first()
-    print("step 1:", user)
-
-    # If the user does not exist, create and commit a new instance
-    if not user:
+    if user is None:
         user = User(username=username, rooms=[], group_ids=[])
         sqlalchemy_session.add(user)
-        sqlalchemy_session.commit()  # commit to persist the user
-        print("Inserted new user.")
 
-    # Re-querying isn't necessary because 'user' is already the instance,
-    # but if you need to refresh, you can also do:
-    # sqlalchemy_session.refresh(user)
-    print("step 2:", user.username)
-
-    # Add or remove the room from user's favorites
+    # Assign a new array so SQLAlchemy tracks the change. Treat saves as set
+    # operations: retries must not add duplicates, and removal must clear all
+    # copies left by older clients. Treat a NULL rooms array as an empty list.
+    room_id = int(room_id)
+    rooms = list(dict.fromkeys(user.rooms or []))
     if remove:
-        if int(room_id) in user.rooms:
-            user.rooms.remove(int(room_id))
-    else:
-        user.rooms.append(int(room_id))
-
-    # Notify SQLAlchemy that the mutable column 'rooms' has been modified
-    flag_modified(user, "rooms")
+        rooms = [saved_id for saved_id in rooms if saved_id != room_id]
+    elif room_id not in rooms:
+        rooms.append(room_id)
+    user.rooms = rooms
     sqlalchemy_session.commit()
 
 
